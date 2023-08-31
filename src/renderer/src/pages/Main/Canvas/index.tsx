@@ -1,31 +1,26 @@
-import { useEffect, type CSSProperties } from 'react';
 import { useSnapshot } from 'valtio';
-import { store,addMaterial } from '@/store';
+import { store, addMaterial } from '@/store';
 import { useDrop } from 'react-dnd';
-import { IMaterialItem } from '@/core/types/material';
-import { IDropResult } from '../MaterialBox';
-import Renderer from '@/core/renderer';
+import { Paper } from '@mui/material';
+import { IMaterialItem } from '@/materials/types';
+import { IDropResult } from '../MaterialIndicatorBox';
+import CanvasRenderer from '@/core/CanvasRenderer';
+import { nanoid } from 'nanoid';
+import './index.less'
 
-const style: CSSProperties = {
-  height: '12rem',
-  width: '12rem',
-  marginRight: '1.5rem',
-  marginBottom: '1.5rem',
-  color: 'white',
-  padding: '1rem',
-  textAlign: 'center',
-  fontSize: '1rem',
-  lineHeight: 'normal',
-  float: 'left',
-  background: 'green',
-};
 
 export default function Canvas() {
   const snap = useSnapshot(store);
   const [, drop] = useDrop(() => ({
     accept: 'material',
     drop: (item: IDropResult) => {
-      const materialItem: IMaterialItem = { name: item.materialName };
+      const materialItem: IMaterialItem = {
+        id: nanoid(),
+        name: item.materialName,
+        properties: {
+          style: {},
+        },
+      };
       addMaterial(materialItem);
     },
     collect: (monitor) => ({
@@ -35,8 +30,8 @@ export default function Canvas() {
   }));
 
   return (
-    <div ref={drop} style={{ ...style }}>
-      <Renderer materials={snap.materialList as IMaterialItem[]} />
-    </div>
+    <Paper className='canvas' ref={drop} elevation={3}>
+      <CanvasRenderer materials={snap.materialList as IMaterialItem[]} />
+    </Paper>
   );
 }

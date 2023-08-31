@@ -1,14 +1,14 @@
-import MImage from '../materials/MImage';
-import MText from '../materials/MText';
-import MButton from '../materials/MButton';
-import { EMaterialName, IMaterialItem } from '../types/material';
+import MImage from '@/materials/MImage';
+import MText from '@/materials/MText';
+import MButton from '@/materials/MButton';
+import { EMaterialName, IMaterialItem } from '@/materials/types';
 
-export default function Renderer(props: { materials: IMaterialItem[] }) {
+export default function CanvasRenderer(props: { materials: IMaterialItem[] }) {
   const { materials } = props;
 
   return (
     <>
-      {materials.map((material, index) => {
+      {materials.map((material) => {
         const Component = () => {
           switch (material.name) {
             case EMaterialName.MButton:
@@ -21,7 +21,7 @@ export default function Renderer(props: { materials: IMaterialItem[] }) {
               return <div>nnkonw material</div>;
           }
         };
-        return <Component key={index} />;
+        return <Component key={material.id} />;
       })}
     </>
   );

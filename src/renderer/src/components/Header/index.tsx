@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import { EventType } from 'main/event/event.type';
 
-export const HeaderHeight = 35;
+export const HeaderHeight = 28;
 
 const ScHeader = styled(Box)(({ theme }) => ({
   position: 'fixed',

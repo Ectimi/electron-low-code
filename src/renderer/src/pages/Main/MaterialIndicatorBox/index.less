@@ -1,12 +1,21 @@
 .material-indicator-box {
+  position: absolute;
+  top: var(--common-gap);
+  left: var(--common-gap);
   display: flex;
-  column-gap: 10px;
-  width: 210px;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 10px;
+  width: 226px;
+  height: calc(100% - var(--common-gap) * 2);
+  padding: var(--common-gap);
+  z-index: 2;
 
   .material-indicator-item {
     width: 100px;
     height: 100px;
     padding: 16px;
+    cursor: pointer;
 
     .icon-container {
       display: flex;

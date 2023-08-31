@@ -13,7 +13,7 @@ export function createMainWindow(
   const defaultOptions: BrowserWindowConstructorOptions = {
     title: 'main',
     minHeight: 800,
-    minWidth: 800,
+    minWidth: 1400,
     frame: false,
     webPreferences: {
       nodeIntegration: true,

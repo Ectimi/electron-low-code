@@ -1,36 +1,18 @@
+import { cloneElement } from 'react';
 import { useDrag } from 'react-dnd';
-import ImageIcon from '@mui/icons-material/Image';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import { ReactElement, cloneElement } from 'react';
-import { Card, Typography } from '@mui/material';
-
+import { Card, Typography, Paper } from '@mui/material';
+import { EMaterialName } from '@/materials/types';
+import {
+  MaterialIndicatorItems,
+  IMaterialIndicatorItem,
+} from './materialIndicators';
 import './index.less';
-import { EMaterialName } from '@/core/types/material';
-
-interface MaterialIndicatorItem {
-  materialName: string;
-  icon: ReactElement;
-  text: string;
-}
 
 export interface IDropResult {
   materialName: EMaterialName;
 }
 
-const MaterialIndicatorItems: MaterialIndicatorItem[] = [
-  {
-    materialName: EMaterialName.MImage,
-    icon: <ImageIcon />,
-    text: '图片组件',
-  },
-  {
-    materialName: EMaterialName.MText,
-    icon: <TextFieldsIcon />,
-    text: '文件组件',
-  },
-];
-
-const MaterialIndicatorItem = function (props: MaterialIndicatorItem) {
+const MaterialIndicatorItem = function (props: IMaterialIndicatorItem) {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'material',
     item: { materialName: props.materialName },
@@ -53,12 +35,12 @@ const MaterialIndicatorItem = function (props: MaterialIndicatorItem) {
   );
 };
 
-export default function MaterialBox() {
+export default function MaterialIndicatorBox() {
   return (
-    <div className="material-indicator-box">
+    <Paper className="material-indicator-box" elevation={5}>
       {MaterialIndicatorItems.map((item) => (
         <MaterialIndicatorItem key={item.materialName} {...item} />
       ))}
-    </div>
+    </Paper>
   );
 }
