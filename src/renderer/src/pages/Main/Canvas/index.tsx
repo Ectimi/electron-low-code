@@ -1,13 +1,12 @@
 import { useSnapshot } from 'valtio';
 import { store, addMaterial } from '@/store';
 import { useDrop } from 'react-dnd';
-import { Paper } from '@mui/material';
 import { IMaterialItem } from '@/materials/types';
 import { IDropResult } from '../MaterialIndicatorBox';
 import CanvasRenderer from '@/core/CanvasRenderer';
 import { nanoid } from 'nanoid';
-import './index.less'
-
+import './index.less';
+import Scaleplate from '@/components/Scaleplate';
 
 export default function Canvas() {
   const snap = useSnapshot(store);
@@ -30,8 +29,9 @@ export default function Canvas() {
   }));
 
   return (
-    <Paper className='canvas' ref={drop} elevation={3}>
+    <div className="canvas" ref={drop}>
+      <Scaleplate />
       <CanvasRenderer materials={snap.materialList as IMaterialItem[]} />
-    </Paper>
+    </div>
   );
 }
