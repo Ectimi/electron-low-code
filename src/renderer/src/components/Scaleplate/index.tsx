@@ -20,6 +20,7 @@ interface ScaleplateTickProps {
   tickLength?: number;
   tickWidth?: number;
   tickColor?: string;
+  style?: CSSProperties;
 }
 
 interface ScaleplateProps
@@ -36,8 +37,8 @@ interface ScaleplateProps
 
 const defaultProps: ScaleplateProps = {
   dir: 'row',
-  min: 0,
-  max: 1500,
+  min: -1000,
+  max: 1000,
   gap: 100,
   scale: 1,
   barWidth: 24,
@@ -49,15 +50,16 @@ const defaultProps: ScaleplateProps = {
   labelFontSize: 14,
 };
 
+const extendLength = 50;
+
 const ScaleplateContaier = styled('div')((props: ScaleplateContainerProps) => {
-  const length = props.max! - props.min!;
+  const max = props.max! % 100 === 0 ? props.max! + extendLength : props.max!;
+  const length = max! - props.min!;
   return {
     position: 'relative',
-    display: 'flex',
-    flexDirection: props.dir,
-    alignItems: 'flex-end',
     background: props.background,
-    justifyContent: 'space-between',
+    flexBasis: `${length}px`,
+    flexShrink: 0,
     ...(props.dir === 'row'
       ? { width: `${length}px`, height: `${props.barWidth}px` }
       : { width: `${props.barWidth}px`, height: `${length}px` }),
@@ -69,6 +71,7 @@ const ScaleplateTick = styled('div')((props: ScaleplateTickProps) => {
     width: `${props.dir === 'row' ? props.tickWidth : props.tickLength}px`,
     height: `${props.dir === 'row' ? props.tickLength : props.tickWidth}px`,
     backgroundColor: props.tickColor,
+    ...props.style,
   };
 });
 
@@ -77,17 +80,19 @@ const ScaleplateLabel = styled('div')((props: ScaleplateLabelProps) => {
     position: 'absolute',
     color: props.labelColor,
     fontSize: props.labelFontsize,
+    userSelect:'none',
     ...props.style,
   };
 });
 
 export default function Scaleplate(p: ScaleplateProps = {}) {
   const props = { ...defaultProps, ...p };
+  const max = props.max! % 100 === 0 ? props.max! + extendLength : props.max!;
   const scProps: ScaleplateContainerProps = {
     dir: props.dir,
     background: props.background,
     barWidth: props.barWidth,
-    max: props.max,
+    max,
     min: props.min,
   };
   const stProps: ScaleplateTickProps = {
@@ -101,13 +106,43 @@ export default function Scaleplate(p: ScaleplateProps = {}) {
     labelColor: props.labelColor,
     labelFontsize: props.labelFontSize,
   };
-  const length = props.max! - props.min!;
+  const length = max! - props.min!;
   const areaNumber = length / props.gap!;
   const perAreaTickAmount = 10;
-  const tickNubers = [props.min!];
+  const tickNumbers = [props.min!];
+  const labels: Array<{ value: number; distance: number }> = [];
 
   for (let i = 1, len = areaNumber * perAreaTickAmount; i <= len; i++) {
-    tickNubers.push(props.min! + props.gap!/perAreaTickAmount * i);
+    tickNumbers.push(props.min! + (props.gap! / perAreaTickAmount) * i);
+  }
+
+  if (props.min! >= 0) {
+    tickNumbers.forEach((n) => {
+      labels.push({ value: n, distance: n + 3 });
+    });
+  } else if (props.min! < 0 && props.max! <= 0) {
+    tickNumbers.forEach((n, i) => {
+      labels.push({
+        value: n,
+        distance: tickNumbers[tickNumbers.length - 1 - i] * -1 + 3,
+      });
+    });
+  } else if (props.min! < 0 && props.max! > 0) {
+    const positives = tickNumbers.filter((item) => item >= 0);
+    const negatives = tickNumbers.filter((item) => item < 0);
+
+    negatives.forEach((negativeNumber, ni) => {
+      labels.push({
+        value: negativeNumber,
+        distance: negatives[negatives.length - 1 - ni] * -1 + 3,
+      });
+    });
+    positives.forEach((positiveNumber) => {
+      labels.push({
+        value: positiveNumber,
+        distance: positiveNumber + Math.abs(Math.min(...negatives)) + 3,
+      });
+    });
   }
 
   return (
@@ -116,7 +151,7 @@ export default function Scaleplate(p: ScaleplateProps = {}) {
       style={props.style}
       {...scProps}
     >
-      {tickNubers.map((number, index) => {
+      {tickNumbers.map((_, index) => {
         const isMiddle = index !== 0 && index % 10 !== 0 && index % 5 === 0;
         const isEnd = index % 10 === 0;
         const tickLength = isMiddle
@@ -127,28 +162,38 @@ export default function Scaleplate(p: ScaleplateProps = {}) {
 
         return (
           <Fragment key={index}>
-            <ScaleplateTick key={index} {...stProps} tickLength={tickLength} />
-            {isEnd && index !== tickNubers.length - 1 && (
-              <ScaleplateLabel
-                {...slProps}
-                style={{
-                  left: `${
-                    props.dir === 'row' ? number  + 3 : 0
-                  }px`,
-                  top: `${
-                    props.dir === 'row' ? 0 : number  + 3
-                  }px`,
-                  writingMode:
-                    props.dir === 'row' ? 'horizontal-tb' : 'vertical-lr',
-                  transform: `rotateZ(${props.dir === 'row' ? 0 : 180}deg)`,
-                }}
-              >
-                {number}
-              </ScaleplateLabel>
-            )}
+            <ScaleplateTick
+              key={index}
+              {...stProps}
+              tickLength={tickLength}
+              style={{
+                position: 'absolute',
+                ...(props.dir === 'row'
+                  ? { bottom: 0, left: index * 10 + 'px' }
+                  : { right: 0, top: index * 10 + 'px' }),
+              }}
+            />
           </Fragment>
         );
       })}
+      {labels
+        .filter((_, index) => index % 10 === 0)
+        .map((item, index) => (
+          <ScaleplateLabel
+            key={item.value + index}
+            {...slProps}
+            style={{
+              ...(props.dir === 'row'
+                ? { left: item.distance + 'px' }
+                : { top: item.distance + 'px' }),
+              writingMode:
+                props.dir === 'row' ? 'horizontal-tb' : 'vertical-lr',
+              transform: `rotateZ(${props.dir === 'row' ? 0 : 180}deg)`,
+            }}
+          >
+            {item.value}
+          </ScaleplateLabel>
+        ))}
     </ScaleplateContaier>
   );
 }

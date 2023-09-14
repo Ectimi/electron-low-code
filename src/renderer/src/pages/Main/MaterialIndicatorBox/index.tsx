@@ -1,16 +1,41 @@
 import { cloneElement } from 'react';
 import { useDrag } from 'react-dnd';
-import { Card, Typography, Paper } from '@mui/material';
+import { styled, Card, Typography, Paper } from '@mui/material';
 import { EMaterialName } from '@/materials/types';
 import {
   MaterialIndicatorItems,
   IMaterialIndicatorItem,
 } from './materialIndicators';
-import './index.less';
 
 export interface IDropResult {
   materialName: EMaterialName;
 }
+
+const ScMaterialIndicatorBox = styled(Paper)({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignContent: 'flex-start',
+  gap: '10px',
+  width: ' var(--left-panel-width)',
+  padding: 'var(--common-gap)',
+  backgroundColor:'var(--background-color)'
+});
+
+const ScMaterialIndicatorItem = styled(Card)({
+  width: '100px',
+  height: '100px',
+  padding: '16px',
+  backgroundColor:'var(--card-background-color)',
+  color:'var(--icon-stroke-color)',
+  cursor: 'pointer',
+});
+
+const ScIconContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginBottom: '10px',
+});
 
 const MaterialIndicatorItem = function (props: IMaterialIndicatorItem) {
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -24,23 +49,27 @@ const MaterialIndicatorItem = function (props: IMaterialIndicatorItem) {
   const opacity = isDragging ? 0.4 : 1;
 
   return (
-    <Card ref={drag} style={{ opacity }} className="material-indicator-item">
-      <div className="icon-container">
+    <ScMaterialIndicatorItem
+      ref={drag}
+      style={{ opacity }}
+      className="material-indicator-item"
+    >
+      <ScIconContainer className="icon-container">
         {cloneElement(props.icon, { sx: { fontSize: 40 } })}
-      </div>
-      <Typography variant="body2" color="text.secondary" align="center">
+      </ScIconContainer>
+      <Typography variant="body2"  align="center">
         {props.text}
       </Typography>
-    </Card>
+    </ScMaterialIndicatorItem>
   );
 };
 
 export default function MaterialIndicatorBox() {
   return (
-    <Paper className="material-indicator-box" elevation={5}>
+    <ScMaterialIndicatorBox className="material-indicator-box" elevation={5}>
       {MaterialIndicatorItems.map((item) => (
         <MaterialIndicatorItem key={item.materialName} {...item} />
       ))}
-    </Paper>
+    </ScMaterialIndicatorBox>
   );
 }

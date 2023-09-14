@@ -1,28 +1,28 @@
+import { useMemo } from 'react';
 import MImage from '@/materials/MImage';
 import MText from '@/materials/MText';
 import MButton from '@/materials/MButton';
 import { EMaterialName, IMaterialItem } from '@/materials/types';
 
+const componentMap = {
+  [EMaterialName.MButton]: MButton,
+  [EMaterialName.MImage]: MImage,
+  [EMaterialName.MText]: MText,
+};
+
 export default function CanvasRenderer(props: { materials: IMaterialItem[] }) {
   const { materials } = props;
 
-  return (
-    <>
-      {materials.map((material) => {
-        const Component = () => {
-          switch (material.name) {
-            case EMaterialName.MButton:
-              return <MButton />;
-            case EMaterialName.MImage:
-              return <MImage />;
-            case EMaterialName.MText:
-              return <MText />;
-            default:
-              return <div>nnkonw material</div>;
-          }
-        };
+  const renderedComponents = useMemo(() => {
+    return materials.map((material) => {
+      const Component = componentMap[material.name];
+      if (Component) {
         return <Component key={material.id} />;
-      })}
-    </>
-  );
+      } else {
+        return <div key={material.id}>unknown material</div>;
+      }
+    });
+  }, [materials]);
+
+  return <>{renderedComponents}</>;
 }

@@ -19,7 +19,7 @@ export type TBorderStyle = 'dashed' | 'dotted' | 'goove';
 
 export type TFontWeight = 'normal' | 'bold' | 'lighter' | 'bolder' | number;
 
-export interface IStyle {
+export interface IBoxStyle {
   basic: {
     width: number;
     height: number;
@@ -43,8 +43,8 @@ export interface IStyle {
     backgroundImage: string;
     backgroundSize: string;
     backgroundRepeat: TBackgroundRepeat;
-    backgroundPositionX:TBackgroundPosition;
-    backgroundPositionY:TBackgroundPosition;
+    backgroundPositionX: TBackgroundPosition;
+    backgroundPositionY: TBackgroundPosition;
   };
 
   border: {
@@ -53,7 +53,9 @@ export interface IStyle {
     borderWidth: number;
     borderRadius: number;
   };
+}
 
+export interface ITextStyle {
   font: {
     fontSize: number;
     fontStyle: string;
@@ -61,12 +63,12 @@ export interface IStyle {
   };
 }
 
+export interface IStyle extends IBoxStyle, ITextStyle {}
+
 export interface IMaterialItem {
   id: string;
   name: EMaterialName;
-  properties: {
-    style: DeepPartial<IStyle>;
-  };
+  
 }
 
 export interface IMaterialProps {

@@ -41,7 +41,7 @@ export default function propStyleToCssProperty(
   let key: keyof IStyle;
   for (key in propStyle) {
     if (Object.prototype.hasOwnProperty.call(propStyle, key)) {
-      const obj = propStyle[key];
+      const obj = propStyle![key];
       if (
         key === 'basic' ||
         key === 'background' ||

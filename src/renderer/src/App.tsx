@@ -15,16 +15,17 @@ function App() {
           'html,body,#root': { width: '100%', height: '100%' },
           '#root': { paddingTop: `${HeaderHeight}px` },
           '::-webkit-scrollbar': {
-            width: '10px',
+            width: '6px',
+            height:'8px'
           },
           '::-webkit-scrollbar-thumb': {
             borderRadius: '2px',
-            backgroundColor: '#2f3c63',
+            backgroundColor: '#989898',
             cursor: 'pointer',
           },
           '::-webkit-scrollbar-track': {
             boxShadow: 'none',
-            background: theme.palette.primary.main,
+            background: 'transparent',
             borderRadius: '10px',
           },
         }}

@@ -21,7 +21,7 @@ const ScHeader = styled(Box)(({ theme }) => ({
   width: '100%',
   height: `${HeaderHeight}px`,
   padding: '0 10px',
-  backgroundColor: theme.palette.primary.dark,
+  backgroundColor: 'var(--headline-color)',
   color: '#fff',
   WebkitAppRegion: 'drag',
   '.MuiIconButton-root': {

@@ -1,21 +1,26 @@
 import { FC } from 'react';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
-import { Box } from '@mui/material';
+import { Box,styled } from '@mui/material';
 import MaterialIndicatorBox from './MaterialIndicatorBox';
-import Canvas from './Canvas';
+import PlottingArea from './PlottingArea';
 import AttrPanel from './AttrPanel';
 
-import './index.less';
+const ScBox = styled(Box)({
+  display:'flex',
+  width:'100%',
+  height:'100%',
+  overflow:'hidden'
+})
 
 export const Main: FC = () => {
   return (
     <DndProvider backend={HTML5Backend}>
-      <Box className="main">
+      <ScBox>
         <MaterialIndicatorBox />
-        <Canvas />
+        <PlottingArea />
         <AttrPanel />
-      </Box>
+      </ScBox>
     </DndProvider>
   );
 };
