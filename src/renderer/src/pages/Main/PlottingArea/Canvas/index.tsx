@@ -1,11 +1,10 @@
 import { useSafeState } from 'ahooks';
-import { nanoid } from 'nanoid';
 import { useDrop } from 'react-dnd';
 import { IDropResult } from '../../MaterialIndicatorBox';
-import { IMaterialItem } from '@/materials/types';
 import { styled } from '@mui/material';
 import store from '@/store';
 import CanvasRenderer from '@/core/CanvasRenderer';
+import createMaterial, { IMaterialItem } from '@/materials/createMaterial';
 
 interface IPosition {
   left: number;
@@ -42,11 +41,8 @@ export default function Canvas(props: ICanvasProps) {
   const [, drop] = useDrop(() => ({
     accept: 'material',
     drop: (item: IDropResult) => {
-      const id = nanoid()
-      const materialItem: IMaterialItem = {
-        id,
-        name: item.materialName,
-      };
+      const materialItem = createMaterial(item.materialName)
+     
       store.addMaterial(materialItem);
     },
     collect: (monitor) => ({

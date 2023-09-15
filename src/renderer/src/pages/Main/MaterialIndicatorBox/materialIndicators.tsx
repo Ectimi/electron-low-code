@@ -1,8 +1,8 @@
 import { ReactElement } from 'react';
-import { EMaterialName } from '@/materials/types';
 import ImageIcon from '@mui/icons-material/Image';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import { SvgIcon } from '@mui/material';
+import { EMaterialName } from '@/materials/types/material';
 
 export interface IMaterialIndicatorItem {
   materialName: string;

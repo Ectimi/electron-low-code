@@ -1,11 +1,11 @@
 import { cloneElement } from 'react';
 import { useDrag } from 'react-dnd';
 import { styled, Card, Typography, Paper } from '@mui/material';
-import { EMaterialName } from '@/materials/types';
 import {
   MaterialIndicatorItems,
   IMaterialIndicatorItem,
 } from './materialIndicators';
+import { EMaterialName } from '@/materials/types/material';
 
 export interface IDropResult {
   materialName: EMaterialName;

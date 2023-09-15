@@ -1,14 +1,22 @@
 import { CSSProperties, useMemo } from 'react';
-import { Button } from '@mui/material';
-import { IMaterialProps } from '../types';
+import { Box } from '@mui/material';
 import propStyleToCssProperty from '../utils/propStyleToCssProperty';
-import defaultProps from './defaultProps';
+import { TButtonProps, defaultProps } from './props';
 
-export default function MButton(p: IMaterialProps) {
-  const style = useMemo(() => ({ ...defaultProps.style, ...p.style }), [p.style]);
-  const fashion = useMemo(() => {
-    return propStyleToCssProperty(style);
-  }, [style]) as CSSProperties;
+export default function MButton(props: TButtonProps) {
+  const { property, custom } = props;
+  const sx = useMemo(
+    () => ({
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: custom.textPosition,
+      cursor:'pointer',
+      ...propStyleToCssProperty(property.style),
+    }),
+    [property, custom]
+  ) as CSSProperties;
 
-  return <Button sx={fashion}>按钮</Button>;
+  return <Box sx={sx}>按钮</Box>;
 }
+
+MButton.__default_configuration = defaultProps;

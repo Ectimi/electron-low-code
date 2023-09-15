@@ -1,5 +1,7 @@
-import { IMaterialItem } from '@/materials/types';
+import { IMaterialItem } from '@/materials/createMaterial';
+import { IMaterial } from '@/materials/types/material';
 import { proxy, useSnapshot } from 'valtio';
+import { proxyWithHistory } from 'valtio/utils';
 
 interface IStore {
   materialList: IMaterialItem[];
@@ -9,6 +11,8 @@ interface IStore {
     height: number;
   };
 }
+
+type TRecord = Map<string, IMaterial['property']>;
 
 class Store {
   state = proxy<IStore>({
@@ -21,6 +25,8 @@ class Store {
     },
   });
 
+  reordMap = proxyWithHistory<TRecord>(new Map());
+
   getSnapshot = () => useSnapshot(this.state);
 
   setSelectedMaterial = (materialId: IStore['selectedMaterial']) =>
@@ -29,7 +35,10 @@ class Store {
   addMaterial = (item: IMaterialItem) => {
     this.state.materialList.push(item);
     this.setSelectedMaterial(item.id);
+    this.reordMap.value.set(item.id, item.defaultConfiguration);
   };
+
+  getConfiguration = (id: string) => this.reordMap.value.get(id);
 }
 
 const store = new Store();
