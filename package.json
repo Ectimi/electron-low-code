@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@emotion/babel-plugin": "^11.11.0",
+    "@scena/react-guides": "^0.28.2",
     "nanoid": "^4.0.2",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
