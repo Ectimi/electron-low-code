@@ -3,7 +3,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { Box,styled } from '@mui/material';
 import MaterialIndicatorBox from './MaterialIndicatorBox';
-import PlottingArea from './PlottingArea';
+import PlotArea from './PlotArea';
 import AttrPanel from './AttrPanel';
 
 const ScBox = styled(Box)({
@@ -18,7 +18,7 @@ export const Main: FC = () => {
     <DndProvider backend={HTML5Backend}>
       <ScBox>
         <MaterialIndicatorBox />
-        <PlottingArea />
+        <PlotArea />
         <AttrPanel />
       </ScBox>
     </DndProvider>

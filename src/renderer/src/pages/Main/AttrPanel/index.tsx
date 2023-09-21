@@ -22,7 +22,8 @@ function TabPanel(props: TabPanelProps) {
 
 const ScAttrPanel = styled(Paper)({
   width:'var(--right-panel-width)',
-  padding:'var(--common-gap)'
+  padding:'var(--common-gap)',
+  userSelect:'none'
 })
 
 export default function AttrPanel() {

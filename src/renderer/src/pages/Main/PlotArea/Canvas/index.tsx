@@ -6,7 +6,7 @@ import store from '@/store';
 import CanvasRenderer from '@/core/CanvasRenderer';
 import createMaterial, { IMaterialItem } from '@/materials/createMaterial';
 
-interface IPosition {
+export interface IPosition {
   left: number;
   top: number;
 }
@@ -17,7 +17,8 @@ interface ISize {
 }
 
 interface ICanvasProps {
-  position?: IPosition;
+  position: IPosition;
+  translate: { x: number; y: number };
   size?: ISize;
   backgroundColor?: string;
 }
@@ -25,24 +26,27 @@ interface ICanvasProps {
 const ScCanvas = styled('div')((props: ICanvasProps) => {
   return {
     position: 'absolute',
-    top: props.position?.top || 0 + 'px',
-    left: props.position?.left || 0 + 'px',
+    top: props.position.top || 0 + 'px',
+    left: props.position.left || 0 + 'px',
     width: props.size?.width || 1920 + 'px',
     height: props.size?.height || 1080 + 'px',
-    backgroundColor:props.backgroundColor || '#fff'
+    backgroundColor: props.backgroundColor || '#fff',
+    transform: `translate(${props.translate.x}px,${props.translate.y}px)`,
   };
 });
 
 export default function Canvas(props: ICanvasProps) {
+  const {
+    position = { top: 0, left: 0 },
+    translate = { x: 0, y: 0 },
+    ...restProps
+  } = props;
   const snap = store.getSnapshot();
-  const [position, setPosition] = useSafeState<IPosition>(
-    props.position || { top: 0, left: 0 }
-  );
   const [, drop] = useDrop(() => ({
     accept: 'material',
     drop: (item: IDropResult) => {
-      const materialItem = createMaterial(item.materialName)
-     
+      const materialItem = createMaterial(item.materialName);
+
       store.addMaterial(materialItem);
     },
     collect: (monitor) => ({
@@ -53,10 +57,11 @@ export default function Canvas(props: ICanvasProps) {
 
   return (
     <ScCanvas
-      {...props}
-      position={position}
-      size={{ width: snap.canvas.width, height: snap.canvas.height }}
+      {...restProps}
       ref={drop}
+      position={position}
+      translate={translate as any}
+      size={{ width: snap.canvas.width, height: snap.canvas.height }}
     >
       <CanvasRenderer materials={snap.materialList as IMaterialItem[]} />
     </ScCanvas>
