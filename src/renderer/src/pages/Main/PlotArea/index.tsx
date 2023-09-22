@@ -1,8 +1,10 @@
-import { forwardRef, useRef } from 'react';
+import { LegacyRef, forwardRef, useRef } from 'react';
 import { styled } from '@mui/material';
 import Canvas from './Canvas';
 import Guides, { GuidesProps } from '@scena/react-guides';
 import { usePlotArea } from '@/hooks/usePlotArea';
+import useZoomWithScroll from '@/hooks/useZoomWithScroll';
+import { useUpdateEffect } from 'ahooks';
 
 const ScPlotArea = styled('div')({
   position: 'relative',
@@ -81,6 +83,11 @@ export default function PlotArea() {
   });
   const horizonalGuidesRef = useRef<any>();
   const verticalGuidesRef = useRef<any>();
+  const zoom = useZoomWithScroll(plotAreaRef);
+
+  useUpdateEffect(() => {
+    console.log('zoom', zoom);
+  }, [zoom]);
 
   return (
     <ScPlotArea ref={plotAreaRef}>
@@ -100,13 +107,17 @@ export default function PlotArea() {
         </svg>
       </ScIconBox>
       <ScHorizontalRuler>
-        <RulerGuides ref={horizonalGuidesRef} />
+        <RulerGuides ref={horizonalGuidesRef} zoom={zoom} />
       </ScHorizontalRuler>
       <ScVerticalRuler>
-        <RulerGuides ref={verticalGuidesRef} type="vertical" />
+        <RulerGuides ref={verticalGuidesRef} type="vertical" zoom={zoom} />
       </ScVerticalRuler>
 
-      <Canvas position={{ top: 330, left: 330 }} translate={canvasPos!} />
+      <Canvas
+        position={{ top: 330, left: 330 }}
+        translate={canvasPos!}
+        scale={zoom}
+      />
     </ScPlotArea>
   );
 }

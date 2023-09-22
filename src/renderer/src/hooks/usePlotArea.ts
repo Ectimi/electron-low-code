@@ -1,6 +1,6 @@
 import { throttle } from '@/utils';
 import { useSafeState, useMount, useUnmount } from 'ahooks';
-import { LegacyRef, useRef } from 'react';
+import { RefObject, useRef } from 'react';
 
 type TOptions = {
   initialCanvasPos?: { x: number; y: number };
@@ -16,7 +16,7 @@ let startY = 0;
 
 export function usePlotArea(
   options: TOptions
-): [LegacyRef<HTMLDivElement>, TOptions['initialCanvasPos']] {
+): [RefObject<HTMLDivElement>, TOptions['initialCanvasPos']] {
   const {
     initialCanvasPos = { x: 0, y: 0 },
     onLooseSpace,
