@@ -13,7 +13,7 @@ const ScBox = styled(Box)({
   overflow:'hidden'
 })
 
-export const Main: FC = () => {
+const Editor: FC = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <ScBox>
@@ -24,3 +24,6 @@ export const Main: FC = () => {
     </DndProvider>
   );
 };
+
+
+export default Editor

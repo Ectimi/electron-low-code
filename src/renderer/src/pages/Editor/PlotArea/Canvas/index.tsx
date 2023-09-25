@@ -1,7 +1,7 @@
 import { useDrop } from 'react-dnd';
 import { IDropResult } from '../../MaterialIndicatorBox';
 import { styled } from '@mui/material';
-import store from '@/store';
+import editorStore from '@/store/editor';
 import CanvasRenderer from '@/core/CanvasRenderer';
 import createMaterial, { IMaterialItem } from '@/materials/createMaterial';
 
@@ -18,7 +18,7 @@ interface ISize {
 interface ICanvasProps {
   position: IPosition;
   translate: { x: number; y: number };
-  scale?:number;
+  scale?: number;
   size?: ISize;
   backgroundColor?: string;
 }
@@ -43,13 +43,13 @@ export default function Canvas(props: ICanvasProps) {
     scale = 1,
     ...restProps
   } = props;
-  const snap = store.getSnapshot();
+  const snap = editorStore.getSnapshot();
   const [, drop] = useDrop(() => ({
     accept: 'material',
     drop: (item: IDropResult) => {
       const materialItem = createMaterial(item.materialName);
 
-      store.addMaterial(materialItem);
+      editorStore.addMaterial(materialItem);
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),

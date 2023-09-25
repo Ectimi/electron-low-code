@@ -7,6 +7,9 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import { EventType } from 'main/event/event.type';
+import MenuBar, { TMenuBarProps } from '../MenuBar';
+
+const { isMac, ipcRenderer } = window.electronApi;
 
 export const HeaderHeight = 28;
 
@@ -17,7 +20,7 @@ const ScHeader = styled(Box)(({ theme }) => ({
   zIndex: 9999,
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'flex-end',
+  justifyContent: isMac ? 'flex-end' : 'space-between',
   width: '100%',
   height: `${HeaderHeight}px`,
   padding: '0 10px',
@@ -29,11 +32,38 @@ const ScHeader = styled(Box)(({ theme }) => ({
   },
 }));
 
-const { ipcRenderer } = window.electronApi;
-
 export const Header: FC = () => {
+  const template: TMenuBarProps['template'] = [
+    {
+      label: '文件(F)',
+      accelerator: 'alt+F',
+      submenu: [
+        {
+          label: '新建项目(N)',
+          accelerator: 'ctrl+N',
+          click() {
+            console.log('new project');
+          },
+        },
+      ],
+    },
+    {
+      label: '帮助(H)',
+      accelerator: 'ctrl+H',
+      submenu: [
+        {
+          label: '关于',
+          click() {
+            console.log('about');
+          },
+        },
+      ],
+    },
+  ];
+
   return (
     <ScHeader>
+      {!isMac && <MenuBar template={template} />}
       <Stack direction="row" spacing={1}>
         <IconButton
           aria-label="minimize"

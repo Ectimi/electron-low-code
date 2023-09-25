@@ -7,3 +7,5 @@ export const getWin = (title: string) =>
 export const getDistPath = () => {
   return path.join(process.cwd(), 'dist');
 };
+
+export const isMac = process.platform === 'darwin'

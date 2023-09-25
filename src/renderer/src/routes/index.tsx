@@ -4,7 +4,7 @@ import {
   createHashRouter,
   RouterProvider,
 } from 'react-router-dom';
-import { Main } from '@/pages/Main';
+import Editor from '@/pages/Editor';
 import AppRoutes from '@/components/AppRoutes';
 import AppLayout from '@/components/AppLayout';
 
@@ -12,7 +12,7 @@ export type RouteItem = RouteObject & { nodeRef: RefObject<HTMLDivElement> };
 const routes: RouteItem[] = [
   {
     path: '/',
-    element: <Main />,
+    element: <Editor />,
     nodeRef: createRef(),
   },
 ];

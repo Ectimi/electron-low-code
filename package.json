@@ -44,6 +44,8 @@
   "dependencies": {
     "@emotion/babel-plugin": "^11.11.0",
     "@scena/react-guides": "^0.28.2",
+    "@types/mousetrap": "^1.6.11",
+    "mousetrap": "^1.6.5",
     "nanoid": "^4.0.2",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",

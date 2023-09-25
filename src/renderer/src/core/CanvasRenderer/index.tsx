@@ -1,6 +1,6 @@
-import { cloneElement, useMemo } from 'react';
+import { cloneElement } from 'react';
 import { IMaterialItem } from '@/materials/createMaterial';
-import store from '@/store';
+import store from '@/store/editor';
 
 export default function CanvasRenderer(props: { materials: IMaterialItem[] }) {
   const { materials } = props;

@@ -3,9 +3,9 @@ import { IMaterial } from '@/materials/types/material';
 import { proxy, useSnapshot } from 'valtio';
 import { proxyWithHistory } from 'valtio/utils';
 
-interface IStore {
+interface IEditorStore {
   materialList: IMaterialItem[];
-  selectedMaterial: string | null;
+  currentMaterial: string | null;
   canvas: {
     width: number;
     height: number;
@@ -14,9 +14,9 @@ interface IStore {
 
 type TRecord = Map<string, IMaterial['property']>;
 
-class Store {
-  state = proxy<IStore>({
-    selectedMaterial: null,
+class EditorStore {
+  state = proxy<IEditorStore>({
+    currentMaterial: null,
     materialList: [],
 
     canvas: {
@@ -25,22 +25,22 @@ class Store {
     },
   });
 
-  reordMap = proxyWithHistory<TRecord>(new Map());
+  recordMap = proxyWithHistory<TRecord>(new Map());
 
   getSnapshot = () => useSnapshot(this.state);
 
-  setSelectedMaterial = (materialId: IStore['selectedMaterial']) =>
-    (this.state.selectedMaterial = materialId);
+  setCurrentMaterial = (materialId: IEditorStore['currentMaterial']) =>
+    (this.state.currentMaterial = materialId);
 
   addMaterial = (item: IMaterialItem) => {
     this.state.materialList.push(item);
-    this.setSelectedMaterial(item.id);
-    this.reordMap.value.set(item.id, item.defaultConfiguration);
+    this.setCurrentMaterial(item.id);
+    this.recordMap.value.set(item.id, item.defaultConfiguration);
   };
 
-  getConfiguration = (id: string) => this.reordMap.value.get(id);
+  getConfiguration = (id: string) => this.recordMap.value.get(id);
 }
 
-const store = new Store();
+const store = new EditorStore();
 
 export default store;
