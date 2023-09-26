@@ -39,7 +39,8 @@
     "react-router-dom": "^6.11.1",
     "react-transition-group": "^4.4.5",
     "typescript": "^5.0.2",
-    "vite": "^4.3.2"
+    "vite": "^4.3.2",
+    "vite-plugin-legacy": "^2.1.0"
   },
   "dependencies": {
     "@emotion/babel-plugin": "^11.11.0",
@@ -49,6 +50,7 @@
     "nanoid": "^4.0.2",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
+    "react-hook-form": "^7.46.2",
     "valtio": "^1.10.5"
   }
 }

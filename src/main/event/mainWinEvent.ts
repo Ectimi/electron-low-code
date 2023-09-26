@@ -1,13 +1,13 @@
 import { ipcMain, BrowserWindow, app } from 'electron';
-import { EventType } from './event.type';
+import { EventName } from 'src/types/EventName';
 
 export default function registerMainWinEvent(win: BrowserWindow) {
-  ipcMain.on(EventType.WIN_MINIMIZE, (event) => {
+  ipcMain.on(EventName.WIN_MINIMIZE, (event) => {
     win.minimize();
     event.returnValue = 'minimized';
   });
 
-  ipcMain.on(EventType.WIN_MAXIMIZE, (event) => {
+  ipcMain.on(EventName.WIN_MAXIMIZE, (event) => {
     if (win.isMaximized()) {
       win.unmaximize();
       event.returnValue = 'unmaximized';
@@ -17,7 +17,7 @@ export default function registerMainWinEvent(win: BrowserWindow) {
     }
   });
 
-  ipcMain.on(EventType.APP_QUIT, (event) => {
+  ipcMain.on(EventName.APP_QUIT, (event) => {
     app.quit();
     event.returnValue = 'quit';
   });

@@ -12,6 +12,11 @@ export default defineConfig({
     outDir: path.join(__dirname, 'dist'),
     rollupOptions: {
       plugins: [buildPlugin()],
+      output: {
+        globals: {
+          electron: 'electron'
+        }
+      }
     },
   },
   plugins: [electronReloadPlugin(), devPlugin(), react()],
@@ -19,6 +24,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src/renderer/src'),
       main: path.resolve(__dirname, 'src/main'),
+      root: path.resolve(__dirname, 'src'),
     },
   },
 });

@@ -1,10 +1,11 @@
 import { app, BrowserWindow } from 'electron';
 import { createMainWindow } from './mainWindow';
+import { CustomScheme } from './CustomScheme';
+import { buildMenu } from './menu';
 import registerMainWinEvent from './event/mainWinEvent';
 import registerGlobalShortcut from './shortcut';
-import { CustomScheme } from './CustomScheme';
-import { listen } from './ipc';
-import { buildMenu } from './menu';
+import registerApi from './api';
+
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
@@ -21,11 +22,11 @@ if (!gotTheLock) {
   });
   app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      const { screen } = require('electron');
       mainWindow = createMainWindow();
       buildMenu(mainWindow);
       registerMainWinEvent(mainWindow);
       registerGlobalShortcut(mainWindow);
+      registerApi(mainWindow);
 
       if (process.argv[2]) {
         mainWindow.loadURL(process.argv[2]);
@@ -34,10 +35,6 @@ if (!gotTheLock) {
         CustomScheme.registerScheme();
         mainWindow.loadURL(`app://index.html`);
       }
-
-      listen('getAllDisplays', () => {
-        return screen.getAllDisplays();
-      });
     }
   });
 }

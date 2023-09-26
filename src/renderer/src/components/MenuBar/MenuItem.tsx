@@ -170,6 +170,7 @@ const MenuItem = (props: IMenuItem) => {
                       key={item.label}
                       onClick={() => {
                         item.click && item.click();
+                        setOpen(false)
                       }}
                     >
                       <div>{item.label}</div>

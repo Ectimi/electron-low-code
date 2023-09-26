@@ -1,5 +1,6 @@
-import {sendEvent} from './ipc.ts'
+import { ApiName } from '../../../types/ApiName.ts'
+import { sendEvent } from './ipc.ts';
 
-export function getAllDisplays(){
-  return sendEvent('getAllDisplays')
+export function selectFloder() {
+  return sendEvent<string>(ApiName.SelectFolder);
 }

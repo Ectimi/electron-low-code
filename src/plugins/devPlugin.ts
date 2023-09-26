@@ -18,9 +18,9 @@ const buildPreload = () => build('preload/index');
 export const devPlugin = () => {
   return {
     name: 'dev-plugin',
-    configureServer(server: ViteDevServer) {
-      buildMain();
-      buildPreload();
+    configureServer : async (server: ViteDevServer)=> {
+      await buildMain();
+      await buildPreload();
 
       if (server.httpServer) {
         server.httpServer.once('listening', () => {

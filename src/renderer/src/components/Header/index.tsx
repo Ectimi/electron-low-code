@@ -6,8 +6,9 @@ import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import { EventType } from 'main/event/event.type';
 import MenuBar, { TMenuBarProps } from '../MenuBar';
+import modalStore from '@/store/modal';
+import { EventName } from 'root/types/EventName';
 
 const { isMac, ipcRenderer } = window.electronApi;
 
@@ -43,6 +44,7 @@ export const Header: FC = () => {
           accelerator: 'ctrl+N',
           click() {
             console.log('new project');
+            modalStore.toggleCreateProjectModal(true)
           },
         },
       ],
@@ -70,7 +72,7 @@ export const Header: FC = () => {
           size="small"
           color="inherit"
           onClick={() => {
-            ipcRenderer.sendSync(EventType.WIN_MINIMIZE);
+            ipcRenderer.sendSync(EventName.WIN_MINIMIZE);
           }}
         >
           <HorizontalRuleIcon fontSize="inherit" />
@@ -80,7 +82,7 @@ export const Header: FC = () => {
           size="small"
           color="inherit"
           onClick={() => {
-            ipcRenderer.sendSync(EventType.WIN_MAXIMIZE);
+            ipcRenderer.sendSync(EventName.WIN_MAXIMIZE);
           }}
         >
           <CropSquareIcon fontSize="inherit" />
@@ -90,7 +92,7 @@ export const Header: FC = () => {
           size="small"
           color="inherit"
           onClick={() => {
-            ipcRenderer.sendSync(EventType.APP_QUIT);
+            ipcRenderer.sendSync(EventName.APP_QUIT);
           }}
         >
           <CloseIcon fontSize="inherit" />

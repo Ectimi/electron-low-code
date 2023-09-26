@@ -5,7 +5,13 @@ interface response {
   data?: any;
 }
 
-export const listen = (eventName: any, handler: (data?: any) => any) => {
+
+export type TListen = (eventName: string, handler: (data?: any) => any) => void;
+
+export const listen: TListen = (
+  eventName: string,
+  handler: (data?: any) => any
+) => {
   ipcMain.on(eventName, async (e, request) => {
     const { id, data } = JSON.parse(request);
     const response: response = { code: 200 };

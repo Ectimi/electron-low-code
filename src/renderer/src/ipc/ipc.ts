@@ -1,7 +1,7 @@
 import { genUid } from '@/utils';
 const { ipcRenderer } = window.electronApi;
 
-export function sendEvent(eventName: any, options: any = {}) {
+export function sendEvent(eventName: string, options: any = {}) {
   const { data } = options;
 
   const id = genUid();

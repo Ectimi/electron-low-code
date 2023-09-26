@@ -4,16 +4,19 @@ import {
   contextBridge,
   IpcRendererEvent,
 } from 'electron';
+import { isMac, isWindow } from 'main/utils';
 
 type listener = (event: IpcRendererEvent, ...args: any[]) => void;
 
 export interface IElectronApi {
   isMac: boolean;
+  isWindow: boolean;
   ipcRenderer: IpcRenderer;
 }
 
 contextBridge.exposeInMainWorld('electronApi', {
-  isMac: process.platform === 'darwin',
+  isMac,
+  isWindow,
   ipcRenderer: {
     once(channel: string, handle: listener) {
       ipcRenderer.once(channel, handle);

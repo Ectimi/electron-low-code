@@ -1,7 +1,7 @@
 import {nanoid} from "nanoid";
 const { ipcRenderer } = window.electronApi
 
-export function sendEvent (eventName:string, options:any = {}) {
+export function sendEvent<T> (eventName:string, options:any = {}):Promise<T> {
     const { data } = options
 
     const id = nanoid()
