@@ -18,8 +18,9 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import FolderIcon from '@mui/icons-material/Folder';
 import { TransitionProps } from '@mui/material/transitions';
 import modalStore from '@/store/modal';
-import { selectFloder } from '@/api';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import { createProject, selectFloder } from '@/api';
+import { useForm, Controller } from 'react-hook-form';
+import showMessage from '../Message';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -59,9 +60,14 @@ export default function AppLayout(props: PropsWithChildren<any>) {
     const path = await selectFloder();
     setValue('projectPath', path);
   };
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     handleClose();
-    console.log('data', data);
+    try {
+      const res = await createProject({ data });
+      showMessage({ content: res });
+    } catch (error: any) {
+      showMessage({ content: error, type: 'error' });
+    }
   };
 
   return (

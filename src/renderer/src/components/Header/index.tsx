@@ -43,7 +43,6 @@ export const Header: FC = () => {
           label: '新建项目(N)',
           accelerator: 'ctrl+N',
           click() {
-            console.log('new project');
             modalStore.toggleCreateProjectModal(true)
           },
         },

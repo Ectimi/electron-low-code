@@ -5,6 +5,7 @@ import { buildMenu } from './menu';
 import registerMainWinEvent from './event/mainWinEvent';
 import registerGlobalShortcut from './shortcut';
 import registerApi from './api';
+import ApplicationData from './applicationData';
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
@@ -15,6 +16,7 @@ const onReady = (mainWindow: BrowserWindow) => {
     registerMainWinEvent(mainWindow);
     registerGlobalShortcut(mainWindow);
     registerApi(mainWindow);
+    ApplicationData.init()
 
     if (process.argv[2]) {
       mainWindow.loadURL(process.argv[2]);

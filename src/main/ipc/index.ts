@@ -5,18 +5,26 @@ interface response {
   data?: any;
 }
 
-
-export type TListen = (eventName: string, handler: (data?: any) => any) => void;
-
-export const listen: TListen = (
+export type TListen = <Data>(
   eventName: string,
-  handler: (data?: any) => any
+  handler: (data?: Data) => any
+) => void;
+
+export const listen: TListen = <Data>(
+  eventName: string,
+  handler: (data?: Data) => any
 ) => {
   ipcMain.on(eventName, async (e, request) => {
     const { id, data } = JSON.parse(request);
     const response: response = { code: 200 };
     try {
-      response.data = await handler(data);
+      const { code, value, error } = await handler(data);
+      if (code === 200) {
+        response.data = value;
+      } else {
+        response.code = code;
+        response.data = error;
+      }
     } catch (err: any) {
       response.code = err.code || 500;
       response.data = { message: err.message || 'Main thread error.' };
