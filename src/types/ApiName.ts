@@ -1,4 +1,5 @@
 export const enum ApiName {
   SelectFolder = 'SelectFolder',
-  CreateProject = 'CreateProject'
+  CreateProject = 'CreateProject',
+  RecentlyProject = 'RecentlyProject'
 }

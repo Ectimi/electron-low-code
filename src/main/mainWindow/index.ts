@@ -1,16 +1,10 @@
 import path from 'path';
 import { getDistPath } from '../utils';
-import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
+import { BrowserWindow } from 'electron';
+import type { BrowserWindowConstructorOptions } from 'electron';
 
-let mainWindow: BrowserWindow | null = null;
-
-export function createMainWindow(
-  options: BrowserWindowConstructorOptions = {}
-) {
-  if (mainWindow !== null) {
-    return mainWindow;
-  }
-  const defaultOptions: BrowserWindowConstructorOptions = {
+export class WindowCreator {
+  private defaultOptions: BrowserWindowConstructorOptions = {
     title: 'main',
     minHeight: 800,
     minWidth: 1400,
@@ -27,6 +21,7 @@ export function createMainWindow(
     },
   };
 
-  mainWindow = new BrowserWindow(Object.assign({}, defaultOptions, options));
-  return mainWindow;
+  createWindow(options?: BrowserWindowConstructorOptions) {
+    return new BrowserWindow(Object.assign({}, this.defaultOptions, options));
+  }
 }

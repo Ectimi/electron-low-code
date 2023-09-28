@@ -21,6 +21,7 @@ import modalStore from '@/store/modal';
 import { createProject, selectFloder } from '@/api';
 import { useForm, Controller } from 'react-hook-form';
 import showMessage from '../Message';
+import { ICreateProjectParams } from 'root/types/ParamsType';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -38,10 +39,6 @@ const FilefolderInput = styled(Input)({
   },
 });
 
-interface FormData {
-  projectName: string;
-  projectPath: string;
-}
 export default function AppLayout(props: PropsWithChildren<any>) {
   const snap = modalStore.getSnapshot();
   const {
@@ -50,7 +47,7 @@ export default function AppLayout(props: PropsWithChildren<any>) {
     formState: { errors },
     setValue,
     reset,
-  } = useForm<FormData>();
+  } = useForm<ICreateProjectParams>();
   const handleClose = (_?: any, reason?: string) => {
     if (reason === 'backdropClick') return;
     modalStore.toggleCreateProjectModal(false);
@@ -60,10 +57,10 @@ export default function AppLayout(props: PropsWithChildren<any>) {
     const path = await selectFloder();
     setValue('projectPath', path);
   };
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: ICreateProjectParams) => {
     handleClose();
     try {
-      const res = await createProject({ data });
+      const res = await createProject(data);
       showMessage({ content: res });
     } catch (error: any) {
       showMessage({ content: error, type: 'error' });

@@ -1,18 +1,16 @@
-import { genUid } from '@/utils';
+import { nanoid } from 'nanoid';
 const { ipcRenderer } = window.electronApi;
 
-export function sendEvent(eventName: string, options: any = {}) {
-  const { data } = options;
-
-  const id = genUid();
+export function sendEvent<T>(eventName: string, data?: any): Promise<T> {
+  const id = nanoid();
   const responseEvent = `${eventName}_res_${id}`;
 
   return new Promise((resolve, reject) => {
     ipcRenderer.once(responseEvent, (_, response) => {
       if (response.code === 200) {
-        resolve(response);
+        resolve(response.data);
       } else {
-        reject(response);
+        reject(response.data);
       }
     });
     ipcRenderer.send(eventName, JSON.stringify({ id, data }));

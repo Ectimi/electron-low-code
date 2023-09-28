@@ -19,6 +19,7 @@ export const listen: TListen = <Data>(
     const response: response = { code: 200 };
     try {
       const { code, value, error } = await handler(data);
+     
       if (code === 200) {
         response.data = value;
       } else {
@@ -26,8 +27,8 @@ export const listen: TListen = <Data>(
         response.data = error;
       }
     } catch (err: any) {
-      response.code = err.code || 500;
-      response.data = { message: err.message || 'Main thread error.' };
+      response.code = err?.code || 500;
+      response.data = { message: err?.message || 'Main thread error.' };
     }
     e.sender.send(`${eventName}_res_${id}`, response);
   });
