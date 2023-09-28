@@ -5,12 +5,15 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
+    "postinstall": "husky install",
     "dev": "cross-env NODE_ENV=development vite",
     "build": "cross-env NODE_ENV=production tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.7.1",
+    "@commitlint/config-conventional": "^17.7.0",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.10.8",
     "@fontsource/roboto": "^4.5.8",
@@ -46,6 +49,7 @@
     "@emotion/babel-plugin": "^11.11.0",
     "@scena/react-guides": "^0.28.2",
     "@types/mousetrap": "^1.6.11",
+    "husky": "^8.0.3",
     "mousetrap": "^1.6.5",
     "nanoid": "^4.0.2",
     "react-dnd": "^16.0.1",
