@@ -1,17 +1,18 @@
 import { RefObject, createRef } from 'react';
-import {
-  RouteObject,
-  createHashRouter,
-  RouterProvider,
-} from 'react-router-dom';
+import { RouteObject, createHashRouter } from 'react-router-dom';
+import Welcome from '@/pages/Welcome';
 import Editor from '@/pages/Editor';
 import AppRoutes from '@/components/AppRoutes';
-import AppLayout from '@/components/AppLayout';
 
 export type RouteItem = RouteObject & { nodeRef: RefObject<HTMLDivElement> };
 const routes: RouteItem[] = [
   {
-    path: '/',
+    path: '/welcome',
+    element: <Welcome />,
+    nodeRef: createRef(),
+  },
+  {
+    path: '/editor',
     element: <Editor />,
     nodeRef: createRef(),
   },
@@ -29,10 +30,4 @@ const router = createHashRouter([
   },
 ]);
 
-const AppRoute = () => (
-  <AppLayout>
-    <RouterProvider router={router} />
-  </AppLayout>
-);
-
-export default AppRoute;
+export default router;

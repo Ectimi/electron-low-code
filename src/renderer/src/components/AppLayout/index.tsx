@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import FolderIcon from '@mui/icons-material/Folder';
+import PermMediaIcon from '@mui/icons-material/PermMedia';
 import { TransitionProps } from '@mui/material/transitions';
 import modalStore from '@/store/modal';
 import { createProject, selectFloder } from '@/api';
@@ -29,7 +30,7 @@ const Transition = forwardRef(function Transition(
   },
   ref: React.Ref<unknown>
 ) {
-  return <Slide direction="up" ref={ref} {...props} />;
+  return <Slide direction="down" ref={ref} {...props} />;
 });
 
 const FilefolderInput = styled(Input)({
@@ -37,6 +38,12 @@ const FilefolderInput = styled(Input)({
     color: 'inherit',
     cursor: 'pointer',
   },
+});
+
+const InputTip = styled('div')({
+  color: 'rgba(0, 0, 0, 0.6)',
+  fontSize: '12px',
+  marginTop: '6px',
 });
 
 export default function AppLayout(props: PropsWithChildren<any>) {
@@ -62,6 +69,7 @@ export default function AppLayout(props: PropsWithChildren<any>) {
     try {
       const res = await createProject(data);
       showMessage({ content: res });
+      location.hash = '#/editor';
     } catch (error: any) {
       showMessage({ content: error, type: 'error' });
     }
@@ -89,7 +97,6 @@ export default function AppLayout(props: PropsWithChildren<any>) {
                 rules={{ required: '项目名称不能为空' }}
                 render={({ field }) => (
                   <Input
-                    id="project-name-input"
                     {...field}
                     startAdornment={
                       <DriveFileRenameOutlineIcon
@@ -132,8 +139,26 @@ export default function AppLayout(props: PropsWithChildren<any>) {
                 </span>
               )}
             </FormControl>
+            <FormControl fullWidth sx={{ m: 1 }} variant="standard">
+              <InputLabel>项目资源文件夹名称</InputLabel>
+              <Controller
+                name="assetFolderName"
+                control={control}
+                defaultValue="assets"
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    startAdornment={
+                      <PermMediaIcon sx={{ marginRight: '20px' }} />
+                    }
+                    placeholder=""
+                  />
+                )}
+              />
+              <InputTip>资源文件夹的名称，默认为"assets"</InputTip>
+            </FormControl>
             <DialogActions>
-              <Button autoFocus onClick={handleClose}>
+              <Button autoFocus sx={{color:'#d32f2f'}} onClick={handleClose}>
                 取消
               </Button>
               <Button onClick={handleSubmit(onSubmit)} autoFocus>

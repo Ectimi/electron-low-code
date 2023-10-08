@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from 'electron';
 import { CustomScheme } from './CustomScheme';
-import { WindowCreator } from './mainWindow';
+import { WindowCreator } from './browserWindow';
 import { MenuBuilder } from './menu';
 import { ApiResgiter } from './api';
 import { EventRegister } from './event/mainWinEvent';
@@ -43,7 +43,7 @@ export default class App {
         this.mainWindow,
         this.applicationDataManager
       );
-      this.eventRegister = new EventRegister(this.mainWindow);
+      this.eventRegister = new EventRegister(this.windowCreator);
       this.shortcutRegister = new ShortcutRegister(this.mainWindow);
 
       this.menuBuilder?.build();

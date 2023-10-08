@@ -1,18 +1,38 @@
-import { useLocation, useOutlet } from 'react-router-dom';
+import { useLocation, useNavigate, useOutlet } from 'react-router-dom';
 import { SwitchTransition } from 'react-transition-group';
 import CSSTransition from '@/components/CSSTransition';
 import { RouteItem } from '@/routes';
-import './index.less'
+import { useAsyncEffect } from 'ahooks';
+import { getWindowNumbers, getRecentlyProjects } from '../../api';
+import './index.less';
 
 type Props = {
   routes: RouteItem[];
 };
 
 export default function AppRoutes(props: Props) {
+  const navigate = useNavigate();
   const location = useLocation();
   const currentOutlet = useOutlet();
   const { nodeRef } =
     props.routes.find((route) => route.path === location.pathname) ?? {};
+
+  useAsyncEffect(async () => {
+    const recentlyProjects = await getRecentlyProjects();
+    const windowNumbers = await getWindowNumbers();
+    const isToWelcome =
+      recentlyProjects.length === 0 ||
+      (recentlyProjects.length > 0 && windowNumbers > 1);
+
+    if (isToWelcome) {
+      navigate('/welcome');
+    } else {
+      const project = recentlyProjects[0];
+      navigate(
+        `/editor?projectName=${project.projectName}&projectPath=${project.projectPath}`
+      );
+    }
+  }, []);
 
   return (
     <SwitchTransition>

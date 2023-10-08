@@ -21,15 +21,31 @@ export interface IMenuItem {
 
 const { isMac } = window.electronApi;
 
-function getShortcutKeyText(accelerator: string) {
-  const [modifierKey, key] = accelerator.split('+');
-  const bindKey = modifierKey
+function getBindKey(accelerator: string) {
+  const arr = accelerator.split('+');
+  const key = arr[arr.length - 1];
+  const mainModifierKey = arr[0];
+  const restModifierKeys = arr
+    .slice(1, arr.length - 1)
+    .map((item) => capitalizeFirstLetter(item))
+    .join('+');
+
+  const bindKey = mainModifierKey
     .toLocaleLowerCase()
     .split('or')
     .map(
       (modifier) =>
-        capitalizeFirstLetter(modifier) + '+' + key.toLocaleUpperCase()
+        capitalizeFirstLetter(modifier) +
+        '+' +
+        (restModifierKeys ? restModifierKeys + '+' : '') +
+        key.toLocaleUpperCase()
     );
+
+  return bindKey;
+}
+
+function getShortcutKeyText(accelerator: string) {
+  const bindKey = getBindKey(accelerator)
 
   if (bindKey.length > 1) {
     for (let i = 0; i < bindKey.length; i++) {
@@ -45,12 +61,7 @@ function getShortcutKeyText(accelerator: string) {
 
 function bindShortcut(accelerator?: string, fn?: IMenuItem['click']) {
   if (accelerator) {
-    const [modifierKey, key] = accelerator.split('+');
-    const bindKey = modifierKey
-      .toLocaleLowerCase()
-      .split('or')
-      .map((modifier) => modifier + '+' + key.toLocaleLowerCase());
-
+    const bindKey = getBindKey(accelerator).map(key=>key.toLocaleLowerCase())
     mousetrap.bind(bindKey, () => fn && fn());
 
     return bindKey;
@@ -170,7 +181,7 @@ const MenuItem = (props: IMenuItem) => {
                       key={item.label}
                       onClick={() => {
                         item.click && item.click();
-                        setOpen(false)
+                        setOpen(false);
                       }}
                     >
                       <div>{item.label}</div>

@@ -22,20 +22,23 @@ export class ShortcutRegister {
   }
 
   reload() {
-    if (this.win === null) return;
     if (process.env.NODE_ENV === 'development') {
       this.register('CommandOrControl+R', () => {
-        console.log('reload');
-        this.win!.webContents.reload();
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (focusedWindow) {
+          focusedWindow.webContents.reload();
+        }
       });
     }
   }
 
   openTools() {
-    if (this.win === null) return;
     if (process.env.NODE_ENV === 'development') {
       this.register('CommandOrControl+Alt+C', () => {
-        this.win!.webContents.toggleDevTools();
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (focusedWindow) {
+          focusedWindow.webContents.toggleDevTools();
+        }
       });
     }
   }

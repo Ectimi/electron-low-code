@@ -1,34 +1,55 @@
 import { ipcMain, BrowserWindow, app } from 'electron';
 import { EventName } from 'src/types/EventName';
+import { WindowCreator } from '../browserWindow';
 
 export class EventRegister {
-  win: BrowserWindow | null = null;
+  windowCreator: WindowCreator | null = null;
 
-  constructor(win: BrowserWindow) {
-    this.win = win;
+  constructor(windowCreator: WindowCreator) {
+    this.windowCreator = windowCreator;
   }
 
   init() {
-    if (this.win !== null) {
-      ipcMain.on(EventName.WIN_MINIMIZE, (event) => {
-        this.win!.minimize();
-        event.returnValue = 'minimized';
-      });
+    ipcMain.on(EventName.WIN_MINIMIZE, (event) => {
+      const focusedWindow = BrowserWindow.getFocusedWindow();
+      if (focusedWindow) {
+        focusedWindow.minimize();
+      }
+      event.returnValue = 'minimized';
+    });
 
-      ipcMain.on(EventName.WIN_MAXIMIZE, (event) => {
-        if (this.win!.isMaximized()) {
-          this.win!.unmaximize();
+    ipcMain.on(EventName.WIN_MAXIMIZE, (event) => {
+      const focusedWindow = BrowserWindow.getFocusedWindow();
+      if (focusedWindow) {
+        if (focusedWindow.isMaximized()) {
+          focusedWindow.unmaximize();
           event.returnValue = 'unmaximized';
         } else {
-          this.win!.maximize();
+          focusedWindow.maximize();
           event.returnValue = 'maximized';
         }
-      });
+      }
+    });
 
-      ipcMain.on(EventName.APP_QUIT, (event) => {
+    ipcMain.on(EventName.WIN_CLOSE, (event) => {
+      const focusedWindow = BrowserWindow.getFocusedWindow();
+      if (focusedWindow) {
+        focusedWindow.close();
+      }
+      if (BrowserWindow.getAllWindows().length === 1) {
         app.quit();
-        event.returnValue = 'quit';
-      });
-    }
+      }
+      event.returnValue = 'close';
+    });
+
+    ipcMain.on(EventName.NEW_WINDOW, (event) => {
+      if (this.windowCreator) {
+        const broswerWindow = this.windowCreator.createWindow();
+        broswerWindow.loadURL(
+          process.argv[2] ? process.argv[2] : 'app://index.html'
+        );
+        event.returnValue = 'createNewWindow';
+      }
+    });
   }
 }

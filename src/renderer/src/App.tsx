@@ -1,12 +1,12 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import GlobalStyles from '@mui/material/GlobalStyles';
-import {  useTheme } from '@mui/material/styles';
-import AppRoute from '@/routes';
+import router from '@/routes';
 import { HeaderHeight } from './components/Header';
+import { RouterProvider } from 'react-router-dom';
+import AppLayout from '@/components/AppLayout';
 
 function App() {
-  const theme = useTheme();
-
+ 
   return (
     <>
       <CssBaseline />
@@ -16,7 +16,7 @@ function App() {
           '#root': { paddingTop: `${HeaderHeight}px` },
           '::-webkit-scrollbar': {
             width: '6px',
-            height:'8px'
+            height: '8px',
           },
           '::-webkit-scrollbar-thumb': {
             borderRadius: '2px',
@@ -30,7 +30,9 @@ function App() {
           },
         }}
       />
-      <AppRoute />
+      <AppLayout>
+        <RouterProvider router={router} />
+      </AppLayout>
     </>
   );
 }

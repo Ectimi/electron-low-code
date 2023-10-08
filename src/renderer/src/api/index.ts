@@ -1,5 +1,6 @@
 import { ICreateProjectParams } from 'root/types/ParamsType.ts';
 import { ApiName } from 'root/types/ApiName.ts';
+import { IApplicationConfig } from 'root/main/applicationData';
 import { sendEvent } from '@/ipc/ipc.ts';
 
 export function selectFloder() {
@@ -11,5 +12,11 @@ export function createProject(data: ICreateProjectParams) {
 }
 
 export function getRecentlyProjects() {
-  return sendEvent<string[]>(ApiName.RecentlyProject);
+  return sendEvent<IApplicationConfig['recentlyProjects']>(
+    ApiName.RecentlyProject
+  );
+}
+
+export function getWindowNumbers() {
+  return sendEvent<number>(ApiName.GetWindowNumbers);
 }

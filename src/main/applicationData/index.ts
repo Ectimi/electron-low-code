@@ -4,9 +4,13 @@ import { isMac } from '../utils';
 
 const packageObj = require('../../../package.json');
 
-interface IApplicationConfig {
+export interface IProjectItem {
+  projectName: string;
+  projectPath: string;
+}
+export interface IApplicationConfig {
   theme: 'light' | 'dark';
-  recentlyProjects: string[];
+  recentlyProjects: Array<IProjectItem>;
 }
 
 export class ApplicationDataManager {

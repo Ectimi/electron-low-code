@@ -34,13 +34,18 @@ export default class ProjectApi {
 
   async [ApiName.CreateProject](data: ICreateProjectParams) {
     if (!data) return returnError('缺少参数');
-    const { projectName = '', projectPath = '' } = data;
+    const {
+      projectName = '',
+      projectPath = '',
+      assetFolderName = 'assets',
+    } = data;
     if (projectName && projectPath) {
       const newProjectPath = path.join(projectPath, projectName);
       if (fs.existsSync(newProjectPath)) {
         return returnError('该项目名称已经存在');
       } else {
         const defaultConfig = {
+          assetFolderName,
           canvas: {
             width: 1920,
             height: 1080,
@@ -48,13 +53,26 @@ export default class ProjectApi {
           materialList: [],
         };
         try {
+          const assetFolderPath = path.join(newProjectPath, assetFolderName);
           fs.mkdirSync(newProjectPath);
+          fs.mkdirSync(assetFolderPath);
           fs.writeFileSync(
             path.join(newProjectPath, 'project.config.json'),
             JSON.stringify(defaultConfig, null, 2)
           );
+
+          const applicationConfig =
+            await this.applicationDataManager?.readConfigFile();
+          applicationConfig?.recentlyProjects.unshift({
+            projectName,
+            projectPath,
+          });
+          await this.applicationDataManager?.writeConfigFile(
+            applicationConfig!
+          );
           return returnValue('新建项目成功');
         } catch (error) {
+          console.log('error==>', error);
           return returnError('创建项目出错');
         }
       }
@@ -65,9 +83,10 @@ export default class ProjectApi {
 
   async [ApiName.RecentlyProject]() {
     const config = this.applicationDataManager?.readConfigFile();
+   
     if (config !== null) {
-      return config?.recentlyProjects;
+      return returnValue(config?.recentlyProjects);
     }
-    return [];
+    return returnValue([]);
   }
 }

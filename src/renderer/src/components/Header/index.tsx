@@ -8,13 +8,14 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import MenuBar, { TMenuBarProps } from '../MenuBar';
 import modalStore from '@/store/modal';
+import commonStore from '@/store/common';
 import { EventName } from 'root/types/EventName';
 
 const { isMac, ipcRenderer } = window.electronApi;
 
 export const HeaderHeight = 28;
 
-const ScHeader = styled(Box)(({ theme }) => ({
+const ScHeader = styled(Box)({
   position: 'fixed',
   top: 0,
   left: 0,
@@ -31,29 +32,45 @@ const ScHeader = styled(Box)(({ theme }) => ({
   '.MuiIconButton-root': {
     WebkitAppRegion: 'no-drag',
   },
-}));
+});
+
+const ScTitle = styled(Box)({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%,-50%)',
+});
 
 export const Header: FC = () => {
+  const commonStoreSnapshot = commonStore.getSnapshot();
   const template: TMenuBarProps['template'] = [
     {
       label: '文件(F)',
       accelerator: 'alt+F',
       submenu: [
         {
-          label: '新建项目(N)',
+          label: '新建项目',
           accelerator: 'ctrl+N',
           click() {
-            modalStore.toggleCreateProjectModal(true)
+            modalStore.toggleCreateProjectModal(true);
+          },
+        },
+        {
+          label: '新建窗口',
+          accelerator: 'ctrl+shift+N',
+          click() {
+            ipcRenderer.sendSync(EventName.NEW_WINDOW);
           },
         },
       ],
     },
     {
       label: '帮助(H)',
-      accelerator: 'ctrl+H',
+      accelerator: 'alt+H',
       submenu: [
         {
           label: '关于',
+          accelerator: 'ctrl+A',
           click() {
             console.log('about');
           },
@@ -65,6 +82,7 @@ export const Header: FC = () => {
   return (
     <ScHeader>
       {!isMac && <MenuBar template={template} />}
+      <ScTitle>{commonStoreSnapshot.windowTitle || 'Low Code Editor'}</ScTitle>
       <Stack direction="row" spacing={1}>
         <IconButton
           aria-label="minimize"
@@ -91,7 +109,7 @@ export const Header: FC = () => {
           size="small"
           color="inherit"
           onClick={() => {
-            ipcRenderer.sendSync(EventName.APP_QUIT);
+            ipcRenderer.sendSync(EventName.WIN_CLOSE);
           }}
         >
           <CloseIcon fontSize="inherit" />

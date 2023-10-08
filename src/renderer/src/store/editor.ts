@@ -41,6 +41,6 @@ class EditorStore {
   getConfiguration = (id: string) => this.recordMap.value.get(id);
 }
 
-const store = new EditorStore();
+const editorStore = new EditorStore();
 
-export default store;
+export default editorStore;
