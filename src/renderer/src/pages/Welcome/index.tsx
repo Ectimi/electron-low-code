@@ -92,11 +92,11 @@ export default function Welcome() {
             <Typography variant="subtitle2">最近打开</Typography>
             <ScRecentlyList>
               {recentlyProjects.map((project) => (
-                <ScRecentlyListItem key={project.projectName} sx={{}}>
-                  <ListItemText
-                    sx={{ color: theme.palette.primary.light }}
-                    onClick={() => handleOpenRecently(project)}
-                  >
+                <ScRecentlyListItem
+                  key={project.projectName}
+                  onClick={() => handleOpenRecently(project)}
+                >
+                  <ListItemText sx={{ color: theme.palette.primary.light }}>
                     {project.projectName}
                   </ListItemText>
                   <ListItemText>{project.projectPath}</ListItemText>
