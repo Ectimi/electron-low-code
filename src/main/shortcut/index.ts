@@ -1,12 +1,6 @@
 import { app, globalShortcut, BrowserWindow } from 'electron';
 
 export class ShortcutRegister {
-  win: BrowserWindow | null = null;
-
-  constructor(win: BrowserWindow) {
-    this.win = win;
-  }
-
   init() {
     this.openTools();
     this.reload();

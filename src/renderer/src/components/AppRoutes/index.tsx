@@ -3,12 +3,18 @@ import { SwitchTransition } from 'react-transition-group';
 import CSSTransition from '@/components/CSSTransition';
 import { RouteItem } from '@/routes';
 import { useAsyncEffect } from 'ahooks';
-import { getWindowNumbers, getRecentlyProjects } from '../../api';
+import {
+  getWindowNumbers,
+  getRecentlyProjects,
+  getApplicationConfig,
+} from '../../api';
 import './index.less';
 
 type Props = {
   routes: RouteItem[];
 };
+
+const { fs } = window.electronApi;
 
 export default function AppRoutes(props: Props) {
   const navigate = useNavigate();
@@ -18,19 +24,36 @@ export default function AppRoutes(props: Props) {
     props.routes.find((route) => route.path === location.pathname) ?? {};
 
   useAsyncEffect(async () => {
-    const recentlyProjects = await getRecentlyProjects();
     const windowNumbers = await getWindowNumbers();
-    const isToWelcome =
-      recentlyProjects.length === 0 ||
-      (recentlyProjects.length > 0 && windowNumbers > 1);
+    if (windowNumbers <= 1) {
+      const lastClosePath = await getApplicationConfig('lastClosePath');
+      
+      if (!lastClosePath || lastClosePath === '/welcome') {
+        navigate('/welcome');
+      } else {
+        const recentlyProjects = await getRecentlyProjects();
 
-    if (isToWelcome) {
+        const isToWelcome =
+          recentlyProjects.length === 0 ||
+          (recentlyProjects.length > 0 && windowNumbers > 1);
+
+        if (isToWelcome) {
+          navigate('/welcome');
+        } else {
+          const project = recentlyProjects[0];
+          const exist = await fs.access(project.projectPath);
+         
+          if (!exist) {
+            navigate('/welcome');
+          } else {
+            navigate(
+              `/editor?projectName=${project.projectName}&projectPath=${project.projectPath}`
+            );
+          }
+        }
+      }
+    }else{
       navigate('/welcome');
-    } else {
-      const project = recentlyProjects[0];
-      navigate(
-        `/editor?projectName=${project.projectName}&projectPath=${project.projectPath}`
-      );
     }
   }, []);
 

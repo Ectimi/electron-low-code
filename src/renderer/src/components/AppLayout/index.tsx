@@ -69,7 +69,7 @@ export default function AppLayout(props: PropsWithChildren<any>) {
     try {
       const res = await createProject(data);
       showMessage({ content: res });
-      location.hash = '#/editor';
+      location.hash = `#/editor?projectName=${data.projectName}&projectPath=${data.projectPath}`;
     } catch (error: any) {
       showMessage({ content: error, type: 'error' });
     }
@@ -158,7 +158,7 @@ export default function AppLayout(props: PropsWithChildren<any>) {
               <InputTip>资源文件夹的名称，默认为"assets"</InputTip>
             </FormControl>
             <DialogActions>
-              <Button autoFocus sx={{color:'#d32f2f'}} onClick={handleClose}>
+              <Button autoFocus sx={{ color: '#d32f2f' }} onClick={handleClose}>
                 取消
               </Button>
               <Button onClick={handleSubmit(onSubmit)} autoFocus>

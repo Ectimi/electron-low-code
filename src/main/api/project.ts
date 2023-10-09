@@ -5,28 +5,30 @@ import { ApiName } from 'root/types/ApiName';
 import { returnValue, returnError } from './utils';
 import { ICreateProjectParams } from 'root/types/ParamsType';
 import { ApplicationDataManager } from '../applicationData';
+import projectConfigTemplate from '../template/projectConfigTemplate';
+import {
+  IApplicationConfig,
+  IProjectItem,
+} from '../template/applicationConfigTemplate';
 
 export default class ProjectApi {
-  win: BrowserWindow | null = null;
   applicationDataManager: ApplicationDataManager | null = null;
 
-  constructor(
-    win: BrowserWindow,
-    applicationDataManager: ApplicationDataManager
-  ) {
-    this.win = win;
+  constructor(applicationDataManager: ApplicationDataManager) {
     this.applicationDataManager = applicationDataManager;
   }
 
   async [ApiName.SelectFolder]() {
-    if (this.win === null) return;
-    const result = await dialog.showOpenDialog(this.win, {
-      properties: ['openDirectory'],
-    });
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    if (focusedWindow) {
+      const result = await dialog.showOpenDialog(focusedWindow, {
+        properties: ['openDirectory'],
+      });
 
-    if (!result.canceled && result.filePaths.length > 0) {
-      const folderPath = result.filePaths[0];
-      return returnValue(folderPath);
+      if (!result.canceled && result.filePaths.length > 0) {
+        const folderPath = result.filePaths[0];
+        return returnValue(folderPath);
+      }
     }
 
     return returnValue('');
@@ -34,6 +36,7 @@ export default class ProjectApi {
 
   async [ApiName.CreateProject](data: ICreateProjectParams) {
     if (!data) return returnError('缺少参数');
+
     const {
       projectName = '',
       projectPath = '',
@@ -44,14 +47,11 @@ export default class ProjectApi {
       if (fs.existsSync(newProjectPath)) {
         return returnError('该项目名称已经存在');
       } else {
-        const defaultConfig = {
+        const defaultConfig = Object.assign({}, projectConfigTemplate, {
+          projectName,
+          projectPath,
           assetFolderName,
-          canvas: {
-            width: 1920,
-            height: 1080,
-          },
-          materialList: [],
-        };
+        });
         try {
           const assetFolderPath = path.join(newProjectPath, assetFolderName);
           fs.mkdirSync(newProjectPath);
@@ -62,10 +62,19 @@ export default class ProjectApi {
           );
 
           const applicationConfig =
-            await this.applicationDataManager?.readConfigFile();
+            await this.applicationDataManager!.readConfigFile();
+
+          const index = applicationConfig!.recentlyProjects.findIndex(
+            (item: IProjectItem) =>
+              item.projectName === data.projectName &&
+              item.projectPath === newProjectPath
+          );
+          if (index > -1) {
+            applicationConfig?.recentlyProjects.splice(index, 1);
+          }
           applicationConfig?.recentlyProjects.unshift({
             projectName,
-            projectPath,
+            projectPath: newProjectPath,
           });
           await this.applicationDataManager?.writeConfigFile(
             applicationConfig!
@@ -83,10 +92,47 @@ export default class ProjectApi {
 
   async [ApiName.RecentlyProject]() {
     const config = this.applicationDataManager?.readConfigFile();
-   
+
     if (config !== null) {
       return returnValue(config?.recentlyProjects);
     }
     return returnValue([]);
+  }
+
+  async [ApiName.IsValidProject](projectPath: string) {
+    if (!projectPath) return returnError('缺少参数');
+
+    try {
+      const configPath = path.join(projectPath, 'project.config.json');
+      await fs.promises.access(configPath, fs.constants.F_OK);
+      const projectConfig: any = JSON.parse(
+        await fs.readFileSync(configPath, 'utf-8')
+      );
+
+      if (
+        projectConfig &&
+        JSON.stringify(Object.keys(projectConfig)) ===
+          JSON.stringify(Object.keys(projectConfigTemplate))
+      ) {
+        return returnValue({
+          isValid: true,
+          projectName: projectConfig.projectName,
+          projectPath: projectConfig.projectPath,
+        });
+      }
+    } catch (error) {
+      console.log('error', error);
+      return returnValue({ isValid: false });
+    }
+
+    return returnValue({ isValid: false });
+  }
+
+  async [ApiName.GetApplicationConfig](key?: keyof IApplicationConfig) {
+    const config: IApplicationConfig =
+      await this.applicationDataManager!.readConfigFile()!;
+    const res = key ? config[key] : config;
+
+    return returnValue(res);
   }
 }

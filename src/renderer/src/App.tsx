@@ -4,11 +4,30 @@ import router from '@/routes';
 import { HeaderHeight } from './components/Header';
 import { RouterProvider } from 'react-router-dom';
 import AppLayout from '@/components/AppLayout';
+import AppContext from './context';
+import { getIsValidProject, selectFloder } from '@/api';
+import showMessage from '@/components/Message';
 
 function App() {
- 
+  const handleOpenProject = async () => {
+    const path = await selectFloder();
+    const res = await getIsValidProject(path);
+
+    if (res.isValid) {
+      location.hash = `#/editor?projectName=${res.projectName}&projectPath=${res.projectPath}`;
+    } else {
+      showMessage({
+        content: '该路径不是合法的项目',
+        type: 'error',
+        autoHideDuration: 2000,
+      });
+    }
+  };
+
+  const provider = { handleOpenProject };
+
   return (
-    <>
+    <AppContext.Provider value={provider}>
       <CssBaseline />
       <GlobalStyles
         styles={{
@@ -33,7 +52,7 @@ function App() {
       <AppLayout>
         <RouterProvider router={router} />
       </AppLayout>
-    </>
+    </AppContext.Provider>
   );
 }
 

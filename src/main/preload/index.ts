@@ -7,12 +7,17 @@ import {
 import fs from 'fs';
 import { isMac, isWindow } from 'main/utils';
 
-type listener = (event: IpcRendererEvent, ...args: any[]) => void;
+type listener = <T = any>(event: IpcRendererEvent, args: T) => void;
 
 export interface IElectronApi {
   isMac: boolean;
   isWindow: boolean;
-  ipcRenderer: IpcRenderer;
+  ipcRenderer: {
+    once: (channel: string, handle: listener) => void;
+    on: (channel: string, handle: listener) => void;
+    send: <T>(channel: string, data?: T) => void;
+    sendSync: <T>(channel: string, data?: T) => void;
+  };
   fs: {
     access: (filePath: string) => Promise<boolean>;
   };
@@ -23,10 +28,10 @@ contextBridge.exposeInMainWorld('electronApi', {
   isWindow,
   fs: {
     access(filePath: string) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         fs.access(filePath, fs.constants.F_OK, (err) => {
           if (err) {
-            reject(false);
+            resolve(false);
           } else {
             resolve(true);
           }
@@ -41,11 +46,11 @@ contextBridge.exposeInMainWorld('electronApi', {
     on(channel: string, handle: listener) {
       ipcRenderer.on(channel, handle);
     },
-    send(channel: string, handle: listener) {
-      ipcRenderer.send(channel, handle);
+    send<T>(channel: string, data: T) {
+      ipcRenderer.send(channel, data);
     },
-    sendSync(channel: string, handle: listener) {
-      ipcRenderer.sendSync(channel, handle);
+    sendSync<T>(channel: string, data: T) {
+      ipcRenderer.sendSync(channel, data);
     },
   },
 } as IElectronApi);

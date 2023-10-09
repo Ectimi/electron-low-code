@@ -2,6 +2,10 @@ export const enum ApiName {
   SelectFolder = 'SelectFolder',
   CreateProject = 'CreateProject',
   RecentlyProject = 'RecentlyProject',
-
-  GetWindowNumbers = 'GetWindowNumbers'
+  IsValidProject = 'IsValidProject',
+  GetApplicationConfig = 'GetApplicationConfig',
+  
+  GetWindowNumbers = 'GetWindowNumbers',
+  CheckProjectWindowOpen = 'CheckProjectWindowOpen'
+  
 }

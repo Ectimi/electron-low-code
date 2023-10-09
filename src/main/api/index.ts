@@ -1,33 +1,22 @@
-import { BrowserWindow } from 'electron';
 import { listen } from '../ipc';
 import ProjectApi from './project';
 import WindowApi from './window';
 import { ApplicationDataManager } from '../applicationData';
 
-
-
 export class ApiResgiter {
-  mainWindow: BrowserWindow | null = null;
   applicationDataManager: ApplicationDataManager | null = null;
   projectApi: ProjectApi | null = null;
-  windowApi:WindowApi | null = null;
+  windowApi: WindowApi | null = null;
 
-  constructor(
-    mainWindow: BrowserWindow,
-    applicationDataManager: ApplicationDataManager
-  ) {
-    this.mainWindow = mainWindow;
+  constructor(applicationDataManager: ApplicationDataManager) {
     this.applicationDataManager = applicationDataManager;
-    this.projectApi = new ProjectApi(
-      this.mainWindow,
-      this.applicationDataManager
-    );
-    this.windowApi = new WindowApi()
+    this.projectApi = new ProjectApi(this.applicationDataManager);
+    this.windowApi = new WindowApi();
   }
 
   async init() {
     this.callApi(this.projectApi);
-    this.callApi(this.windowApi)
+    this.callApi(this.windowApi);
   }
 
   callApi(ctor: any) {

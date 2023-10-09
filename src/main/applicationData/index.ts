@@ -1,17 +1,11 @@
 import path from 'path';
 import fs from 'fs';
 import { isMac } from '../utils';
+import applicationConfigTemplate, {
+  IApplicationConfig,
+} from '../template/applicationConfigTemplate';
 
 const packageObj = require('../../../package.json');
-
-export interface IProjectItem {
-  projectName: string;
-  projectPath: string;
-}
-export interface IApplicationConfig {
-  theme: 'light' | 'dark';
-  recentlyProjects: Array<IProjectItem>;
-}
 
 export class ApplicationDataManager {
   get aplicationFolderPath() {
@@ -43,10 +37,10 @@ export class ApplicationDataManager {
   createConfigFile() {
     const configFilePath = this.applicationConfigFilePath;
     if (!fs.existsSync(configFilePath)) {
-      const defaultConfig: IApplicationConfig = {
-        theme: 'light',
-        recentlyProjects: [],
-      };
+      const defaultConfig: IApplicationConfig = Object.assign(
+        {},
+        applicationConfigTemplate
+      );
       this.writeConfigFile(defaultConfig);
     }
   }

@@ -3,5 +3,7 @@ export enum EventName {
     WIN_MAXIMIZE = 'WIN_MAXIMIZE',
     WIN_CLOSE = 'WIN_CLOSE',
     NEW_WINDOW = 'NEW_WINDOW',
+
+    BEFORE_CLOSE = 'BEFORE_CLOSE'
   }
   

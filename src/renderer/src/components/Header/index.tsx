@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import { styled } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CropSquareIcon from '@mui/icons-material/CropSquare';
@@ -10,6 +10,9 @@ import MenuBar, { TMenuBarProps } from '../MenuBar';
 import modalStore from '@/store/modal';
 import commonStore from '@/store/common';
 import { EventName } from 'root/types/EventName';
+import { getWindowNumbers } from '@/api';
+import { IEventBeforClose } from 'root/types/ParamsType';
+import AppContext, { IAppContext } from '@/context';
 
 const { isMac, ipcRenderer } = window.electronApi;
 
@@ -42,6 +45,7 @@ const ScTitle = styled(Box)({
 });
 
 export const Header: FC = () => {
+  const context = useContext(AppContext) as IAppContext;
   const commonStoreSnapshot = commonStore.getSnapshot();
   const template: TMenuBarProps['template'] = [
     {
@@ -62,6 +66,13 @@ export const Header: FC = () => {
             ipcRenderer.sendSync(EventName.NEW_WINDOW);
           },
         },
+        {
+          label: '打开项目',
+          accelerator: 'ctrl+O',
+          click() {
+            context.handleOpenProject();
+          },
+        },
       ],
     },
     {
@@ -78,6 +89,30 @@ export const Header: FC = () => {
       ],
     },
   ];
+
+  const handleClose = async () => {
+    const windowNumber = await getWindowNumbers();
+    if (windowNumber === 1) {
+      const urlParams = new URLSearchParams(
+        window.location.hash.replace('#/editor?', '')
+      );
+      const projectName = urlParams.get('projectName');
+      const projectPath = urlParams.get('projectPath');
+      if (projectName && projectPath) {
+        ipcRenderer.sendSync<IEventBeforClose>(EventName.BEFORE_CLOSE, {
+          projectName,
+          projectPath,
+          lastClosePath: '/editor',
+        });
+      } else {
+        ipcRenderer.sendSync<IEventBeforClose>(EventName.BEFORE_CLOSE, {
+          lastClosePath: '/welcome',
+        });
+      }
+    }
+
+    ipcRenderer.sendSync(EventName.WIN_CLOSE);
+  };
 
   return (
     <ScHeader>
@@ -105,12 +140,10 @@ export const Header: FC = () => {
           <CropSquareIcon fontSize="inherit" />
         </IconButton>
         <IconButton
-          aria-label="quit"
+          aria-label="close"
           size="small"
           color="inherit"
-          onClick={() => {
-            ipcRenderer.sendSync(EventName.WIN_CLOSE);
-          }}
+          onClick={handleClose}
         >
           <CloseIcon fontSize="inherit" />
         </IconButton>

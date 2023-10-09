@@ -8,17 +8,22 @@ import {
   List,
   ListItem,
   ListItemText,
-  useTheme,
+  Tooltip,
 } from '@mui/material';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import SvgWelcomeIllustration from '@/assets/welcome_illustration.svg';
 import { useAsyncEffect, useSafeState } from 'ahooks';
-import { getRecentlyProjects } from '../../api';
-import { IApplicationConfig, IProjectItem } from 'root/main/applicationData';
+import { checkProjectWindowOpen, getRecentlyProjects } from '../../api';
+import {
+  IApplicationConfig,
+  IProjectItem,
+} from 'root/main/template/applicationConfigTemplate';
 import modalStore from '@/store/modal';
-import showMessage from '../../components/Message';
+import showMessage from '@/components/Message';
 import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import AppContext, { IAppContext } from '@/context';
 
 const { fs } = window.electronApi;
 
@@ -37,9 +42,15 @@ const ScMarginBox = styled(Box)({
   marginTop: '20px',
 });
 
+const ScStack = styled(Stack)({
+  width: '100px',
+});
+
 const ScRecentlyList = styled(List)({
   height: '400px',
-  padding: 0,
+  padding: '0 10px',
+  overflowY: 'auto',
+  overflowX: 'hidden',
 });
 
 const ScRecentlyListItem = styled(ListItem)({
@@ -48,8 +59,22 @@ const ScRecentlyListItem = styled(ListItem)({
   cursor: 'pointer',
 });
 
+const ScRecentlyListItemName = styled(ListItemText)(({ theme }) => ({
+  color: theme.palette.primary.light,
+  flex: '0 0 auto',
+  marginRight: '20px',
+}));
+
+const ScRecentlyListItemPath = styled(ListItemText)({
+  span: {
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+  },
+});
+
 export default function Welcome() {
-  const theme = useTheme();
+  const context = useContext(AppContext) as IAppContext;
   const navigate = useNavigate();
   const [recentlyProjects, setRecentlyProjects] = useSafeState<
     IApplicationConfig['recentlyProjects']
@@ -57,12 +82,16 @@ export default function Welcome() {
 
   const handleOpenRecently = async (project: IProjectItem) => {
     const exist = await fs.access(project.projectPath);
+
     if (!exist) {
       showMessage({ content: '该项目路径不存在', type: 'error' });
     } else {
-      navigate(
-        `/editor?projectName=${project.projectName}&projectPath=${project.projectPath}`
-      );
+      const isProjectOpen = await checkProjectWindowOpen(project);
+      if (!isProjectOpen) {
+        navigate(
+          `/editor?projectName=${project.projectName}&projectPath=${project.projectPath}`
+        );
+      }
     }
   };
 
@@ -78,28 +107,37 @@ export default function Welcome() {
         <Grid xs={4}>
           <ScMarginBox>
             <Typography variant="subtitle2">启动</Typography>
-            <Stack sx={{ width: '100px' }}>
-              <Button startIcon={<FolderOpenIcon />}>打开项目</Button>
+            <ScStack>
+              <Button
+                startIcon={<FolderOpenIcon />}
+                onClick={() => context.handleOpenProject()}
+              >
+                打开项目
+              </Button>
               <Button
                 startIcon={<CreateNewFolderIcon />}
                 onClick={() => modalStore.toggleCreateProjectModal(true)}
               >
                 新建项目
               </Button>
-            </Stack>
+            </ScStack>
           </ScMarginBox>
           <ScMarginBox>
             <Typography variant="subtitle2">最近打开</Typography>
             <ScRecentlyList>
-              {recentlyProjects.map((project) => (
+              {recentlyProjects.map((project, index) => (
                 <ScRecentlyListItem
-                  key={project.projectName}
+                  key={project.projectName + '_' + index}
                   onClick={() => handleOpenRecently(project)}
                 >
-                  <ListItemText sx={{ color: theme.palette.primary.light }}>
+                  <ScRecentlyListItemName>
                     {project.projectName}
-                  </ListItemText>
-                  <ListItemText>{project.projectPath}</ListItemText>
+                  </ScRecentlyListItemName>
+                  <Tooltip title={project.projectPath} placement="bottom">
+                    <ScRecentlyListItemPath>
+                      {project.projectPath}
+                    </ScRecentlyListItemPath>
+                  </Tooltip>
                 </ScRecentlyListItem>
               ))}
             </ScRecentlyList>

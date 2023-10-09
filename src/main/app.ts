@@ -3,7 +3,7 @@ import { CustomScheme } from './CustomScheme';
 import { WindowCreator } from './browserWindow';
 import { MenuBuilder } from './menu';
 import { ApiResgiter } from './api';
-import { EventRegister } from './event/mainWinEvent';
+import { EventRegister } from './event';
 import { ShortcutRegister } from './shortcut';
 import { ApplicationDataManager } from './applicationData';
 
@@ -38,13 +38,13 @@ export default class App {
       this.windowCreator = new WindowCreator();
       this.mainWindow = this.windowCreator.createWindow({ show: false });
       this.applicationDataManager = new ApplicationDataManager();
-      this.menuBuilder = new MenuBuilder(this.mainWindow);
-      this.apiRegister = new ApiResgiter(
-        this.mainWindow,
+      this.menuBuilder = new MenuBuilder();
+      this.apiRegister = new ApiResgiter(this.applicationDataManager);
+      this.eventRegister = new EventRegister(
+        this.windowCreator,
         this.applicationDataManager
       );
-      this.eventRegister = new EventRegister(this.windowCreator);
-      this.shortcutRegister = new ShortcutRegister(this.mainWindow);
+      this.shortcutRegister = new ShortcutRegister();
 
       this.menuBuilder?.build();
       this.apiRegister?.init();
