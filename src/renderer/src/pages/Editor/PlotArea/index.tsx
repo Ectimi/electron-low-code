@@ -1,4 +1,4 @@
-import { LegacyRef, forwardRef, useRef } from 'react';
+import { forwardRef, useRef } from 'react';
 import { styled } from '@mui/material';
 import Canvas from './Canvas';
 import Guides, { GuidesProps } from '@scena/react-guides';

@@ -10,7 +10,7 @@ export interface IMaterialIndicatorItem {
   text: string;
 }
 
-const iconColor = '#ff8e3c';
+const iconColor = '#4f7def';
 
 const ButtonIcon = () => (
   <SvgIcon fontSize='large'>

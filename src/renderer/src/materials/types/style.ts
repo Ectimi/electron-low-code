@@ -1,5 +1,13 @@
 export type TBackgroundPosition = number | string;
 
+export type TDisplay =
+  | 'block'
+  | 'inline-block'
+  | 'inline'
+  | 'flex'
+  | 'grid'
+  | 'none';
+
 export type TBackgroundRepeat =
   | 'repeat-x'
   | 'repeat-y'
@@ -27,52 +35,164 @@ export type TBorderStyle =
   | 'inset'
   | 'outset';
 
+export type TOutlineStyle =
+  | 'none'
+  | 'dotted'
+  | 'dashed'
+  | 'solid'
+  | 'double'
+  | 'groove'
+  | 'ridge'
+  | 'inset'
+  | 'outset'
+  | 'inherit';
+
 export type TFontWeight = 'normal' | 'bold' | 'lighter' | 'bolder' | number;
 
-export type TBoxStyle = {
-  basic: {
-    width: number;
-    height: number;
-    margin: number | [number, number?, number?, number?];
-    padding: number | [number, number?, number?, number?];
-    opacity: number;
-  };
+export type TCursor =
+  | 'default'
+  | 'auto'
+  | 'crosshair'
+  | 'pointer'
+  | 'move'
+  | 'e-resize'
+  | 'ne-resize'
+  | 'nw-resize'
+  | 'n-resize'
+  | 'se-resize'
+  | 'sw-resize'
+  | 's-resize'
+  | 'w-resize'
+  | 'text'
+  | 'wait'
+  | 'help';
 
-  boxShadow: {
-    boxShadowInset: boolean;
-    boxShadowOffsetX: number;
-    boxShadowOffsetY: number;
-    boxShadowBlurRadius: number;
-    boxShadowSpreadRadius: number;
-    boxShadowColor: string;
-  };
+export type TFlexContainer = {
+  flexDirection: 'row' | 'row-reverse' | 'column' | 'column-reverse';
+  flexWrap: 'nowrap' | 'wrap' | 'wrap-reverse';
+  justifyContent:
+    | 'flex-start'
+    | 'flex-end'
+    | 'center'
+    | 'space-between'
+    | 'space-around';
+  alignItems: 'flex-start' | 'flex-end' | 'center' | 'baseline' | 'stretch';
+  alinContent:
+    | 'flex-start'
+    | 'flex-end'
+    | 'center'
+    | 'space-between'
+    | 'psace-around'
+    | 'stretch';
+};
 
-  background: {
-    backgroundColor: string;
-    backgroundImage: string;
-    backgroundSize: string;
-    backgroundRepeat: TBackgroundRepeat;
-    backgroundPositionX: TBackgroundPosition;
-    backgroundPositionY: TBackgroundPosition;
-  };
+export type TFlexItem = {
+  order: number;
+  flexGrow: number;
+  flexShrink: number;
+  flexBasis: number | 'auto';
+  alignSelf:
+    | 'auto'
+    | 'flex-start'
+    | 'flex-end'
+    | 'center'
+    | 'baseline'
+    | 'stretch';
+};
 
-  border: {
-    borderStyle: TBorderStyle | [TBorderStyle, TBorderStyle, TBorderStyle, TBorderStyle];
-    borderColor: string | [string, string?, string?, string?];
-    borderWidth: number | [number, number?, number?, number?];
-    borderRadius: number | [number, number?, number?, number?];
+export type TLayout = {
+  display: TDisplay;
+  flexLayout: {
+    container: TFlexContainer;
+    item: TFlexItem;
   };
 };
 
-export type TTextStyle = {
-  font: {
-    color: string;
-    fontSize: number;
-    fontFamily: string;
-    fontWeight: TFontWeight;
-  };
+export type TPosition = {
+  position: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
+  top?: number | 'auto';
+  bottom?: number | 'auto';
+  left?: number | 'auto';
+  right?: number | 'auto';
+  zIndex?: number | 'auto';
 };
 
-export type TButtonStyle = TBoxStyle & TTextStyle;
+export type TGap = {
+  margin: number | [number, number, number, number];
+  padding: number | [number, number, number, number];
+};
 
-export type TAllStyle = TBoxStyle & TTextStyle;
+export type TSize = {
+  width: number | string;
+  height: number | string;
+  minWidth?: number;
+  minHeight?: number;
+  overflow: 'visible' | 'hidden' | 'scroll' | 'auto' | 'inherit';
+};
+
+export type TFont = {
+  color: string;
+  fontSize: number;
+  fontFamily: string;
+  fontWeight: TFontWeight;
+  fontStyle: 'normal' | 'italic' | 'inherit';
+  textAlign: 'left' | 'right' | 'center' | 'justify' | 'inherit';
+  textDecoration:
+    | 'none'
+    | 'underline'
+    | 'overline'
+    | 'line-through'
+    | 'inherit';
+};
+
+export type TBackground = {
+  backgroundColor: string;
+  backgroundImage: string;
+  backgroundSize: string;
+  backgroundRepeat: TBackgroundRepeat;
+  backgroundPositionX: TBackgroundPosition;
+  backgroundPositionY: TBackgroundPosition;
+  backgroundClip: 'border-box' | 'padding-box' | 'content-box';
+};
+
+export type TOutline = {
+  width: number;
+  color: string;
+  style: TOutlineStyle;
+};
+
+export type TBoxShadow = {
+  boxShadowInset: boolean;
+  boxShadowOffsetX: number;
+  boxShadowOffsetY: number;
+  boxShadowBlurRadius: number;
+  boxShadowSpreadRadius: number;
+  boxShadowColor: string;
+};
+
+export type TEffect = {
+  outline: TOutline;
+  opacity: number;
+  cursor: TCursor;
+  boxShadow: TBoxShadow;
+};
+
+export const enum EStyleType {
+  layout = 'layout',
+  position = 'position',
+  gap = 'gap',
+  size = 'size',
+  font = 'font',
+  background = 'background',
+  effect = 'effect',
+}
+
+export type TStyle = {
+  [EStyleType.layout]: TLayout;
+  [EStyleType.position]: TPosition;
+  [EStyleType.gap]: TGap;
+  [EStyleType.size]: TSize;
+  [EStyleType.font]: TFont;
+  [EStyleType.background]: TBackground;
+  [EStyleType.effect]: TEffect;
+};

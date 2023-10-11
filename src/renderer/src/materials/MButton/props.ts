@@ -1,41 +1,39 @@
-import { ETextPos, TMaterialButton } from '../types/material';
+import { TMaterialProps } from '../types/material';
 import { DeepPartial } from '../types/utils';
-import { defaultBoxStyle, defaultTextStyle } from '../default/style';
-import { deepMerge } from '@/utils';
+import { defaultMaterialStyle } from '../default/style';
+import { TStyle } from '../types/style';
+import defaultsDeep from 'lodash/defaultsDeep';
 
-export type TButtonProperty = TMaterialButton['property'];
-
-export type TButtonProps = Omit<TMaterialButton, 'id' | 'name'>;
-
-export const presetStyle: DeepPartial<TButtonProperty['style']> = deepMerge(
+export const presetStyle: TStyle = defaultsDeep(
   {
-    ...defaultBoxStyle,
-    ...defaultTextStyle,
-  },
-  {
-    basic: {
+    layout: {
+      display: 'flex',
+      flexLayout: {
+        container: {
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+      },
+    },
+    size: {
       width: 100,
       height: 35,
     },
     background: {
       backgroundColor: '#3f7ef7',
     },
-    border: {
-      borderRadius: 4,
-    },
     font: {
       color: '#fff',
     },
-  }
+    effect: {
+      cursor: 'pointer',
+    },
+  } as DeepPartial<TStyle>,
+  defaultMaterialStyle
 );
 
-export const defaultProps: TButtonProps = {
-  property: {
-    style: presetStyle as TButtonProperty['style'],
-    animations: [],
-    events: [],
-  },
-  custom: {
-    textPosition: ETextPos.center,
-  },
+export const defaultProps: TMaterialProps = {
+  style: presetStyle,
+  animations: [],
+  events: [],
 };

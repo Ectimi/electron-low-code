@@ -1,4 +1,4 @@
-import { TAllStyle, TButtonStyle } from './style';
+import { TStyle } from './style';
 
 export const enum EMaterialName {
   MImage = 'MImage',
@@ -6,26 +6,14 @@ export const enum EMaterialName {
   MButton = 'MButton',
 }
 
-export const enum ETextPos {
-  'left' = 'left',
-  'center' = 'center',
-  'right' = 'right',
-}
-
-export interface IMaterial<Style = TAllStyle, Custom = any> {
+export interface IMaterial {
   id: string;
   name: EMaterialName;
   property: {
-    style: Style;
+    style: TStyle;
     animations: any;
     events: any;
   };
-  custom: Custom;
 }
 
-export type TMaterialButton = IMaterial<
-  TButtonStyle,
-  {
-    textPosition: ETextPos;
-  }
->;
+export type TMaterialProps = IMaterial['property'];

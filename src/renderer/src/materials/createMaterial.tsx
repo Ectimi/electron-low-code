@@ -13,7 +13,7 @@ export interface IMaterialItem {
   id: string;
   name: EMaterialName;
   component: React.ReactElement;
-  defaultConfiguration: IMaterial['property'];
+  configuration: IMaterial['property'];
 }
 
 const componentMap: Record<EMaterialName, MaterialFC> = {
@@ -30,6 +30,6 @@ export default function createMaterial(name: EMaterialName): IMaterialItem {
     id,
     name,
     component: <Component />,
-    defaultConfiguration: Component.__default_configuration,
+    configuration: Component.__default_configuration,
   };
 }

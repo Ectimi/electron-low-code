@@ -1,5 +1,5 @@
 import { useState, SyntheticEvent } from 'react';
-import { Paper, Tabs, Tab,styled } from '@mui/material';
+import { Box, Paper as MPaper, Tabs, Tab, styled } from '@mui/material';
 import StylePanelRenderer from '@/core/StylePanelRenderer';
 import AniPanelRenderer from '@/core/AniPanelRenderer';
 
@@ -9,22 +9,26 @@ interface TabPanelProps {
   value: number;
 }
 
-
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
 
   return (
-    <div role="tabpanel" hidden={value !== index} {...other}>
+    <Box
+      role="tabpanel"
+      hidden={value !== index}
+      {...other}
+      sx={{ height: '100%' }}
+    >
       {value === index && children}
-    </div>
+    </Box>
   );
 }
 
-const ScAttrPanel = styled(Paper)({
-  width:'var(--right-panel-width)',
-  padding:'var(--common-gap)',
-  userSelect:'none'
-})
+const AttrPanelBox = styled(MPaper)({
+  width: 'var(--right-panel-width)',
+  // padding:'var(--common-gap)',
+  userSelect: 'none',
+});
 
 export default function AttrPanel() {
   const [index, setIndex] = useState(0);
@@ -32,7 +36,7 @@ export default function AttrPanel() {
     setIndex(newValue);
   };
   return (
-    <ScAttrPanel elevation={5}>
+    <AttrPanelBox elevation={5}>
       <Tabs value={index} onChange={handleChange}>
         <Tab label="样式" />
         <Tab label="动画" />
@@ -43,6 +47,6 @@ export default function AttrPanel() {
       <TabPanel value={index} index={1}>
         <AniPanelRenderer />
       </TabPanel>
-    </ScAttrPanel>
+    </AttrPanelBox>
   );
 }

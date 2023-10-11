@@ -1,114 +1,86 @@
 import { CSSProperties } from 'react';
-import { TAllStyle, TBoxStyle, TTextStyle } from '../types/style';
-import { DeepPartial } from '../types/utils';
+import {
+  TBackground,
+  TBoxShadow,
+  TFlexContainer,
+  TFlexItem,
+  TFont,
+  TSize,
+  TStyle,
+} from '../types/style';
 
-function processBoxStyle(
-  boxStyle:
-    | TBoxStyle['basic']
-    | TBoxStyle['boxShadow']
-    | TBoxStyle['background']
-    | TBoxStyle['border']
-) {
-  const style: any = {};
+const styleValueParser = (
+  val: number | string | Array<number | string>
+): string => {
+  if (typeof val === 'string') return val;
+  if (Array.isArray(val)) return val.map((n) => styleValueParser(n)).join(' ');
+  return val + 'px';
+};
 
-  if ('width' in boxStyle) {
-    let key: keyof TBoxStyle['basic'];
-    for (key in boxStyle) {
-      const value = boxStyle[key];
-      if (key === 'width' || key === 'height') {
-        style[key] = value + 'px';
-      } else if (key === 'margin' || key === 'padding') {
-        style[key] = Array.isArray(value)
-          ? value.map((n) => n + 'px').join(' ')
-          : value + 'px';
-      } else if (key === 'opacity') {
-        style[key] = value;
-      }
-    }
-  } else if ('backgroundColor' in boxStyle) {
-    let key: keyof TBoxStyle['background'];
-    for (key in boxStyle) {
-      const value = boxStyle[key];
-      if (key === 'backgroundColor' || key === 'backgroundRepeat') {
-        style[key] = value;
-      } else if (key === 'backgroundImage') {
-        style[key] = value === 'none' ? value : `url(${value})`;
-      } else if (
-        key === 'backgroundPositionX' ||
-        key === 'backgroundPositionY'
-      ) {
-        if (typeof value === 'number') {
-          style[key] = value + 'px';
-        } else {
-          style[key] = value;
-        }
-      }
-    }
-  } else if ('borderStyle' in boxStyle) {
-    let key: keyof TBoxStyle['border'];
-    for (key in boxStyle) {
-      const value = boxStyle[key];
-      if (key === 'borderStyle' || key === 'borderColor') {
-        style[key] = Array.isArray(value) ? value.join(' ') : value;
-      } else if (key === 'borderWidth' || key === 'borderRadius') {
-        style[key] = Array.isArray(value)
-          ? value.map((n) => n + 'px').join(' ')
-          : value + 'px';
-      }
-    }
-  } else if ('boxShadow' in boxStyle) {
-    const {
-      boxShadowInset,
-      boxShadowOffsetX,
-      boxShadowOffsetY,
-      boxShadowBlurRadius,
-      boxShadowSpreadRadius,
-      boxShadowColor,
-    } = boxStyle;
-    const inset = boxShadowInset ? 'inset' : '';
-    const blurRadius = boxShadowBlurRadius < 0 ? 0 : boxShadowBlurRadius;
-    style[
-      'boxShadow'
-    ] = `${inset} ${boxShadowOffsetX} ${boxShadowOffsetY} ${blurRadius} ${boxShadowSpreadRadius} ${boxShadowColor}`;
+const styleParser = (styleProps: TStyle) => {
+  const { layout, position, gap, size, font, background, effect } = styleProps;
+  const targetStyle: CSSProperties = {};
+
+  // 处理 layout 样式
+  targetStyle.display = layout.display;
+  if (layout.display === 'flex' && layout.flexLayout) {
+    const { container, item } = layout.flexLayout;
+
+    Object.keys(container).map((key) => {
+      (targetStyle as any)[key] = container[key as keyof TFlexContainer];
+    });
+    Object.keys(item).map((key) => {
+      (targetStyle as any)[key] = item[key as keyof TFlexItem];
+    });
   }
 
-  return style as CSSProperties;
-}
+  // 处理 positio 样式
+  targetStyle.position = position.position;
+  if (position.top) targetStyle.top = styleValueParser(position.top);
+  if (position.bottom) targetStyle.bottom = styleValueParser(position.bottom);
+  if (position.left) targetStyle.left = styleValueParser(position.left);
+  if (position.right) targetStyle.right = styleValueParser(position.right);
 
-function processFontStyle(fontStyle: TTextStyle['font']) {
-  const style: any = {};
-  let key: keyof TTextStyle['font'];
-  for (key in fontStyle) {
-    const value = fontStyle[key];
-    if (key === 'color' || key === 'fontFamily' || key === 'fontWeight') {
-      style[key] = value;
-    } else if (key === 'fontSize') {
-      style[key] = value + 'px';
-    }
-  }
-  return style as CSSProperties;
-}
+  // 处理 gap 样式
+  targetStyle.margin = styleValueParser(gap.margin);
+  targetStyle.padding = styleValueParser(gap.padding);
 
-export default function propStyleToCssProperty(
-  propStyle: DeepPartial<TAllStyle>
-) {
-  const style: any = {};
-  let key: keyof TAllStyle;
-  for (key in propStyle) {
-    if (Object.prototype.hasOwnProperty.call(propStyle, key)) {
-      const obj = propStyle![key];
-      if (
-        key === 'basic' ||
-        key === 'background' ||
-        key === 'border' ||
-        key === 'boxShadow'
-      ) {
-        Object.assign(style, processBoxStyle(obj as any));
-      } else if (key === 'font') {
-        Object.assign(style, processFontStyle(obj as TTextStyle['font']));
-      }
-    }
-  }
+  // 处理 size 样式
+  Object.keys(size).map((key) => {
+    (targetStyle as any)[key] = size[key as keyof TSize];
+  });
 
-  return style as CSSProperties;
-}
+  // 处理 font 样式
+  Object.keys(font).map((key) => {
+    (targetStyle as any)[key] = font[key as keyof TFont];
+  });
+
+  // 处理 background 样式
+  Object.keys(background).map((key) => {
+    (targetStyle as any)[key] = background[key as keyof TBackground];
+  });
+
+  // 处理 effect 样式
+  const { outline, opacity, cursor, boxShadow } = effect;
+  targetStyle.outline = `${styleValueParser(outline.width)} ${outline.style} ${
+    outline.color
+  }`;
+  targetStyle.opacity = opacity;
+  targetStyle.cursor = cursor;
+
+  const {
+    boxShadowInset,
+    boxShadowOffsetX,
+    boxShadowOffsetY,
+    boxShadowBlurRadius,
+    boxShadowSpreadRadius,
+    boxShadowColor,
+  } = boxShadow;
+  const inset = boxShadowInset ? 'inset' : '';
+  const blurRadius = boxShadowBlurRadius < 0 ? 0 : boxShadowBlurRadius;
+  targetStyle.boxShadow = `${inset} ${boxShadowOffsetX} ${boxShadowOffsetY} ${blurRadius} ${boxShadowSpreadRadius} ${boxShadowColor}`;
+
+  return targetStyle;
+};
+
+export { styleParser };
