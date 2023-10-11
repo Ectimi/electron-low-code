@@ -1,74 +1,73 @@
-import { FC, useContext } from 'react';
-import { styled } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import CropSquareIcon from '@mui/icons-material/CropSquare';
-import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
-import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
-import MenuBar, { TMenuBarProps } from '../MenuBar';
-import modalStore from '@/store/modal';
-import commonStore from '@/store/common';
-import { EventName } from 'root/types/EventName';
-import { getWindowNumbers } from '@/api';
-import { IEventBeforClose } from 'root/types/ParamsType';
-import AppContext, { IAppContext } from '@/context';
+import { FC, useContext } from "react";
+import { styled } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import CropSquareIcon from "@mui/icons-material/CropSquare";
+import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
+import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import MenuBar, { TMenuBarProps } from "../MenuBar";
+import commonStore from "@/store/common";
+import { EventName } from "root/types/EventName";
+import { getWindowNumbers } from "@/api";
+import { IEventBeforClose } from "root/types/ParamsType";
+import AppContext, { IAppContext } from "@/context";
 
-const { isMac, ipcRenderer } = window.electronApi;
+const { isMac, isWindow, ipcRenderer } = window.electronApi;
 
 export const HeaderHeight = 28;
 
 const ScHeader = styled(Box)({
-  position: 'fixed',
+  position: "fixed",
   top: 0,
   left: 0,
   zIndex: 9999,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: isMac ? 'flex-end' : 'space-between',
-  width: '100%',
+  display: "flex",
+  alignItems: "center",
+  justifyContent: isMac ? "flex-end" : "space-between",
+  width: "100%",
   height: `${HeaderHeight}px`,
-  padding: '0 10px',
-  backgroundColor: 'var(--headline-color)',
-  color: '#fff',
-  WebkitAppRegion: 'drag',
-  '.MuiIconButton-root': {
-    WebkitAppRegion: 'no-drag',
+  padding: "0 10px",
+  backgroundColor: "var(--headline-color)",
+  color: "#fff",
+  WebkitAppRegion: "drag",
+  ".MuiIconButton-root": {
+    WebkitAppRegion: "no-drag",
   },
 });
 
 const ScTitle = styled(Box)({
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%,-50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%,-50%)",
 });
 
 export const Header: FC = () => {
   const context = useContext(AppContext) as IAppContext;
   const commonStoreSnapshot = commonStore.getSnapshot();
-  const template: TMenuBarProps['template'] = [
+  const template: TMenuBarProps["template"] = [
     {
-      label: '文件(F)',
-      accelerator: 'alt+F',
+      label: "文件(F)",
+      accelerator: "alt+F",
       submenu: [
         {
-          label: '新建项目',
-          accelerator: 'ctrl+N',
+          label: "新建项目",
+          accelerator: "ctrl+N",
           click() {
-            modalStore.toggleCreateProjectModal(true);
+            context.handleCreateProject();
           },
         },
         {
-          label: '新建窗口',
-          accelerator: 'ctrl+shift+N',
+          label: "新建窗口",
+          accelerator: "ctrl+shift+N",
           click() {
-            ipcRenderer.sendSync(EventName.NEW_WINDOW);
+            context.handleNewWindow();
           },
         },
         {
-          label: '打开项目',
-          accelerator: 'ctrl+O',
+          label: "打开项目",
+          accelerator: "ctrl+O",
           click() {
             context.handleOpenProject();
           },
@@ -76,14 +75,14 @@ export const Header: FC = () => {
       ],
     },
     {
-      label: '帮助(H)',
-      accelerator: 'alt+H',
+      label: "帮助(H)",
+      accelerator: "alt+H",
       submenu: [
         {
-          label: '关于',
-          accelerator: 'ctrl+A',
+          label: "关于",
+          accelerator: "ctrl+A",
           click() {
-            console.log('about');
+            console.log("about");
           },
         },
       ],
@@ -94,19 +93,19 @@ export const Header: FC = () => {
     const windowNumber = await getWindowNumbers();
     if (windowNumber === 1) {
       const urlParams = new URLSearchParams(
-        window.location.hash.replace('#/editor?', '')
+        window.location.hash.replace("#/editor?", "")
       );
-      const projectName = urlParams.get('projectName');
-      const projectPath = urlParams.get('projectPath');
+      const projectName = urlParams.get("projectName");
+      const projectPath = urlParams.get("projectPath");
       if (projectName && projectPath) {
         ipcRenderer.sendSync<IEventBeforClose>(EventName.BEFORE_CLOSE, {
           projectName,
           projectPath,
-          lastClosePath: '/editor',
+          lastClosePath: "/editor",
         });
       } else {
         ipcRenderer.sendSync<IEventBeforClose>(EventName.BEFORE_CLOSE, {
-          lastClosePath: '/welcome',
+          lastClosePath: "/welcome",
         });
       }
     }
@@ -117,37 +116,39 @@ export const Header: FC = () => {
   return (
     <ScHeader>
       {!isMac && <MenuBar template={template} />}
-      <ScTitle>{commonStoreSnapshot.windowTitle || 'Low Code Editor'}</ScTitle>
-      <Stack direction="row" spacing={1}>
-        <IconButton
-          aria-label="minimize"
-          size="small"
-          color="inherit"
-          onClick={() => {
-            ipcRenderer.sendSync(EventName.WIN_MINIMIZE);
-          }}
-        >
-          <HorizontalRuleIcon fontSize="inherit" />
-        </IconButton>
-        <IconButton
-          aria-label="maxsize"
-          size="small"
-          color="inherit"
-          onClick={() => {
-            ipcRenderer.sendSync(EventName.WIN_MAXIMIZE);
-          }}
-        >
-          <CropSquareIcon fontSize="inherit" />
-        </IconButton>
-        <IconButton
-          aria-label="close"
-          size="small"
-          color="inherit"
-          onClick={handleClose}
-        >
-          <CloseIcon fontSize="inherit" />
-        </IconButton>
-      </Stack>
+      <ScTitle>{commonStoreSnapshot.windowTitle || "Low Code Editor"}</ScTitle>
+      {isWindow && (
+        <Stack direction="row" spacing={1}>
+          <IconButton
+            aria-label="minimize"
+            size="small"
+            color="inherit"
+            onClick={() => {
+              ipcRenderer.sendSync(EventName.WIN_MINIMIZE);
+            }}
+          >
+            <HorizontalRuleIcon fontSize="inherit" />
+          </IconButton>
+          <IconButton
+            aria-label="maxsize"
+            size="small"
+            color="inherit"
+            onClick={() => {
+              ipcRenderer.sendSync(EventName.WIN_MAXIMIZE);
+            }}
+          >
+            <CropSquareIcon fontSize="inherit" />
+          </IconButton>
+          <IconButton
+            aria-label="close"
+            size="small"
+            color="inherit"
+            onClick={handleClose}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        </Stack>
+      )}
     </ScHeader>
   );
 };

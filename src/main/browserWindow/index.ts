@@ -1,14 +1,15 @@
-import path from 'path';
-import { getDistPath } from '../utils';
-import { BrowserWindow } from 'electron';
-import type { BrowserWindowConstructorOptions } from 'electron';
+import path from "path";
+import { getDistPath, isMac } from "../utils";
+import { BrowserWindow } from "electron";
+import type { BrowserWindowConstructorOptions } from "electron";
 
 export class WindowCreator {
   private defaultOptions: BrowserWindowConstructorOptions = {
-    title: 'main',
+    title: "main",
     minHeight: 800,
     minWidth: 1400,
     frame: false,
+    titleBarStyle: isMac ? "hidden" : "default",
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,
@@ -17,7 +18,7 @@ export class WindowCreator {
       webviewTag: true,
       spellcheck: false,
       disableHtmlFullscreenWindowResize: true,
-      preload: path.resolve(getDistPath(), 'preload/index.js'),
+      preload: path.resolve(getDistPath(), "preload/index.js"),
     },
   };
 

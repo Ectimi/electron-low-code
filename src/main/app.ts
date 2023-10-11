@@ -73,8 +73,6 @@ export default class App {
   }
 
   onWindowAllClosed() {
-    if (process.platform !== 'darwin') {
-      app.quit();
-    }
+    app.quit();
   }
 }

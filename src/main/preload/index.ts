@@ -3,9 +3,9 @@ import {
   IpcRenderer,
   contextBridge,
   IpcRendererEvent,
-} from 'electron';
-import fs from 'fs';
-import { isMac, isWindow } from 'main/utils';
+} from "electron";
+import fs from "fs";
+import { isMac, isWindow } from "main/utils";
 
 type listener = <T = any>(event: IpcRendererEvent, args: T) => void;
 
@@ -17,13 +17,14 @@ export interface IElectronApi {
     on: (channel: string, handle: listener) => void;
     send: <T>(channel: string, data?: T) => void;
     sendSync: <T>(channel: string, data?: T) => void;
+    removeAllListeners: (channel: string) => void;
   };
   fs: {
     access: (filePath: string) => Promise<boolean>;
   };
 }
 
-contextBridge.exposeInMainWorld('electronApi', {
+contextBridge.exposeInMainWorld("electronApi", {
   isMac,
   isWindow,
   fs: {
@@ -51,6 +52,9 @@ contextBridge.exposeInMainWorld('electronApi', {
     },
     sendSync<T>(channel: string, data: T) {
       ipcRenderer.sendSync(channel, data);
+    },
+    removeAllListeners(channel: string) {
+      ipcRenderer.removeAllListeners(channel);
     },
   },
 } as IElectronApi);
