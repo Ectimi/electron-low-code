@@ -1,7 +1,6 @@
 import { CSSProperties } from 'react';
 import {
   TBackground,
-  TBoxShadow,
   TFlexContainer,
   TFlexItem,
   TFont,

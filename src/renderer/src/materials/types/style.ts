@@ -117,9 +117,11 @@ export type TPosition = {
   zIndex?: number | 'auto';
 };
 
+export type TGapValue = number | 'auto' | Array<number|string>
+
 export type TGap = {
-  margin: number | [number, number, number, number];
-  padding: number | [number, number, number, number];
+  margin: TGapValue;
+  padding: TGapValue;
 };
 
 export type TSize = {

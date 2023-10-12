@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { styleParser } from '../utils/propStyleToCssProperty';
+import { styleParser } from '../utils/styleParser';
 import { defaultProps } from './props';
 import { TMaterialProps } from '../types/material';
 import { cloneDeep } from 'lodash';

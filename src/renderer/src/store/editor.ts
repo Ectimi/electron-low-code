@@ -1,10 +1,10 @@
 import { IMaterialItem } from '@/materials/createMaterial';
-import { IMaterial } from '@/materials/types/material';
 import { proxy, useSnapshot } from 'valtio';
 import { proxyWithHistory } from 'valtio/utils';
+import set from 'lodash/set';
+import { produce } from 'immer';
 
 interface IEditorStore {
-  materialList: IMaterialItem[];
   currentMaterial: string | null;
   canvas: {
     width: number;
@@ -12,28 +12,9 @@ interface IEditorStore {
   };
 }
 
-function updateObj(obj: any, key: string, value: any): void {
-  const keys = key.split('.');
-  let currentObj: any = obj;
-
-  for (let i = 0; i < keys.length - 1; i++) {
-    const currentKey = keys[i];
-    if (!(currentKey in currentObj)) {
-      currentObj[currentKey] = {};
-    }
-    currentObj = currentObj[currentKey];
-  }
-
-  const lastKey = keys[keys.length - 1];
-  currentObj[lastKey] = value;
-}
-
-type TRecord = Map<string, IMaterial['property']>;
-
 class EditorStore {
   state = proxy<IEditorStore>({
     currentMaterial: null,
-    materialList: [],
 
     canvas: {
       width: 1920,
@@ -41,7 +22,7 @@ class EditorStore {
     },
   });
 
-  recordMap = proxyWithHistory<TRecord>(new Map());
+  materialList = proxyWithHistory<IMaterialItem[]>([]);
 
   getSnapshot = () => useSnapshot(this.state);
 
@@ -49,16 +30,23 @@ class EditorStore {
     (this.state.currentMaterial = materialId);
 
   addMaterial = (item: IMaterialItem) => {
-    this.state.materialList.push(item);
+    this.materialList.value.push(item);
     this.setCurrentMaterial(item.id);
-    this.recordMap.value.set(item.id, item.configuration);
   };
 
-  getConfiguration = (id: string) => this.recordMap.value.get(id);
+  getMaterial = (materialId: string) =>
+    this.materialList.value.filter(({ id }) => id === materialId)[0];
+
+  getConfiguration = (materialId: string) =>
+    this.getMaterial(materialId).configuration;
 
   updateMaterialStyle = (materialId: string, key: string, value: any) => {
-    const style = this.getConfiguration(materialId)?.style;
-    updateObj(style, key, value);
+    this.materialList.value = produce(this.materialList.value, (draft) => {
+      const material = draft.filter(({ id }) => id === materialId)[0];
+      if (material) {
+        set(material, ['configuration', 'style', ...key.split('.')], value);
+      }
+    });
   };
 }
 

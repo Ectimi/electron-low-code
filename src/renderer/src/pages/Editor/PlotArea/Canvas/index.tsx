@@ -4,6 +4,9 @@ import { styled } from '@mui/material';
 import editorStore from '@/store/editor';
 import CanvasRenderer from '@/core/CanvasRenderer';
 import createMaterial, { IMaterialItem } from '@/materials/createMaterial';
+import { useSnapshot } from 'valtio';
+import { subscribeKey } from 'valtio/utils';
+import { useMount, useUpdate } from 'ahooks';
 
 export interface IPosition {
   left: number;
@@ -43,7 +46,9 @@ export default function Canvas(props: ICanvasProps) {
     scale = 1,
     ...restProps
   } = props;
+  const update = useUpdate();
   const snap = editorStore.getSnapshot();
+  const materials = useSnapshot(editorStore.materialList);
   const [, drop] = useDrop(() => ({
     accept: 'material',
     drop: (item: IDropResult) => {
@@ -57,6 +62,12 @@ export default function Canvas(props: ICanvasProps) {
     }),
   }));
 
+  useMount(() => {
+    subscribeKey(editorStore.materialList, 'value', () => {
+      update();
+    });
+  });
+
   return (
     <ScCanvas
       {...restProps}
@@ -66,7 +77,7 @@ export default function Canvas(props: ICanvasProps) {
       scale={scale}
       size={{ width: snap.canvas.width, height: snap.canvas.height }}
     >
-      <CanvasRenderer materials={snap.materialList as IMaterialItem[]} />
+      <CanvasRenderer materials={materials.value as IMaterialItem[]} />
     </ScCanvas>
   );
 }

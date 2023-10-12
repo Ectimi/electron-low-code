@@ -25,6 +25,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const AttrPanelBox = styled(MPaper)({
+  position:'relative',
   width: 'var(--right-panel-width)',
   // padding:'var(--common-gap)',
   userSelect: 'none',
@@ -36,7 +37,7 @@ export default function AttrPanel() {
     setIndex(newValue);
   };
   return (
-    <AttrPanelBox elevation={5}>
+    <AttrPanelBox id='attrPanelBox' elevation={5}>
       <Tabs value={index} onChange={handleChange}>
         <Tab label="样式" />
         <Tab label="动画" />
