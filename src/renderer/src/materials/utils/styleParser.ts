@@ -46,7 +46,11 @@ const styleParser = (styleProps: TStyle) => {
 
   // 处理 size 样式
   Object.keys(size).map((key) => {
-    (targetStyle as any)[key] = size[key as keyof TSize];
+    const value: any =
+      key === 'fontWeight'
+        ? (targetStyle as any)[key]
+        : styleValueParser(size[key as keyof TSize]!);
+    (targetStyle as any)[key] = value;
   });
 
   // 处理 font 样式

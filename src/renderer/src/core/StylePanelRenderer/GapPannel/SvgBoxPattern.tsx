@@ -1,6 +1,6 @@
-import { styled } from "@mui/material";
-import React from "react";
-import { PropsWithChildren } from "react";
+import { styled } from '@mui/material';
+import React from 'react';
+import { PropsWithChildren } from 'react';
 
 const SpacingWrap = styled('div')({
   position: 'relative',
@@ -48,11 +48,11 @@ const WEPath = styled('path')({
 });
 
 const SvgBoxPattern = (props: PropsWithChildren<any>) => {
-  const MarginController = React.Children.toArray(props.children).filter(
-    (c: any) => c.type.displayName === 'MarginController'
+  const Margins = React.Children.toArray(props.children).filter(
+    (c: any) => c.props.name === 'margin'
   );
-  const PaddingController = React.Children.toArray(props.children).filter(
-    (c: any) => c.type.displayName === 'PaddingController'
+  const Paddings = React.Children.toArray(props.children).filter(
+    (c: any) => c.props.name === 'padding'
   );
 
   return (
@@ -171,7 +171,7 @@ const SvgBoxPattern = (props: PropsWithChildren<any>) => {
             }}
           ></rect>
         </svg>
-        {MarginController}
+        {Margins}
       </SpacingMaxIcon>
 
       <SpacingMinIcon>
@@ -288,7 +288,7 @@ const SvgBoxPattern = (props: PropsWithChildren<any>) => {
             }}
           ></rect>
         </svg>
-        {PaddingController}
+        {Paddings}
       </SpacingMinIcon>
 
       <svg
@@ -334,4 +334,4 @@ const SvgBoxPattern = (props: PropsWithChildren<any>) => {
   );
 };
 
-export default SvgBoxPattern
+export default SvgBoxPattern;

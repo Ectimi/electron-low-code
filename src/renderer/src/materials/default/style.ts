@@ -24,13 +24,18 @@ export const defaultMaterialStyle: TStyle = {
     position: 'static',
   },
   gap: {
-    margin: 0,
-    padding: 0,
+    margin: [0,0,0,0],
+    padding: [0,0,0,0],
   },
   size: {
     width: 100,
     height: 40,
+    minWidth:0,
+    minHeight:0,
+    maxWidth:'none',
+    maxHeight:'none',
     overflow: 'visible',
+    objectFit:'fill'
   },
   font: {
     color: '#000',

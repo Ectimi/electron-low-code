@@ -54,7 +54,7 @@ const AccordionDetails = styled(MuiAccordionDetails)({
 
 const titleMap: Map<EStyleType, any> = new Map([
   [EStyleType.layout, '布局'],
-  [EStyleType.position, '位置'],
+  [EStyleType.position, '定位'],
   [EStyleType.gap, '间隔'],
   [EStyleType.size, '尺寸'],
   [EStyleType.font, '字体'],
@@ -92,6 +92,7 @@ export default function StylePanelRenderer() {
                 {titleMap.get(key as EStyleType)}
               </Typography>
             </AccordionSummary>
+
             <AccordionDetails>
               {key === EStyleType.layout && (
                 <LayoutPannel
@@ -105,13 +106,42 @@ export default function StylePanelRenderer() {
                   }}
                 />
               )}
-              {key === EStyleType.size && <SizePannel />}
+
+              {key === EStyleType.gap && (
+                <GapPannel
+                  {...property.style.gap}
+                  onChange={(gapType, value) => {
+                    editorStore.updateMaterialStyle(
+                      editorSnap.currentMaterial!,
+                      'gap.' + gapType,
+                      value
+                    );
+                  }}
+                />
+              )}
+
+              {key === EStyleType.size && (
+                <SizePannel
+                  {...property.style.size}
+                  onChange={(data) => {
+                    editorStore.updateMaterialStyle(
+                      editorSnap.currentMaterial!,
+                      'size',
+                      data
+                    );
+                  }}
+                />
+              )}
+
+              {key === EStyleType.position && (
+                <PositionPannel {...property.style.position} />
+              )}
+
               {key === EStyleType.background && <BackgroundPannel />}
+
               {key === EStyleType.font && <FontPannel />}
+
               {key === EStyleType.effect && <EffectPannel />}
-              {key === EStyleType.position && <PositionPannel />}
-              {key === EStyleType.gap && <GapPannel onChange={(value)=>{console.log();
-              }}/>}
             </AccordionDetails>
           </Accordion>
         ))

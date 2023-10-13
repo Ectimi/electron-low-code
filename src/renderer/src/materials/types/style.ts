@@ -1,5 +1,7 @@
 export type TBackgroundPosition = number | string;
 
+export type TCssValue = number | 'auto' | `${number}%`|`${number}px`
+
 export type TDisplay =
   | 'block'
   | 'inline-block'
@@ -67,6 +69,8 @@ export type TCursor =
   | 'wait'
   | 'help';
 
+export type TGapValue = Array<number | string>;
+
 export type TFlexContainer = {
   flexDirection: 'row' | 'row-reverse' | 'column' | 'column-reverse';
   flexWrap: 'nowrap' | 'wrap' | 'wrap-reverse';
@@ -110,14 +114,12 @@ export type TLayout = {
 
 export type TPosition = {
   position: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
-  top?: number | 'auto';
-  bottom?: number | 'auto';
-  left?: number | 'auto';
-  right?: number | 'auto';
+  top?: TCssValue;
+  bottom?: TCssValue;
+  left?: TCssValue;
+  right?: TCssValue;
   zIndex?: number | 'auto';
 };
-
-export type TGapValue = number | 'auto' | Array<number|string>
 
 export type TGap = {
   margin: TGapValue;
@@ -125,11 +127,25 @@ export type TGap = {
 };
 
 export type TSize = {
-  width: number | string;
-  height: number | string;
-  minWidth?: number;
-  minHeight?: number;
+  width: TCssValue;
+  height: TCssValue;
+  minWidth:
+    TCssValue
+    | 'min-content'
+    | 'max-content'
+    | 'fit-content'
+    | 'fill-available';
+  minHeight: TCssValue | 'min-content' | 'max-content' | 'fit-content';
+  maxWidth:
+    | number
+    | 'none'
+    | 'min-content'
+    | 'max-content'
+    | 'fit-content'
+    | 'fill-available';
+  maxHeight: number | 'none' | 'auto' | 'min-content' | 'max-content';
   overflow: 'visible' | 'hidden' | 'scroll' | 'auto' | 'inherit';
+  objectFit: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
 };
 
 export type TFont = {
@@ -150,7 +166,7 @@ export type TFont = {
 export type TBackground = {
   backgroundColor: string;
   backgroundImage: string;
-  backgroundSize: string;
+  backgroundSize: TBackgrounSize;
   backgroundRepeat: TBackgroundRepeat;
   backgroundPositionX: TBackgroundPosition;
   backgroundPositionY: TBackgroundPosition;

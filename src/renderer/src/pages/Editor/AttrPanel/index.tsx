@@ -17,7 +17,7 @@ function TabPanel(props: TabPanelProps) {
       role="tabpanel"
       hidden={value !== index}
       {...other}
-      sx={{ height: '100%' }}
+      sx={{ height: 'calc(100% - 48px)',overflowY:'auto' }}
     >
       {value === index && children}
     </Box>

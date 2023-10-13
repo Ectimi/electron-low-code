@@ -9,73 +9,31 @@ import {
   Stack,
 } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
-import { ChangeEventHandler, Fragment } from 'react';
-import { useImmer } from "use-immer";
+import { useImmer } from 'use-immer';
 import { useSafeState } from 'ahooks';
 import SvgBoxPattern from './SvgBoxPattern';
-import { TGap, TGapValue } from 'root/renderer/src/materials/types/style';
+import {
+  TGap,
+  TGapValue,
+  TStyle,
+} from 'root/renderer/src/materials/types/style';
 
-type TGapControllerHandle = (gapName: string) => void;
-const SpacingEdit = styled('div')({
+const SpacingEdit = styled('div')((props: { name: string }) => ({
   padding: '2px 4px',
   userSelect: 'none',
   fontSize: '10px',
   color: '#191919',
   placeSelf: 'center',
-});
+}));
 const gridAreas = [
   '1 / 2 / 2 / 3',
   '2 / 3 / 3 / 4',
   '3 / 2 / 4 / 3',
   '2 / 1 / 3 / 2',
 ];
-const gapPos = ['top', 'right', 'bottom', 'right'];
+const gapPos = ['top', 'right', 'bottom', 'left'];
 
-const MarginController = (props: {
-  margins: number[];
-  onClick: TGapControllerHandle;
-}) => {
-  const { margins } = props;
-
-  return (
-    <Fragment>
-      {margins.map((val, index) => (
-        <SpacingEdit
-          key={index}
-          sx={{ gridArea: gridAreas[index] }}
-          onClick={() => props.onClick('margin-' + gapPos[index])}
-        >
-          {val}
-        </SpacingEdit>
-      ))}
-    </Fragment>
-  );
-};
-MarginController.displayName = 'MarginController';
-
-const PaddingController = (props: {
-  paddings: number[];
-  onClick: TGapControllerHandle;
-}) => {
-  const { paddings } = props;
-
-  return (
-    <Fragment>
-      {paddings.map((val, index) => (
-        <SpacingEdit
-          key={index}
-          sx={{ gridArea: gridAreas[index] }}
-          onClick={() => props.onClick('padding-' + gapPos[index])}
-        >
-          {val}
-        </SpacingEdit>
-      ))}
-    </Fragment>
-  );
-};
-PaddingController.displayName = 'PaddingController';
-
-const Box = styled(MBox)({
+export const Box = styled(MBox)({
   position: 'absolute',
   top: '50%',
   left: '50%',
@@ -86,14 +44,14 @@ const Box = styled(MBox)({
   backgroundColor: '#fff',
 });
 
-const PersetContainer = styled('div')({
+export const PersetContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
   marginTop: '15px',
 });
 
-const PresetValue = styled('div')({
+export const PresetValue = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -106,7 +64,7 @@ const PresetValue = styled('div')({
   },
 });
 
-const PresetFlexBox = styled('div')({
+export const PresetFlexBox = styled('div')({
   width: 'calc(100% - 60px)',
   height: '60px',
   display: 'flex',
@@ -114,7 +72,7 @@ const PresetFlexBox = styled('div')({
   alignContent: 'space-between',
 });
 
-export type TProps = {
+export type TProps = TStyle['gap'] & {
   onChange: (gapType: keyof TGap, value: TGapValue) => void;
 };
 
@@ -122,43 +80,82 @@ export function GapPannel(props: TProps) {
   const [modalVisible, setModalVisible] = useSafeState(false);
   const [gapName, setGapName] = useSafeState('');
   const [inputValue, setInputValue] = useSafeState<number | string>('');
-  const [margins,setMargins] = useImmer([0, 0, 0, 0])
-  const [paddings,setPaddings] = useImmer([0, 0, 0, 0])
+  const [margins, setMargins] = useImmer<Array<number | string>>(props.margin);
+  const [paddings, setPaddings] = useImmer<Array<number | string>>(
+    props.padding
+  );
 
-  const gapControllerHandle: TGapControllerHandle = (gapName) => {
+  const onModalClose = () => {
+    setModalVisible(false);
+    setInputValue('');
+  };
+
+  const handleGapClick = (gapName: string) => {
+    const [type, pos] = gapName.split('-');
+    const index = gapPos.indexOf(pos);
+    setInputValue(type === 'margin' ? margins[index] : paddings[index]);
     setGapName(gapName);
     setModalVisible(true);
   };
 
-  const onInputChange:ChangeEventHandler<HTMLInputElement> = (e)=>{
-    const value = parseFloat(e.target.value)
-    setInputValue(value)
-    console.log('change');
-    
-    if(gapName.startsWith('margin')){
-        setMargins(draft=>{
-            const updateIndex = gapPos.indexOf(gapName.split('-')[1])
-            draft[updateIndex] = value
-            console.log('draft',draft);
-            
-        })
+  const onInputChange = (value: string | number) => {
+    if (typeof value === 'string') {
+      if (isNaN(parseFloat(value))) {
+        value = 'auto';
+      } else {
+        value = parseFloat(value);
+      }
     }
-  }
+    setInputValue(value);
+    if (gapName.startsWith('margin')) {
+      setMargins((draft) => {
+        const updateIndex = gapPos.indexOf(gapName.split('-')[1]);
+        draft[updateIndex] = value;
+        props.onChange('margin', draft);
+      });
+    } else if (gapName.startsWith('padding')) {
+      setPaddings((draft) => {
+        const updateIndex = gapPos.indexOf(gapName.split('-')[1]);
+        draft[updateIndex] = value;
+        props.onChange('padding', draft);
+      });
+    }
+  };
+
+  const handleClear = () => {
+    setInputValue(0);
+    onInputChange(0);
+  };
 
   return (
     <>
       <SvgBoxPattern>
-        <MarginController margins={margins} onClick={gapControllerHandle} />
-        <PaddingController
-          paddings={paddings}
-          onClick={gapControllerHandle}
-        />
+        {margins.map((val, index) => (
+          <SpacingEdit
+            key={index}
+            name="margin"
+            sx={{ gridArea: gridAreas[index] }}
+            onClick={() => handleGapClick('margin-' + gapPos[index])}
+          >
+            {val}
+          </SpacingEdit>
+        ))}
+        {paddings.map((val, index) => (
+          <SpacingEdit
+            key={index}
+            name="padding"
+            sx={{ gridArea: gridAreas[index] }}
+            onClick={() => handleGapClick('padding-' + gapPos[index])}
+          >
+            {val}
+          </SpacingEdit>
+        ))}
       </SvgBoxPattern>
 
       <Modal
         container={document.getElementById('attrPanelBox')}
         open={modalVisible}
-        onClose={() => setModalVisible(false)}
+        onClose={onModalClose}
         sx={{
           position: 'absolute',
           '.MuiBackdrop-root': { position: 'absolute' },
@@ -177,16 +174,16 @@ export function GapPannel(props: TProps) {
               <TextField
                 label="输入值"
                 size="small"
-                type={inputValue === 'auto' ? 'text' : 'number'}
+                type={typeof inputValue === 'string' ? 'text' : 'number'}
                 InputProps={{
                   endAdornment: (
-                    <IconButton onClick={() => setInputValue('')}>
+                    <IconButton onClick={handleClear}>
                       <ClearIcon sx={{ fontSize: '14px' }} />
                     </IconButton>
                   ),
                 }}
                 value={inputValue}
-                onChange={onInputChange}
+                onChange={(e) => onInputChange(e.target.value)}
               />
               <MBox sx={{ marginLeft: '10px' }}>px</MBox>
             </Stack>
@@ -201,7 +198,7 @@ export function GapPannel(props: TProps) {
             <PersetContainer>
               <PresetValue
                 sx={{ width: '60px', height: '60px' }}
-                onClick={() => setInputValue('auto')}
+                onClick={() => onInputChange('auto')}
               >
                 auto
               </PresetValue>
@@ -210,7 +207,7 @@ export function GapPannel(props: TProps) {
                   <PresetValue
                     key={number}
                     sx={{ width: '22%', height: '26px', marginLeft: '3%' }}
-                    onClick={() => setInputValue(number)}
+                    onClick={() => onInputChange(number)}
                   >
                     {number}
                   </PresetValue>
