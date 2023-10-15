@@ -5,14 +5,15 @@ import { HeaderHeight } from "@/components/Header";
 import { RouterProvider } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import AppContext, { IAppContext } from "@/context";
-import { getIsValidProject, selectFloder } from "@/api";
+import { getIsValidProject, getWindowNumbers, selectFloder } from "@/api";
 import showMessage from "@/components/Message";
 import { useMount } from "ahooks";
 import { EMenuAction } from "root/types/MenuAction";
 import modalStore from "@/store/modal";
 import { EventName } from "root/types/EventName";
+import { IEventBeforClose } from "root/types/ParamsType";
 
-const { ipcRenderer } = window.electronApi;
+const { ipcRenderer,isMac } = window.electronApi;
 
 function App() {
   const handleCreateProject = () => modalStore.toggleCreateProjectModal(true);
@@ -31,11 +32,36 @@ function App() {
       });
     }
   };
+  const handleBeforeClose = async () => {
+    const windowNumber = await getWindowNumbers();
+    if (windowNumber === 1) {
+      const urlParams = new URLSearchParams(
+        window.location.hash.replace("#/editor?", "")
+      );
+      const projectName = urlParams.get("projectName");
+      const projectPath = urlParams.get("projectPath");
+      if (projectName && projectPath) {
+        ipcRenderer.sendSync<IEventBeforClose>(EventName.BEFORE_CLOSE, {
+          projectName,
+          projectPath,
+          lastClosePath: "/editor",
+        });
+      } else {
+        ipcRenderer.sendSync<IEventBeforClose>(EventName.BEFORE_CLOSE, {
+          lastClosePath: "/welcome",
+        });
+      }
+    }
+    if (!isMac) {
+      ipcRenderer.sendSync(EventName.WIN_CLOSE);
+    }
+  };
 
   const provider: IAppContext = {
     handleCreateProject,
     handleOpenProject,
     handleNewWindow,
+    handleBeforeClose,
   };
 
   useMount(() => {
@@ -46,6 +72,10 @@ function App() {
     ipcRenderer.on(EMenuAction.CreateProject, handleCreateProject);
     ipcRenderer.on(EMenuAction.NewWindow, handleNewWindow);
     ipcRenderer.on(EMenuAction.OpenProject, handleOpenProject);
+
+    window.onbeforeunload = () => {
+      handleBeforeClose();
+    };
   });
 
   return (

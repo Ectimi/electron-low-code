@@ -22,6 +22,7 @@ export const defaultMaterialStyle: TStyle = {
   },
   position: {
     position: 'static',
+    zIndex:'auto'
   },
   gap: {
     margin: [0,0,0,0],

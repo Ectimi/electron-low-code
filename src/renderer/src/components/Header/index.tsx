@@ -89,34 +89,12 @@ export const Header: FC = () => {
     },
   ];
 
-  const handleClose = async () => {
-    const windowNumber = await getWindowNumbers();
-    if (windowNumber === 1) {
-      const urlParams = new URLSearchParams(
-        window.location.hash.replace("#/editor?", "")
-      );
-      const projectName = urlParams.get("projectName");
-      const projectPath = urlParams.get("projectPath");
-      if (projectName && projectPath) {
-        ipcRenderer.sendSync<IEventBeforClose>(EventName.BEFORE_CLOSE, {
-          projectName,
-          projectPath,
-          lastClosePath: "/editor",
-        });
-      } else {
-        ipcRenderer.sendSync<IEventBeforClose>(EventName.BEFORE_CLOSE, {
-          lastClosePath: "/welcome",
-        });
-      }
-    }
-
-    ipcRenderer.sendSync(EventName.WIN_CLOSE);
-  };
-
   return (
     <ScHeader>
       {!isMac && <MenuBar template={template} />}
-      <ScTitle>{commonStoreSnapshot.windowTitle || "Low Code Editor"}</ScTitle>
+      <ScTitle>
+        {commonStoreSnapshot.currentProjectName || "Low Code Editor"}
+      </ScTitle>
       {isWindow && (
         <Stack direction="row" spacing={1}>
           <IconButton
@@ -143,7 +121,7 @@ export const Header: FC = () => {
             aria-label="close"
             size="small"
             color="inherit"
-            onClick={handleClose}
+            onClick={() => context.handleBeforeClose()}
           >
             <CloseIcon fontSize="inherit" />
           </IconButton>

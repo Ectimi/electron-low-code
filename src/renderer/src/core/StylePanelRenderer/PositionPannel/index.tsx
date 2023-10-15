@@ -111,7 +111,6 @@ export function PositionPannel(props: TPosition) {
                 sx={{ width: '172px', marginLeft: '20px' }}
                 variant="standard"
                 label="zIndex"
-                type="number"
                 size="small"
               />
             </Stack>

@@ -11,3 +11,10 @@ export const getDistPath = () => {
 export const isMac = process.platform === 'darwin'
 
 export const isWindow = process.platform === 'win32'
+
+export const sendRendererEvent = (channel:string)=>{
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (focusedWindow) {
+    focusedWindow.webContents.send(channel);
+  }
+}

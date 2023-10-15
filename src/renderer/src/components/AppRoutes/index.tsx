@@ -25,6 +25,7 @@ export default function AppRoutes(props: Props) {
 
   useAsyncEffect(async () => {
     const windowNumbers = await getWindowNumbers();
+  
     if (windowNumbers <= 1) {
       const lastClosePath = await getApplicationConfig('lastClosePath');
       
@@ -32,6 +33,8 @@ export default function AppRoutes(props: Props) {
         navigate('/welcome');
       } else {
         const recentlyProjects = await getRecentlyProjects();
+        console.log('rec',recentlyProjects);
+        
 
         const isToWelcome =
           recentlyProjects.length === 0 ||

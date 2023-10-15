@@ -5,6 +5,7 @@ export interface IAppContext {
   handleOpenProject: noop;
   handleCreateProject: noop;
   handleNewWindow: noop;
+  handleBeforeClose:noop;
 }
 
 const AppContext = createContext<IAppContext | unknown>({});

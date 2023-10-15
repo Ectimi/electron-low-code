@@ -1,65 +1,16 @@
 import {
-  Box,
   MenuItem,
   Select,
-  SelectChangeEvent,
   Stack,
-  TextField as MTextField,
-  TextFieldProps,
-  styled,
   FormControl,
   InputLabel,
 } from '@mui/material';
-import { useReactive, useSafeState } from 'ahooks';
-import { forwardRef, useEffect } from 'react';
+import { useReactive } from 'ahooks';
+import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import InputWithUnit from 'root/renderer/src/components/InputWithUnit';
 import { TCssValue, TSize } from 'root/renderer/src/materials/types/style';
 
-const UnitInputSelect = styled(Select)({
-  position: 'absolute',
-  top: '50%',
-  right: '10px',
-  transform: 'translateY(-50%)',
-  marginLeft: 0,
-  borderRadius: 0,
-  fieldset: {
-    border: 'none',
-  },
-});
-
-const TextField = styled(MTextField)({
-  '.MuiInputBase-input': {
-    paddingRight: '70px',
-  },
-});
-const InputWithUnit = forwardRef(
-  (
-    props: TextFieldProps & {
-      onUnitChange: (name: string, unit: string) => void;
-    },
-    ref: any
-  ) => {
-    const { sx, onUnitChange, ...restProps } = props;
-    const [unit, setUnit] = useSafeState('px');
-
-    return (
-      <Box sx={{ position: 'relative', ...sx }}>
-        <TextField ref={ref} size="small" type="number" {...restProps} />
-        <UnitInputSelect
-          value={unit}
-          size="small"
-          onChange={(e: SelectChangeEvent<any>) => {
-            setUnit(e.target.value);
-            onUnitChange(restProps.label as string, e.target.value);
-          }}
-        >
-          <MenuItem value="px">px</MenuItem>
-          <MenuItem value="%">%</MenuItem>
-        </UnitInputSelect>
-      </Box>
-    );
-  }
-);
 
 const overflowTypes = ['visible', 'hidden', 'scroll', 'auto', 'inherit'];
 const objectFitTypes = ['contain', 'cover', 'fill', 'none', 'scale-down'];

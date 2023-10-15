@@ -23,6 +23,7 @@ export class WindowCreator {
   };
 
   createWindow(options?: BrowserWindowConstructorOptions) {
-    return new BrowserWindow(Object.assign({}, this.defaultOptions, options));
+    const window = new BrowserWindow(Object.assign({}, this.defaultOptions, options));
+    return window; 
   }
 }

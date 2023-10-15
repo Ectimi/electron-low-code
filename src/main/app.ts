@@ -1,11 +1,11 @@
-import { app, BrowserWindow } from 'electron';
-import { CustomScheme } from './CustomScheme';
-import { WindowCreator } from './browserWindow';
-import { MenuBuilder } from './menu';
-import { ApiResgiter } from './api';
-import { EventRegister } from './event';
-import { ShortcutRegister } from './shortcut';
-import { ApplicationDataManager } from './applicationData';
+import { app, BrowserWindow } from "electron";
+import { CustomScheme } from "./CustomScheme";
+import { WindowCreator } from "./browserWindow";
+import { MenuBuilder } from "./menu";
+import { ApiResgiter } from "./api";
+import { EventRegister } from "./event";
+import { ShortcutRegister } from "./shortcut";
+import { ApplicationDataManager } from "./applicationData";
 
 export default class App {
   mainWindow: BrowserWindow | null = null;
@@ -25,12 +25,12 @@ export default class App {
   runCheck() {
     const gotTheLock = app.requestSingleInstanceLock();
     if (!gotTheLock) return app.quit();
-    app.on('second-instance', this.onSecondInstance);
+    app.on("second-instance", this.onSecondInstance);
   }
 
   lifetimeRegister() {
-    app.on('ready', this.onReady);
-    app.on('window-all-closed', this.onWindowAllClosed);
+    app.on("ready", this.onReady);
+    app.on("window-all-closed", this.onWindowAllClosed);
   }
 
   onReady() {
@@ -53,9 +53,9 @@ export default class App {
       this.applicationDataManager?.init();
 
       if (process.argv[2]) {
-        this.mainWindow.on('ready-to-show', () => this.mainWindow?.show());
+        this.mainWindow.on("ready-to-show", () => this.mainWindow?.show());
         this.mainWindow!.loadURL(process.argv[2]);
-        this.mainWindow!.webContents.openDevTools({ mode: 'undocked' });
+        this.mainWindow!.webContents.openDevTools({ mode: "undocked" });
       } else {
         CustomScheme.registerScheme();
         this.mainWindow!.loadURL(`app://index.html`);

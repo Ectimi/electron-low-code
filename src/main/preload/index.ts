@@ -1,13 +1,17 @@
 import {
   ipcRenderer,
-  IpcRenderer,
   contextBridge,
   IpcRendererEvent,
 } from "electron";
 import fs from "fs";
 import { isMac, isWindow } from "main/utils";
 
-type listener = <T = any>(event: IpcRendererEvent, args: T) => void;
+interface IResponse {
+  code: number;
+  data?: any;
+}
+
+type listener =(event: IpcRendererEvent, args: IResponse) => void;
 
 export interface IElectronApi {
   isMac: boolean;

@@ -21,7 +21,9 @@ const Editor: FC = () => {
 
   useMount(() => {
     const projectName = searchParams.get('projectName');
-    commonStore.setWindowTitle(projectName!);
+    const projectPath = searchParams.get('projectPath')
+    commonStore.state.currentProjectName = projectName!
+    commonStore.state.currentProjectPath = projectPath!
   });
 
   return (

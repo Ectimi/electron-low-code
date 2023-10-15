@@ -118,7 +118,7 @@ export type TPosition = {
   bottom?: TCssValue;
   left?: TCssValue;
   right?: TCssValue;
-  zIndex?: number | 'auto';
+  zIndex: number | 'auto';
 };
 
 export type TGap = {

@@ -1,17 +1,17 @@
 import { proxy, useSnapshot } from 'valtio';
 
 interface ICommonStore {
-  windowTitle: string;
+  currentProjectName: string;
+  currentProjectPath: string;
 }
 
 class CommonStore {
   state = proxy<ICommonStore>({
-    windowTitle: '',
+    currentProjectName:'',
+    currentProjectPath:''
   });
 
   getSnapshot = () => useSnapshot(this.state);
-
-  setWindowTitle = (title: string) => (this.state.windowTitle = title);
 }
 
 const commonStore = new CommonStore();
