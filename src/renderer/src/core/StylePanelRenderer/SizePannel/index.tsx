@@ -6,15 +6,17 @@ import {
   InputLabel,
 } from '@mui/material';
 import { useReactive } from 'ahooks';
+import { Subscription } from 'node_modules/react-hook-form/dist/utils/createSubject';
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import InputWithUnit from 'root/renderer/src/components/InputWithUnit';
 import { TCssValue, TSize } from 'root/renderer/src/materials/types/style';
-
+import editorStore from 'root/renderer/src/store/editor';
 
 const overflowTypes = ['visible', 'hidden', 'scroll', 'auto', 'inherit'];
 const objectFitTypes = ['contain', 'cover', 'fill', 'none', 'scale-down'];
 const inputTypes = ['width', 'height', 'minWidth', 'minHeight'];
+let subscription: Subscription | null = null;
 
 export function SizePannel(props: TSize & { onChange: (data: TSize) => void }) {
   const { onChange, ...restProps } = props;
@@ -43,12 +45,15 @@ export function SizePannel(props: TSize & { onChange: (data: TSize) => void }) {
   };
 
   useEffect(() => {
-    const subscription = watch((data) => {
+    if (subscription) {
+      subscription.unsubscribe();
+    }
+    subscription = watch((data) => {
       update(data as TSize);
     });
-    return () => subscription.unsubscribe();
+    return () => subscription!.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch]);
+  }, [watch, editorStore.state.currentMaterial]);
 
   return (
     <Stack gap={2}>

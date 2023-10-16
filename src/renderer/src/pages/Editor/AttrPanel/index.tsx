@@ -17,7 +17,7 @@ function TabPanel(props: TabPanelProps) {
       role="tabpanel"
       hidden={value !== index}
       {...other}
-      sx={{ height: 'calc(100% - 48px)',overflowY:'auto' }}
+      sx={{ height: 'calc(100% - 48px)', overflowY: 'auto' }}
     >
       {value === index && children}
     </Box>
@@ -25,7 +25,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const AttrPanelBox = styled(MPaper)({
-  position:'relative',
+  position: 'relative',
   width: 'var(--right-panel-width)',
   // padding:'var(--common-gap)',
   userSelect: 'none',
@@ -36,8 +36,9 @@ export default function AttrPanel() {
   const handleChange = (_: SyntheticEvent, newValue: number) => {
     setIndex(newValue);
   };
+
   return (
-    <AttrPanelBox id='attrPanelBox' elevation={5}>
+    <AttrPanelBox id="attrPanelBox" elevation={5}>
       <Tabs value={index} onChange={handleChange}>
         <Tab label="样式" />
         <Tab label="动画" />

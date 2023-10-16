@@ -148,11 +148,12 @@ export type TSize = {
   objectFit: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
 };
 
-export type TFont = {
+export type TText = {
   color: string;
+  lineHeight:number;
   fontSize: number;
   fontFamily: string;
-  fontWeight: TFontWeight;
+  fontWeight: number;
   fontStyle: 'normal' | 'italic' | 'inherit';
   textAlign: 'left' | 'right' | 'center' | 'justify' | 'inherit';
   textDecoration:
@@ -200,7 +201,7 @@ export const enum EStyleType {
   position = 'position',
   gap = 'gap',
   size = 'size',
-  font = 'font',
+  text = 'text',
   background = 'background',
   effect = 'effect',
 }
@@ -210,7 +211,7 @@ export type TStyle = {
   [EStyleType.position]: TPosition;
   [EStyleType.gap]: TGap;
   [EStyleType.size]: TSize;
-  [EStyleType.font]: TFont;
+  [EStyleType.text]: TText;
   [EStyleType.background]: TBackground;
   [EStyleType.effect]: TEffect;
 };

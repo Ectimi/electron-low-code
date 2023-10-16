@@ -33,9 +33,6 @@ export default function AppRoutes(props: Props) {
         navigate('/welcome');
       } else {
         const recentlyProjects = await getRecentlyProjects();
-        console.log('rec',recentlyProjects);
-        
-
         const isToWelcome =
           recentlyProjects.length === 0 ||
           (recentlyProjects.length > 0 && windowNumbers > 1);

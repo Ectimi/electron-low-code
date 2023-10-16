@@ -38,12 +38,13 @@ export const defaultMaterialStyle: TStyle = {
     overflow: 'visible',
     objectFit:'fill'
   },
-  font: {
-    color: '#000',
+  text: {
+    color: '#000000',
+    lineHeight:1.2,
     fontSize: 16,
     fontFamily:
       'Helvetica,Tahoma,Arial,STXihei,"华文细黑","Microsoft YaHei","微软雅黑",sans-serif',
-    fontWeight: 'normal',
+    fontWeight: 400,
     fontStyle: 'normal',
     textAlign: 'left',
     textDecoration: 'none',

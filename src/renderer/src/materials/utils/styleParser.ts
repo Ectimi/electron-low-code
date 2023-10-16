@@ -3,7 +3,7 @@ import {
   TBackground,
   TFlexContainer,
   TFlexItem,
-  TFont,
+  TText,
   TSize,
   TStyle,
 } from '../types/style';
@@ -17,7 +17,7 @@ const styleValueParser = (
 };
 
 const styleParser = (styleProps: TStyle) => {
-  const { layout, position, gap, size, font, background, effect } = styleProps;
+  const { layout, position, gap, size, text, background, effect } = styleProps;
   const targetStyle: CSSProperties = {};
 
   // 处理 layout 样式
@@ -35,6 +35,7 @@ const styleParser = (styleProps: TStyle) => {
 
   // 处理 positio 样式
   targetStyle.position = position.position;
+  if(position.zIndex) targetStyle.zIndex = position.zIndex;
   if (position.top) targetStyle.top = styleValueParser(position.top);
   if (position.bottom) targetStyle.bottom = styleValueParser(position.bottom);
   if (position.left) targetStyle.left = styleValueParser(position.left);
@@ -53,9 +54,9 @@ const styleParser = (styleProps: TStyle) => {
     (targetStyle as any)[key] = value;
   });
 
-  // 处理 font 样式
-  Object.keys(font).map((key) => {
-    (targetStyle as any)[key] = font[key as keyof TFont];
+  // 处理 text 样式
+  Object.keys(text).map((key) => {
+    (targetStyle as any)[key] = text[key as keyof TText];
   });
 
   // 处理 background 样式

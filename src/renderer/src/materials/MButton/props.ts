@@ -22,8 +22,8 @@ export const presetStyle: TStyle = defaultsDeep(
     background: {
       backgroundColor: '#3f7ef7',
     },
-    font: {
-      color: '#fff',
+    text: {
+      color: '#ffffff',
     },
     effect: {
       cursor: 'pointer',

@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import {
@@ -14,10 +13,12 @@ import { IMaterial } from '@/materials/types/material';
 import { LayoutPannel } from './LayoutPannel';
 import { SizePannel } from './SizePannel';
 import { BackgroundPannel } from './BackgroundPannel';
-import { FontPannel } from './FontPannel';
+import { TextPannel } from './TextPannel';
 import { EffectPannel } from './EffectPannel';
 import { PositionPannel } from './PositionPannel';
 import { GapPannel } from './GapPannel';
+import { useSafeState, useUpdateEffect } from 'ahooks';
+import { Fragment, useMemo } from 'react';
 
 const Accordion = styled(MuiAccordion)(({ theme }) => ({
   '.MuiButtonBase-root': {
@@ -57,21 +58,26 @@ const titleMap: Map<EStyleType, any> = new Map([
   [EStyleType.position, '定位'],
   [EStyleType.gap, '间隔'],
   [EStyleType.size, '尺寸'],
-  [EStyleType.font, '字体'],
+  [EStyleType.text, '文本'],
   [EStyleType.background, '背景'],
   [EStyleType.effect, '效果'],
 ]);
 
 export default function StylePanelRenderer() {
+  const [updateKey, forceUpdate] = useSafeState(0);
   const editorSnap = editorStore.getSnapshot();
   const property = useMemo<IMaterial['property'] | null>(() => {
     return editorSnap.currentMaterial
       ? editorStore.getConfiguration(editorSnap.currentMaterial!)!
       : null;
   }, [editorSnap.currentMaterial]);
+  
+  useUpdateEffect(() => {
+    forceUpdate((pre) => pre + 1);
+  }, [editorSnap.currentMaterial]);
 
   return (
-    <>
+    <Fragment key={updateKey}>
       {editorSnap.currentMaterial && property ? (
         [...titleMap.keys()].map((key) => (
           <Accordion
@@ -107,6 +113,19 @@ export default function StylePanelRenderer() {
                 />
               )}
 
+              {key === EStyleType.position && (
+                <PositionPannel
+                  {...property.style.position}
+                  onChange={(type, value) => {
+                    editorStore.updateMaterialStyle(
+                      editorSnap.currentMaterial!,
+                      `position.${type}`,
+                      value
+                    );
+                  }}
+                />
+              )}
+
               {key === EStyleType.gap && (
                 <GapPannel
                   {...property.style.gap}
@@ -133,13 +152,20 @@ export default function StylePanelRenderer() {
                 />
               )}
 
-              {key === EStyleType.position && (
-                <PositionPannel {...property.style.position} />
+              {key === EStyleType.text && (
+                <TextPannel
+                  {...property.style.text}
+                  onChange={(type, value) => {
+                    editorStore.updateMaterialStyle(
+                      editorSnap.currentMaterial!,
+                      `text.${type}`,
+                      value
+                    );
+                  }}
+                />
               )}
 
               {key === EStyleType.background && <BackgroundPannel />}
-
-              {key === EStyleType.font && <FontPannel />}
 
               {key === EStyleType.effect && <EffectPannel />}
             </AccordionDetails>
@@ -155,6 +181,6 @@ export default function StylePanelRenderer() {
           请在画布中选择组件
         </Stack>
       )}
-    </>
+    </Fragment>
   );
 }

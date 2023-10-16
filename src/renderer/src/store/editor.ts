@@ -4,7 +4,7 @@ import { proxyWithHistory } from 'valtio/utils';
 import set from 'lodash/set';
 import { produce } from 'immer';
 
-interface IEditorStore {
+export interface IEditorStore {
   currentMaterial: string | null;
   canvas: {
     width: number;

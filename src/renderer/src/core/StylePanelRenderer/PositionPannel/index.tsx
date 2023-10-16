@@ -11,6 +11,7 @@ import {
   TextField,
   Typography,
   styled,
+  SelectChangeEvent,
 } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useReactive, useSafeState } from 'ahooks';
@@ -26,7 +27,7 @@ const PatternWrap = styled('div')({
   justifyItems: 'center',
   width: '172px',
   height: '64px',
-  marginLeft:'20px'
+  marginLeft: '20px',
 });
 
 const PositionEdit = styled('div')({
@@ -46,12 +47,32 @@ const gridAreas = [
 const positionTypes = ['static', 'relative', 'absolute', 'fixed', 'sticky'];
 const posNames = ['top', 'right', 'bottom', 'left'];
 
-export function PositionPannel(props: TPosition) {
+export function PositionPannel(
+  props: TPosition & {
+    onChange: (type: string, value: string | number) => void;
+  }
+) {
   const [type, setType] = useSafeState(props.position);
+  const [zIndexType, setZIndexType] = useSafeState('auto');
   const [modalVisible, setModalVisible] = useSafeState(false);
   const [inputValue, setInputValue] = useSafeState<number | string>('');
   const [posName, setPosName] = useSafeState('');
   const pos = useReactive(['auto', 'auto', 'auto', 'auto']);
+
+  const onPositionSelectChange = (e: SelectChangeEvent) => {
+    setType(e.target.value as TPosition['position']);
+    props.onChange('position', e.target.value);
+  };
+
+  const onZIndexSelectChange = (e: SelectChangeEvent) => {
+    const value = e.target.value;
+    setZIndexType(value);
+    if (value === 'auto') {
+      props.onChange('zIndex', value);
+    } else {
+      props.onChange('zIndex', 1);
+    }
+  };
 
   const onModalClose = () => {
     setModalVisible(false);
@@ -74,11 +95,12 @@ export function PositionPannel(props: TPosition) {
       }
     }
     setInputValue(value);
+    props.onChange(posName, value);
   };
 
   const handleClear = () => {
-    setInputValue(0);
-    onInputChange(0);
+    setInputValue('auto');
+    onInputChange('auto');
   };
 
   return (
@@ -93,7 +115,7 @@ export function PositionPannel(props: TPosition) {
               size="small"
               label="position"
               value={type}
-              onChange={(e) => setType(e.target.value as TPosition['position'])}
+              onChange={onPositionSelectChange}
             >
               {positionTypes.map((pos) => (
                 <MenuItem value={pos} key={pos}>
@@ -105,15 +127,37 @@ export function PositionPannel(props: TPosition) {
         </Stack>
         {type !== 'static' && (
           <>
-            <Stack direction="row" alignItems="center">
-              <div>层级设置:</div>
-              <TextField
-                sx={{ width: '172px', marginLeft: '20px' }}
-                variant="standard"
-                label="zIndex"
-                size="small"
-              />
+            <Stack direction="row" alignItems="center" gap={1.2}>
+              <div>层级设置：</div>
+              <FormControl sx={{ width: '172px' }} variant="standard">
+                <InputLabel id="label-zIndex">z-index</InputLabel>
+                <Select
+                  labelId="label-zIndex"
+                  size="small"
+                  label="z-index"
+                  value={zIndexType}
+                  onChange={onZIndexSelectChange}
+                >
+                  <MenuItem value="auto">auto</MenuItem>
+                  <MenuItem value="custom">custom</MenuItem>
+                </Select>
+              </FormControl>
             </Stack>
+            {zIndexType === 'custom' && (
+              <Stack direction="row" justifyContent="flex-end">
+                <TextField
+                  sx={{ width: '172px' }}
+                  variant="standard"
+                  label="zIndex"
+                  size="small"
+                  type="number"
+                  defaultValue={1}
+                  onChange={(e) =>
+                    props.onChange('zIndex', Number(e.target.value))
+                  }
+                />
+              </Stack>
+            )}
             <Stack direction="row" alignItems="center">
               <div>位置设置:</div>
               <PatternWrap>

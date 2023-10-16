@@ -23,7 +23,7 @@ const componentMap: Record<EMaterialName, MaterialFC> = {
 };
 
 export default function createMaterial(name: EMaterialName): IMaterialItem {
-  const id = nanoid();
+  const id = name + '__' + nanoid();
   const Component = componentMap[name];
 
   return {

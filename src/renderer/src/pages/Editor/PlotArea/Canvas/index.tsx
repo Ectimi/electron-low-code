@@ -53,7 +53,6 @@ export default function Canvas(props: ICanvasProps) {
     accept: 'material',
     drop: (item: IDropResult) => {
       const materialItem = createMaterial(item.materialName);
-
       editorStore.addMaterial(materialItem);
     },
     collect: (monitor) => ({
@@ -62,11 +61,7 @@ export default function Canvas(props: ICanvasProps) {
     }),
   }));
 
-  useMount(() => {
-    subscribeKey(editorStore.materialList, 'value', () => {
-      update();
-    });
-  });
+  useMount(() => subscribeKey(editorStore.materialList, 'value', update));
 
   return (
     <ScCanvas
