@@ -12,19 +12,18 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useImmer } from 'use-immer';
 import { useSafeState } from 'ahooks';
 import SvgBoxPattern from './SvgBoxPattern';
-import {
-  TGap,
-  TGapValue,
-  TStyle,
-} from 'root/renderer/src/materials/types/style';
+import { TGap, TGapValue } from 'root/renderer/src/materials/types/style';
+import { PropsWithChildren } from 'react';
 
-const SpacingEdit = styled('div')((props: { name: string }) => ({
+const SpacingEdit = styled((props: PropsWithChildren<any>) => (
+  <div {...props}></div>
+))({
   padding: '2px 4px',
   userSelect: 'none',
   fontSize: '10px',
   color: '#191919',
   placeSelf: 'center',
-}));
+});
 const gridAreas = [
   '1 / 2 / 2 / 3',
   '2 / 3 / 3 / 4',
@@ -72,7 +71,7 @@ export const PresetFlexBox = styled('div')({
   alignContent: 'space-between',
 });
 
-export type TProps = TStyle['gap'] & {
+export type TProps = TGap & {
   onChange: (gapType: keyof TGap, value: TGapValue) => void;
 };
 

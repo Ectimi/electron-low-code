@@ -23,7 +23,6 @@ export type TBackgrounSize =
   | 'cover'
   | 'contain'
   | number
-  | [number | string, number | string];
 
 export type TBorderStyle =
   | 'none'
@@ -167,8 +166,10 @@ export type TText = {
 export type TBackground = {
   backgroundColor: string;
   backgroundImage: string;
-  backgroundSize: TBackgrounSize;
-  backgroundRepeat: TBackgroundRepeat;
+  backgroundSizeX: TBackgrounSize;
+  backgroundSizeY: TBackgrounSize;
+  backgroundRepeatX: TBackgroundRepeat;
+  backgroundRepeatY: TBackgroundRepeat;
   backgroundPositionX: TBackgroundPosition;
   backgroundPositionY: TBackgroundPosition;
   backgroundClip: 'border-box' | 'padding-box' | 'content-box';

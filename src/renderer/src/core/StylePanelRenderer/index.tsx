@@ -165,7 +165,9 @@ export default function StylePanelRenderer() {
                 />
               )}
 
-              {key === EStyleType.background && <BackgroundPannel />}
+              {key === EStyleType.background && (
+                <BackgroundPannel {...property.style.background} />
+              )}
 
               {key === EStyleType.effect && (
                 <EffectPannel

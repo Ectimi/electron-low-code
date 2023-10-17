@@ -65,8 +65,20 @@ const styleParser = (styleProps: TStyle) => {
   });
 
   // 处理 background 样式
-  Object.keys(background).map((key) => {
-    (targetStyle as any)[key] = background[key as keyof TBackground];
+  const { backgroundSizeX, backgroundSizeY, ...restBackgroundProps } =
+    background;
+  targetStyle.backgroundSize = `${styleValueParser(
+    backgroundSizeX
+  )} ${styleValueParser(backgroundSizeY)}`;
+  Object.keys(restBackgroundProps).map((key) => {
+    const value: any = background[key as keyof TBackground];
+    if (Array.isArray(value)) {
+      (targetStyle as any)[key] = value
+        .map((v) => styleValueParser(v))
+        .join(' ');
+    } else {
+      (targetStyle as any)[key] = value;
+    }
   });
 
   // 处理 effect 样式
