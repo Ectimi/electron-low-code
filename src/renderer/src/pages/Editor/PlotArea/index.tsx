@@ -91,7 +91,7 @@ export default function PlotArea() {
 
   return (
     <ScPlotArea ref={plotAreaRef}>
-      <ScIconBox>
+      {/* <ScIconBox>
         <svg
           viewBox="0 0 1024 1024"
           version="1.1"
@@ -111,7 +111,7 @@ export default function PlotArea() {
       </ScHorizontalRuler>
       <ScVerticalRuler>
         <RulerGuides ref={verticalGuidesRef} type="vertical" zoom={zoom} />
-      </ScVerticalRuler>
+      </ScVerticalRuler> */}
 
       <Canvas
         position={{ top: 330, left: 330 }}

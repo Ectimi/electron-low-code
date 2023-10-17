@@ -61,8 +61,8 @@ export const defaultMaterialStyle: TStyle = {
   effect: {
     outline: {
       width: 0,
-      color: '#333',
-      style: 'solid',
+      color: '#333333',
+      style: 'none',
     },
     opacity: 1,
     cursor: 'default',
@@ -72,7 +72,7 @@ export const defaultMaterialStyle: TStyle = {
       boxShadowOffsetY: 0,
       boxShadowBlurRadius: 0,
       boxShadowSpreadRadius: 0,
-      boxShadowColor: 'transparent',
+      boxShadowColor: '#ffffff',
     },
   },
 };

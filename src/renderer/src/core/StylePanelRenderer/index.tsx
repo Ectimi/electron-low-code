@@ -71,7 +71,7 @@ export default function StylePanelRenderer() {
       ? editorStore.getConfiguration(editorSnap.currentMaterial!)!
       : null;
   }, [editorSnap.currentMaterial]);
-  
+
   useUpdateEffect(() => {
     forceUpdate((pre) => pre + 1);
   }, [editorSnap.currentMaterial]);
@@ -167,7 +167,18 @@ export default function StylePanelRenderer() {
 
               {key === EStyleType.background && <BackgroundPannel />}
 
-              {key === EStyleType.effect && <EffectPannel />}
+              {key === EStyleType.effect && (
+                <EffectPannel
+                  {...property.style.effect}
+                  onChange={(data) => {
+                    editorStore.updateMaterialStyle(
+                      editorSnap.currentMaterial!,
+                      'effect',
+                      data
+                    );
+                  }}
+                />
+              )}
             </AccordionDetails>
           </Accordion>
         ))

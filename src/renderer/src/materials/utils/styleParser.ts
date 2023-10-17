@@ -11,7 +11,12 @@ import {
 const styleValueParser = (
   val: number | string | Array<number | string>
 ): string => {
-  if (typeof val === 'string') return val;
+  if (typeof val === 'string') {
+    if (typeof parseFloat(val) === 'number') {
+      return parseFloat(val) + 'px';
+    }
+    return val;
+  }
   if (Array.isArray(val)) return val.map((n) => styleValueParser(n)).join(' ');
   return val + 'px';
 };
@@ -35,7 +40,7 @@ const styleParser = (styleProps: TStyle) => {
 
   // 处理 positio 样式
   targetStyle.position = position.position;
-  if(position.zIndex) targetStyle.zIndex = position.zIndex;
+  if (position.zIndex) targetStyle.zIndex = position.zIndex;
   if (position.top) targetStyle.top = styleValueParser(position.top);
   if (position.bottom) targetStyle.bottom = styleValueParser(position.bottom);
   if (position.left) targetStyle.left = styleValueParser(position.left);
@@ -82,7 +87,7 @@ const styleParser = (styleProps: TStyle) => {
   } = boxShadow;
   const inset = boxShadowInset ? 'inset' : '';
   const blurRadius = boxShadowBlurRadius < 0 ? 0 : boxShadowBlurRadius;
-  targetStyle.boxShadow = `${inset} ${boxShadowOffsetX} ${boxShadowOffsetY} ${blurRadius} ${boxShadowSpreadRadius} ${boxShadowColor}`;
+  targetStyle.boxShadow = `${inset} ${boxShadowOffsetX}px ${boxShadowOffsetY}px ${blurRadius}px ${boxShadowSpreadRadius}px ${boxShadowColor}`;
 
   return targetStyle;
 };

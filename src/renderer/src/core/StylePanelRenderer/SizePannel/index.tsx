@@ -16,18 +16,36 @@ import editorStore from 'root/renderer/src/store/editor';
 const overflowTypes = ['visible', 'hidden', 'scroll', 'auto', 'inherit'];
 const objectFitTypes = ['contain', 'cover', 'fill', 'none', 'scale-down'];
 const inputTypes = ['width', 'height', 'minWidth', 'minHeight'];
+
 let subscription: Subscription | null = null;
+
+const unitParser = (val: string | number) => {
+  if (isNaN(Number(val))) {
+    if (val.toString().includes('px')) {
+      return 'px';
+    } else {
+      return '%';
+    }
+  }
+  return 'px';
+};
 
 export function SizePannel(props: TSize & { onChange: (data: TSize) => void }) {
   const { onChange, ...restProps } = props;
   const unitState = useReactive({
-    width: 'px',
-    height: 'px',
-    minWidth: 'px',
-    minHeight: 'px',
+    width: unitParser(restProps.width),
+    height: unitParser(restProps.height),
+    minWidth: unitParser(restProps.minWidth),
+    minHeight: unitParser(restProps.minHeight),
   });
   const { watch, register, control, getValues } = useForm<TSize>({
-    defaultValues: restProps,
+    defaultValues: {
+      ...restProps,
+      width: parseFloat(restProps.width as any),
+      height: parseFloat(restProps.height as any),
+      minWidth: parseFloat(restProps.minWidth as any),
+      minHeight: parseFloat(restProps.minHeight as any),
+    },
   });
   const update = (data: TSize) => {
     onChange({

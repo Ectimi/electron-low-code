@@ -177,8 +177,8 @@ export function TextPannel(
         />
       </FormControl>
 
-      <Stack direction="row" alignItems="center">
-        <div>字体颜色：</div>
+      <Stack direction="row" alignItems="center" gap={3}>
+        <div>字体颜色</div>
         <input {...register('color')} type="color" />
       </Stack>
     </Stack>

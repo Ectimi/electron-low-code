@@ -106,8 +106,8 @@ export function PositionPannel(
   return (
     <>
       <Stack gap={2}>
-        <Stack direction="row" gap={1.2} alignItems="center">
-          <div>定位方式：</div>
+        <Stack direction="row" gap={3} alignItems="center">
+          <div>定位方式</div>
           <FormControl sx={{ width: '172px' }} variant="standard">
             <InputLabel id="label-position">position</InputLabel>
             <Select
