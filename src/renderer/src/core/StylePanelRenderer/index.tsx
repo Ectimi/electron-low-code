@@ -19,6 +19,8 @@ import { PositionPannel } from './PositionPannel';
 import { GapPannel } from './GapPannel';
 import { useSafeState, useUpdateEffect } from 'ahooks';
 import { Fragment, useMemo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import Fallback from '@/components/Fallback';
 
 const Accordion = styled(MuiAccordion)(({ theme }) => ({
   '.MuiButtonBase-root': {
@@ -77,123 +79,134 @@ export default function StylePanelRenderer() {
   }, [editorSnap.currentMaterial]);
 
   return (
-    <Fragment key={updateKey}>
-      {editorSnap.currentMaterial && property ? (
-        [...titleMap.keys()].map((key) => (
-          <Accordion
-            key={key}
-            disableGutters
-            elevation={0}
-            square
-            defaultExpanded
-          >
-            <AccordionSummary
-              aria-controls="panel1d-content"
-              id="panel1d-header"
-              expandIcon={
-                <ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />
-              }
+    <ErrorBoundary FallbackComponent={Fallback}>
+      <Fragment key={updateKey}>
+        {editorSnap.currentMaterial && property ? (
+          [...titleMap.keys()].map((key) => (
+            <Accordion
+              key={key}
+              disableGutters
+              elevation={0}
+              square
+              defaultExpanded
             >
-              <Typography variant="subtitle2">
-                {titleMap.get(key as EStyleType)}
-              </Typography>
-            </AccordionSummary>
+              <AccordionSummary
+                aria-controls="panel1d-content"
+                id="panel1d-header"
+                expandIcon={
+                  <ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />
+                }
+              >
+                <Typography variant="subtitle2">
+                  {titleMap.get(key as EStyleType)}
+                </Typography>
+              </AccordionSummary>
 
-            <AccordionDetails>
-              {key === EStyleType.layout && (
-                <LayoutPannel
-                  display={property.style.layout.display}
-                  onChange={(value) => {
-                    editorStore.updateMaterialStyle(
-                      editorSnap.currentMaterial!,
-                      'layout.display',
-                      value
-                    );
-                  }}
-                />
-              )}
+              <AccordionDetails>
+                {key === EStyleType.layout && (
+                  <LayoutPannel
+                    display={property.style.layout.display}
+                    onChange={(value) => {
+                      editorStore.updateMaterialStyle(
+                        editorSnap.currentMaterial!,
+                        'layout.display',
+                        value
+                      );
+                    }}
+                  />
+                )}
 
-              {key === EStyleType.position && (
-                <PositionPannel
-                  {...property.style.position}
-                  onChange={(type, value) => {
-                    editorStore.updateMaterialStyle(
-                      editorSnap.currentMaterial!,
-                      `position.${type}`,
-                      value
-                    );
-                  }}
-                />
-              )}
+                {key === EStyleType.position && (
+                  <PositionPannel
+                    {...property.style.position}
+                    onChange={(type, value) => {
+                      editorStore.updateMaterialStyle(
+                        editorSnap.currentMaterial!,
+                        `position.${type}`,
+                        value
+                      );
+                    }}
+                  />
+                )}
 
-              {key === EStyleType.gap && (
-                <GapPannel
-                  {...property.style.gap}
-                  onChange={(gapType, value) => {
-                    editorStore.updateMaterialStyle(
-                      editorSnap.currentMaterial!,
-                      'gap.' + gapType,
-                      value
-                    );
-                  }}
-                />
-              )}
+                {key === EStyleType.gap && (
+                  <GapPannel
+                    {...property.style.gap}
+                    onChange={(gapType, value) => {
+                      editorStore.updateMaterialStyle(
+                        editorSnap.currentMaterial!,
+                        'gap.' + gapType,
+                        value
+                      );
+                    }}
+                  />
+                )}
 
-              {key === EStyleType.size && (
-                <SizePannel
-                  {...property.style.size}
-                  onChange={(data) => {
-                    editorStore.updateMaterialStyle(
-                      editorSnap.currentMaterial!,
-                      'size',
-                      data
-                    );
-                  }}
-                />
-              )}
+                {key === EStyleType.size && (
+                  <SizePannel
+                    {...property.style.size}
+                    onChange={(data) => {
+                      editorStore.updateMaterialStyle(
+                        editorSnap.currentMaterial!,
+                        'size',
+                        data
+                      );
+                    }}
+                  />
+                )}
 
-              {key === EStyleType.text && (
-                <TextPannel
-                  {...property.style.text}
-                  onChange={(type, value) => {
-                    editorStore.updateMaterialStyle(
-                      editorSnap.currentMaterial!,
-                      `text.${type}`,
-                      value
-                    );
-                  }}
-                />
-              )}
+                {key === EStyleType.text && (
+                  <TextPannel
+                    {...property.style.text}
+                    onChange={(type, value) => {
+                      editorStore.updateMaterialStyle(
+                        editorSnap.currentMaterial!,
+                        `text.${type}`,
+                        value
+                      );
+                    }}
+                  />
+                )}
 
-              {key === EStyleType.background && (
-                <BackgroundPannel {...property.style.background} />
-              )}
+                {key === EStyleType.background && (
+                  <BackgroundPannel
+                    {...property.style.background}
+                    onChange={(data) => {
+                      editorStore.updateMaterialStyle(
+                        editorSnap.currentMaterial!,
+                        'background',
+                        data
+                      );
+                    }}
+                  />
+                )}
 
-              {key === EStyleType.effect && (
-                <EffectPannel
-                  {...property.style.effect}
-                  onChange={(data) => {
-                    editorStore.updateMaterialStyle(
-                      editorSnap.currentMaterial!,
-                      'effect',
-                      data
-                    );
-                  }}
-                />
-              )}
-            </AccordionDetails>
-          </Accordion>
-        ))
-      ) : (
-        <Stack
-          sx={{ height: '100%' }}
-          direction={'row'}
-          alignItems="center"
-          justifyContent="center"
-        >
-          请在画布中选择组件
-        </Stack>
-      )}
-    </Fragment>
+                {key === EStyleType.effect && (
+                  <EffectPannel
+                    {...property.style.effect}
+                    onChange={(data) => {
+                      editorStore.updateMaterialStyle(
+                        editorSnap.currentMaterial!,
+                        'effect',
+                        data
+                      );
+                    }}
+                  />
+                )}
+              </AccordionDetails>
+            </Accordion>
+          ))
+        ) : (
+          <Stack
+            sx={{ height: '100%' }}
+            direction={'row'}
+            alignItems="center"
+            justifyContent="center"
+          >
+            请在画布中选择组件
+          </Stack>
+        )}
+      </Fragment>
+    </ErrorBoundary>
   );
 }

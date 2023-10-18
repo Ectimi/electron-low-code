@@ -1,6 +1,12 @@
-export type TBackgroundPosition = number | string;
+export type TBackgroundPosition =
+  | 'left'
+  | 'center'
+  | 'right'
+  | number
+  | `${number}%`
+  | `${number}px`;
 
-export type TCssValue = number | 'auto' | `${number}%`|`${number}px`
+export type TCssValue = number | 'auto' | `${number}%` | `${number}px`;
 
 export type TDisplay =
   | 'block'
@@ -18,11 +24,11 @@ export type TBackgroundRepeat =
   | 'round'
   | 'no-repeat';
 
-export type TBackgrounSize =
+export type TBackgroundSize =
   | 'auto'
   | 'cover'
   | 'contain'
-  | number
+  | [TCssValue, TCssValue];
 
 export type TBorderStyle =
   | 'none'
@@ -129,7 +135,7 @@ export type TSize = {
   width: TCssValue;
   height: TCssValue;
   minWidth:
-    TCssValue
+    | TCssValue
     | 'min-content'
     | 'max-content'
     | 'fit-content'
@@ -149,7 +155,7 @@ export type TSize = {
 
 export type TText = {
   color: string;
-  lineHeight:number;
+  lineHeight: number;
   fontSize: number;
   fontFamily: string;
   fontWeight: number;
@@ -166,10 +172,8 @@ export type TText = {
 export type TBackground = {
   backgroundColor: string;
   backgroundImage: string;
-  backgroundSizeX: TBackgrounSize;
-  backgroundSizeY: TBackgrounSize;
-  backgroundRepeatX: TBackgroundRepeat;
-  backgroundRepeatY: TBackgroundRepeat;
+  backgroundSize: TBackgroundSize;
+  backgroundRepeat: TBackgroundRepeat;
   backgroundPositionX: TBackgroundPosition;
   backgroundPositionY: TBackgroundPosition;
   backgroundClip: 'border-box' | 'padding-box' | 'content-box';

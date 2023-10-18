@@ -54,3 +54,7 @@ export const deepMerge = (
 export function capitalizeFirstLetter(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+export function isValidCssValue(val: string | number) {
+  return /\d+(px|%)*$/.test(val.toString());
+}

@@ -12,7 +12,8 @@ const styleValueParser = (
   val: number | string | Array<number | string>
 ): string => {
   if (typeof val === 'string') {
-    if (typeof parseFloat(val) === 'number') {
+    if (val.endsWith('px') || val.endsWith('%')) return val;
+    else if (typeof parseFloat(val) === 'number' && !isNaN(parseFloat(val))) {
       return parseFloat(val) + 'px';
     }
     return val;
@@ -65,12 +66,7 @@ const styleParser = (styleProps: TStyle) => {
   });
 
   // 处理 background 样式
-  const { backgroundSizeX, backgroundSizeY, ...restBackgroundProps } =
-    background;
-  targetStyle.backgroundSize = `${styleValueParser(
-    backgroundSizeX
-  )} ${styleValueParser(backgroundSizeY)}`;
-  Object.keys(restBackgroundProps).map((key) => {
+  Object.keys(background).map((key) => {
     const value: any = background[key as keyof TBackground];
     if (Array.isArray(value)) {
       (targetStyle as any)[key] = value

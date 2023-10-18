@@ -57,7 +57,7 @@ export function SizePannel(props: TSize & { onChange: (data: TSize) => void }) {
     } as TSize);
   };
 
-  const onUnitChange = (name: string, unit: string) => {
+  const onUnitChange = (unit: string, name: string) => {
     (unitState as any)[name] = unit;
     update(getValues());
   };
@@ -82,6 +82,7 @@ export function SizePannel(props: TSize & { onChange: (data: TSize) => void }) {
           label={name}
           size="small"
           onUnitChange={onUnitChange}
+          defaultUnit={(unitState as any)[name]}
         />
       ))}
 

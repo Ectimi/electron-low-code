@@ -53,7 +53,7 @@ const cursorStyles = [
 ];
 const StackFlex = styled((props: StackProps) => (
   <Stack direction="row" alignItems="center" gap={2} {...props} />
-))();
+))({});
 
 type TNestedFieldRender = (args: {
   value: any;
@@ -117,7 +117,7 @@ export function EffectPannel(
       <StackFlex>
         <div>光标</div>
         <FormControl sx={{ width: '209px' }}>
-          <InputLabel id="label-cursorStyle">cursor-style</InputLabel>
+          <InputLabel id="label-cursorStyle">cursor</InputLabel>
           <Controller
             name="cursor"
             control={control}
@@ -126,7 +126,7 @@ export function EffectPannel(
                 {...field}
                 labelId="label-cursorStyle"
                 size="small"
-                label="cursorStyle"
+                label="cursor"
               >
                 {cursorStyles.map((name) => (
                   <MenuItem key={name} value={name}>

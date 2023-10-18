@@ -52,10 +52,8 @@ export const defaultMaterialStyle: TStyle = {
   background: {
     backgroundColor: 'transparent',
     backgroundImage: 'none',
-    backgroundSizeX: 'auto',
-    backgroundSizeY: 'auto',
-    backgroundRepeatX: 'no-repeat',
-    backgroundRepeatY: 'no-repeat',
+    backgroundSize: 'auto',
+    backgroundRepeat: 'no-repeat',
     backgroundPositionX: 0,
     backgroundPositionY: 0,
     backgroundClip: 'border-box',
