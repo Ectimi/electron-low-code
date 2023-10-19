@@ -163,7 +163,7 @@ export function GapPannel(props: TProps) {
         <Fade in={modalVisible}>
           <Box>
             <Typography id="transition-modal-title" variant="subtitle1">
-              间隔 {gapName} 设置
+              间距 {gapName} 设置
             </Typography>
             <Stack
               direction="row"

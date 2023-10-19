@@ -3,9 +3,10 @@ import { proxy, useSnapshot } from 'valtio';
 import { proxyWithHistory } from 'valtio/utils';
 import set from 'lodash/set';
 import { produce } from 'immer';
+import { IMaterial } from '@/materials/types/material';
 
 export interface IEditorStore {
-  currentMaterial: string | null;
+  currentMaterial: IMaterial['id'] | null;
   canvas: {
     width: number;
     height: number;

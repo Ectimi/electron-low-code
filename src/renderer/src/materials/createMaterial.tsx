@@ -12,24 +12,24 @@ type MaterialFC = FC & {
 export interface IMaterialItem {
   id: string;
   name: EMaterialName;
-  component: React.ReactElement;
+  component: MaterialFC;
   configuration: IMaterial['property'];
 }
 
 const componentMap: Record<EMaterialName, MaterialFC> = {
-  [EMaterialName.MButton]: MButton as unknown as MaterialFC,
-  [EMaterialName.MImage]: MImage as unknown as MaterialFC,
-  [EMaterialName.MText]: MText as unknown as MaterialFC,
+  [EMaterialName.Button]: MButton as unknown as MaterialFC,
+  [EMaterialName.Image]: MImage as unknown as MaterialFC,
+  [EMaterialName.Text]: MText as unknown as MaterialFC,
 };
 
 export default function createMaterial(name: EMaterialName): IMaterialItem {
   const id = name + '__' + nanoid();
-  const Component = componentMap[name];
+  const component = componentMap[name];
 
   return {
     id,
     name,
-    component: <Component />,
-    configuration: Component.__default_configuration,
+    component,
+    configuration: component.__default_configuration,
   };
 }

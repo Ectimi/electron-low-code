@@ -16,7 +16,7 @@ let startY = 0;
 
 export function usePlotArea(
   options: TOptions
-): [RefObject<HTMLDivElement>, TOptions['initialCanvasPos']] {
+): [RefObject<HTMLDivElement>, { x: number; y: number }] {
   const {
     initialCanvasPos = { x: 0, y: 0 },
     onLooseSpace,

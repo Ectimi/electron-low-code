@@ -3,44 +3,48 @@ import { TStyle } from '../types/style';
 export const defaultMaterialStyle: TStyle = {
   layout: {
     display: 'block',
-    flexLayout:{
-      container:{
-        flexDirection:'row',
-        flexWrap:'nowrap',
-        justifyContent:'flex-start',
-        alignItems:'stretch',
-        alinContent:'stretch'
+    flexLayout: {
+      container: {
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        justifyContent: 'flex-start',
+        alignItems: 'stretch',
+        alinContent: 'stretch',
       },
-      item:{
-        order:0,
-        flexGrow:0,
-        flexShrink:1,
-        flexBasis:'auto',
-        alignSelf:'auto'
-      }
-    }
+      item: {
+        order: 0,
+        flexGrow: 0,
+        flexShrink: 1,
+        flexBasis: 'auto',
+        alignSelf: 'auto',
+      },
+    },
   },
   position: {
     position: 'static',
-    zIndex:'auto'
+    zIndex: 'auto',
+    top: 'auto',
+    right: 'auto',
+    bottom: 'auto',
+    left: 'auto',
   },
   gap: {
-    margin: [0,0,0,0],
-    padding: [0,0,0,0],
+    margin: [0, 0, 0, 0],
+    padding: [0, 0, 0, 0],
   },
   size: {
     width: 100,
     height: 40,
-    minWidth:0,
-    minHeight:0,
-    maxWidth:'none',
-    maxHeight:'none',
+    minWidth: 0,
+    minHeight: 0,
+    maxWidth: 'none',
+    maxHeight: 'none',
     overflow: 'visible',
-    objectFit:'fill'
+    objectFit: 'fill',
   },
   text: {
     color: '#000000',
-    lineHeight:1.2,
+    lineHeight: 1.2,
     fontSize: 16,
     fontFamily:
       'Helvetica,Tahoma,Arial,STXihei,"华文细黑","Microsoft YaHei","微软雅黑",sans-serif',

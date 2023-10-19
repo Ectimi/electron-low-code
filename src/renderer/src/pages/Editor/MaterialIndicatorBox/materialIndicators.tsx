@@ -38,17 +38,17 @@ const ButtonIcon = () => (
 
 export const MaterialIndicatorItems: IMaterialIndicatorItem[] = [
   {
-    materialName: EMaterialName.MImage,
+    materialName: EMaterialName.Image,
     icon: <ImageIcon htmlColor={iconColor} />,
     text: '图片组件',
   },
   {
-    materialName: EMaterialName.MText,
+    materialName: EMaterialName.Text,
     icon: <TextFieldsIcon htmlColor={iconColor} />,
     text: '文字组件',
   },
   {
-    materialName: EMaterialName.MButton,
+    materialName: EMaterialName.Button,
     icon: <ButtonIcon />,
     text: '按钮组件',
   },

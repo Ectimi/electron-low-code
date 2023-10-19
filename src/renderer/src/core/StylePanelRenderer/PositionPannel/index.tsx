@@ -57,7 +57,7 @@ export function PositionPannel(
   const [modalVisible, setModalVisible] = useSafeState(false);
   const [inputValue, setInputValue] = useSafeState<number | string>('');
   const [posName, setPosName] = useSafeState('');
-  const pos = useReactive(['auto', 'auto', 'auto', 'auto']);
+  const pos = useReactive([props.top, props.right, props.bottom, props.left]);
 
   const onPositionSelectChange = (e: SelectChangeEvent) => {
     setType(e.target.value as TPosition['position']);
@@ -96,6 +96,9 @@ export function PositionPannel(
     }
     setInputValue(value);
     props.onChange(posName, value);
+
+    const index = posNames.indexOf(posName);
+    pos[index] = value as any;
   };
 
   const handleClear = () => {

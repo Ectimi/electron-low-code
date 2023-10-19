@@ -1,4 +1,5 @@
 import {
+  Divider,
   FormControl,
   InputLabel,
   MenuItem,
@@ -7,20 +8,17 @@ import {
   StackProps,
   styled,
 } from '@mui/material';
-import {
-  useLatest,
-  useReactive,
-  useSafeState,
-  useUpdateEffect,
-} from 'ahooks';
+import { useLatest, useSafeState, useUpdateEffect } from 'ahooks';
 import { Subscription } from 'node_modules/react-hook-form/dist/utils/createSubject';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import InputWithUnit from 'root/renderer/src/components/InputWithUnit';
 import { TBackground } from 'root/renderer/src/materials/types/style';
 import editorStore from 'root/renderer/src/store/editor';
+import { extractCssValue, isValidCssValue } from 'root/renderer/src/utils';
 
 type TBackgroundSize = 'auto' | 'cover' | 'contain' | 'custom';
+type TBackgroundPosition = 'left' | 'center' | 'right' | 'custom';
 type TFormValue = TBackground & {
   backgroundSizeWidth: number;
   backgroundSizeHeight: number;
@@ -40,13 +38,13 @@ const backgroundRepeatTypes = [
   'round',
   'no-repeat',
 ];
-
-const extractValue = (val: string) => {
-  if (val.endsWith('px') || val.endsWith('%')) {
-    return { value: parseFloat(val), unit: val.replace(/-?\d+(\.\d+)?/g, '') };
-  }
-  return { value: parseFloat(val), unit: 'px' };
-};
+const backgroundPositionTypes = ['left', 'center', 'right', 'custom'];
+const backgroundClipTypes = [
+  'border-box',
+  'padding-box',
+  'content-box',
+  'text',
+];
 
 let subscription: Subscription | null = null;
 
@@ -56,32 +54,72 @@ export function BackgroundPannel(props: TProps) {
     const { backgroundSize } = props;
     return Array.isArray(backgroundSize) ? 'custom' : backgroundSize;
   });
+  const [positionXType, setPositionXType] = useSafeState<TBackgroundPosition>(
+    () => {
+      const { backgroundPositionX } = props;
+      return isValidCssValue(backgroundPositionX)
+        ? 'custom'
+        : (backgroundPositionX as TBackgroundPosition);
+    }
+  );
+  const [positionYType, setPositionYType] = useSafeState<TBackgroundPosition>(
+    () => {
+      const { backgroundPositionY } = props;
+      return isValidCssValue(backgroundPositionY)
+        ? 'custom'
+        : (backgroundPositionY as TBackgroundPosition);
+    }
+  );
   const lastestSizeType = useLatest(sizeType);
-  const unitState = useReactive({ width: 'px', height: 'px' });
+  const lastestPosXType = useLatest(positionXType);
+  const lastestPosYType = useLatest(positionYType);
+  const unitRef = useRef({
+    width: 'px',
+    height: 'px',
+    'position-x': 'px',
+    'position-y': 'px',
+  });
   const { watch, register, control, getValues } = useForm<TFormValue>({
     defaultValues: (function getDefaultValue() {
       const { backgroundSize } = props;
 
+      let backgroundPositionX = 0;
+      let backgroundPositionY = 0;
       let backgroundSizeWidth = 0;
       let backgroundSizeHeight = 0;
+
       if (Array.isArray(backgroundSize)) {
-        const { value: width, unit: wUnit } = extractValue(
+        const { value: width, unit: wUnit } = extractCssValue(
           backgroundSize[0] as string
         );
-        const { value: height, unit: hUnit } = extractValue(
+        const { value: height, unit: hUnit } = extractCssValue(
           backgroundSize[1] as string
         );
 
         backgroundSizeWidth = width;
         backgroundSizeHeight = height;
-        unitState.width = wUnit;
-        unitState.height = hUnit;
+        unitRef.current.width = wUnit;
+        unitRef.current.height = hUnit;
+      }
+
+      if (isValidCssValue(props.backgroundPositionX)) {
+        const { value, unit } = extractCssValue(props.backgroundPositionX);
+        backgroundPositionX = value;
+        unitRef.current['position-x'] = unit;
+      }
+
+      if (isValidCssValue(props.backgroundPositionY)) {
+        const { value, unit } = extractCssValue(props.backgroundPositionY);
+        backgroundPositionY = value;
+        unitRef.current['position-y'] = unit;
       }
 
       return {
         ...restProps,
         backgroundSizeWidth,
         backgroundSizeHeight,
+        backgroundPositionX,
+        backgroundPositionY,
       };
     })(),
   });
@@ -90,24 +128,34 @@ export function BackgroundPannel(props: TProps) {
     const backgroundSize =
       lastestSizeType.current === 'custom'
         ? [
-            data.backgroundSizeWidth + unitState.width,
-            data.backgroundSizeHeight + unitState.height,
+            data.backgroundSizeWidth + unitRef.current.width,
+            data.backgroundSizeHeight + unitRef.current.height,
           ]
         : lastestSizeType.current;
 
+    const backgroundPositionX =
+      lastestPosXType.current === 'custom'
+        ? data.backgroundPositionX + unitRef.current['position-x']
+        : lastestPosXType.current;
+
+    const backgroundPositionY =
+      lastestPosYType.current === 'custom'
+        ? data.backgroundPositionY + unitRef.current['position-y']
+        : lastestPosYType.current;
+
     onChange({
+      backgroundSize,
+      backgroundPositionX,
+      backgroundPositionY,
       backgroundColor: data.backgroundColor,
       backgroundImage: data.backgroundImage,
-      backgroundSize,
       backgroundRepeat: data.backgroundRepeat,
-      backgroundPositionX: data.backgroundPositionX,
-      backgroundPositionY: data.backgroundPositionY,
       backgroundClip: data.backgroundClip,
     } as TBackground);
   };
 
   const onUnitChange = (unit: string, name: string) => {
-    (unitState as any)[name] = unit;
+    (unitRef.current as any)[name] = unit;
     update(getValues());
   };
 
@@ -124,7 +172,7 @@ export function BackgroundPannel(props: TProps) {
 
   useUpdateEffect(() => {
     update(getValues());
-  }, [sizeType]);
+  }, [sizeType, positionXType, positionYType]);
 
   return (
     <Stack gap={2}>
@@ -132,6 +180,7 @@ export function BackgroundPannel(props: TProps) {
         <div>颜色</div>
         <input {...register('backgroundColor')} type="color" />
       </StackFlex>
+
       <StackFlex>
         <div>尺寸</div>
         <Stack gap={2} sx={{ width: '209px' }}>
@@ -162,20 +211,21 @@ export function BackgroundPannel(props: TProps) {
                   label="width"
                   type="number"
                   onUnitChange={onUnitChange}
-                  defaultUnit={unitState.width}
+                  defaultUnit={unitRef.current.width}
                 />
                 <InputWithUnit
                   {...register('backgroundSizeHeight')}
                   size="small"
                   label="height"
                   onUnitChange={onUnitChange}
-                  defaultUnit={unitState.height}
+                  defaultUnit={unitRef.current.height}
                 />
               </>
             )}
           </Stack>
         </Stack>
       </StackFlex>
+
       <StackFlex>
         <div>重复</div>
         <FormControl sx={{ width: '209px' }}>
@@ -199,6 +249,95 @@ export function BackgroundPannel(props: TProps) {
             )}
           />
         </FormControl>
+      </StackFlex>
+
+      <StackFlex>
+        <div>剪裁</div>
+        <FormControl sx={{ width: '209px' }}>
+          <InputLabel id="label-clip">clip</InputLabel>
+          <Controller
+            name="backgroundClip"
+            control={control}
+            render={({ field }) => (
+              <Select {...field} labelId="label-clip" size="small" label="clip">
+                {backgroundClipTypes.map((type) => (
+                  <MenuItem value={type} key={type}>
+                    {type}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          />
+        </FormControl>
+      </StackFlex>
+
+      <StackFlex>
+        <div>位置</div>
+        <Stack gap={2} sx={{ width: '209px' }}>
+          <Stack gap={2}>
+            <Divider>x轴</Divider>
+            <FormControl fullWidth>
+              <InputLabel id="label-position-x">position</InputLabel>
+              <Select
+                labelId="label-position-x"
+                size="small"
+                label="position"
+                value={positionXType}
+                onChange={(e) => {
+                  setPositionXType(e.target.value as TBackgroundPosition);
+                }}
+              >
+                {backgroundPositionTypes.map((type) => (
+                  <MenuItem value={type} key={type}>
+                    {type}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {positionXType === 'custom' && (
+              <InputWithUnit
+                {...register('backgroundPositionX')}
+                size="small"
+                label="position-x"
+                type="number"
+                onUnitChange={onUnitChange}
+                defaultUnit={unitRef.current['position-x']}
+              />
+            )}
+          </Stack>
+
+          <Stack gap={2}>
+            <Divider>y轴</Divider>
+            <FormControl fullWidth>
+              <InputLabel id="label-position-y">position</InputLabel>
+              <Select
+                labelId="label-position-y"
+                size="small"
+                label="position"
+                value={positionYType}
+                onChange={(e) => {
+                  setPositionYType(e.target.value as TBackgroundPosition);
+                }}
+              >
+                {backgroundPositionTypes.map((type) => (
+                  <MenuItem value={type} key={type}>
+                    {type}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {positionYType === 'custom' && (
+              <InputWithUnit
+                {...register('backgroundPositionY')}
+                size="small"
+                label="position-y"
+                type="number"
+                onUnitChange={onUnitChange}
+                defaultUnit={unitRef.current['position-y']}
+              />
+            )}
+          </Stack>
+        </Stack>
       </StackFlex>
     </Stack>
   );

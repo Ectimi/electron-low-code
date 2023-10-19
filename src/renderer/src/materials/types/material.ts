@@ -1,9 +1,9 @@
 import { TStyle } from './style';
 
 export const enum EMaterialName {
-  MImage = 'MImage',
-  MText = 'MText',
-  MButton = 'MButton',
+  Image = 'Image',
+  Text = 'Mext',
+  Button = 'Button',
 }
 
 export interface IMaterial {

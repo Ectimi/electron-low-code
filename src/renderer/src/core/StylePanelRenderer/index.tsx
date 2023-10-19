@@ -58,7 +58,7 @@ const AccordionDetails = styled(MuiAccordionDetails)({
 const titleMap: Map<EStyleType, any> = new Map([
   [EStyleType.layout, '布局'],
   [EStyleType.position, '定位'],
-  [EStyleType.gap, '间隔'],
+  [EStyleType.gap, '间距'],
   [EStyleType.size, '尺寸'],
   [EStyleType.text, '文本'],
   [EStyleType.background, '背景'],

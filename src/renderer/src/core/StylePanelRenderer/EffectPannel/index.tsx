@@ -186,7 +186,7 @@ export function EffectPannel(
             attr="width"
             render={(field) => (
               <TextField
-                label="outline-width"
+                label="width"
                 type="number"
                 size="small"
                 sx={{ width: '209px' }}
@@ -206,7 +206,7 @@ export function EffectPannel(
         <StackFlex>
           <div>样式</div>
           <FormControl sx={{ width: '209px' }}>
-            <InputLabel id="label-outlineStyle">outline-style</InputLabel>
+            <InputLabel id="label-outlineStyle">style</InputLabel>
             <NestedField
               name="outline"
               attr="style"
@@ -214,7 +214,7 @@ export function EffectPannel(
                 <Select
                   labelId="label-outlineStyle"
                   size="small"
-                  label="outline-style"
+                  label="style"
                   {...field}
                 >
                   {outlineStyles.map((name) => (
@@ -237,15 +237,15 @@ export function EffectPannel(
         <StackFlex>
           <div>inset</div>
           <FormControl sx={{ width: '209px' }}>
-            <InputLabel id="label-boxShadowInset">outline-style</InputLabel>
+            <InputLabel id="label-inset">inset</InputLabel>
             <NestedField
               name="boxShadow"
               attr="boxShadowInset"
               render={(field) => (
                 <Select
-                  labelId="label-boxShadowInset"
+                  labelId="label-inset"
                   size="small"
-                  label="boxShadowInset"
+                  label="inset"
                   onChange={(e) =>
                     field.onChange({
                       target: {
@@ -303,6 +303,7 @@ export function EffectPannel(
                 {...field}
                 type="number"
                 size="small"
+                label='blur-radius'
                 sx={{ width: '180px' }}
               />
             )}
@@ -319,6 +320,7 @@ export function EffectPannel(
                 {...field}
                 type="number"
                 size="small"
+                label='spread-radius'
                 sx={{ width: '180px' }}
               />
             )}

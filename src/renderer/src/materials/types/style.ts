@@ -119,10 +119,10 @@ export type TLayout = {
 
 export type TPosition = {
   position: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
-  top?: TCssValue;
-  bottom?: TCssValue;
-  left?: TCssValue;
-  right?: TCssValue;
+  top: TCssValue;
+  bottom: TCssValue;
+  left: TCssValue;
+  right: TCssValue;
   zIndex: number | 'auto';
 };
 
@@ -176,7 +176,7 @@ export type TBackground = {
   backgroundRepeat: TBackgroundRepeat;
   backgroundPositionX: TBackgroundPosition;
   backgroundPositionY: TBackgroundPosition;
-  backgroundClip: 'border-box' | 'padding-box' | 'content-box';
+  backgroundClip: 'border-box' | 'padding-box' | 'content-box' | 'text';
 };
 
 export type TOutline = {

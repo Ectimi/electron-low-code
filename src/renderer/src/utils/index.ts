@@ -51,10 +51,18 @@ export const deepMerge = (
   return target;
 };
 
-export function capitalizeFirstLetter(str: string): string {
+export const capitalizeFirstLetter = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1);
-}
+};
 
-export function isValidCssValue(val: string | number) {
+export const isValidCssValue = (val: string | number) => {
   return /\d+(px|%)*$/.test(val.toString());
-}
+};
+
+export const extractCssValue = (val: string | number) => {
+  val = val.toString();
+  if (val.endsWith('px') || val.endsWith('%')) {
+    return { value: parseFloat(val), unit: val.replace(/-?\d+(\.\d+)?/g, '') };
+  }
+  return { value: parseFloat(val), unit: 'px' };
+};

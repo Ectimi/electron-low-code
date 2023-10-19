@@ -1,6 +1,7 @@
-import { cloneElement } from 'react';
+import { ReactElement, cloneElement } from 'react';
 import { IMaterialItem } from '@/materials/createMaterial';
 import store from '@/store/editor';
+import editorStore from '@/store/editor';
 
 export default function CanvasRenderer(props: { materials: IMaterialItem[] }) {
   const { materials } = props;
@@ -8,11 +9,17 @@ export default function CanvasRenderer(props: { materials: IMaterialItem[] }) {
   return (
     <>
       {materials.map((material) => {
-        const cloneComponent = cloneElement(material.component, {
-          key:material.id,
+        const fn = material.component;
+        const Component = fn({ ...material.configuration });
+
+        return cloneElement(Component as ReactElement, {
+          key: material.id,
+          id: material.id,
           ...store.getConfiguration(material.id),
+          onClick: () => {
+            editorStore.setCurrentMaterial(material.id);
+          },
         });
-        return cloneComponent;
       })}
     </>
   );

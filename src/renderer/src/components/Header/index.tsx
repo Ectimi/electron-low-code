@@ -9,8 +9,6 @@ import Box from "@mui/material/Box";
 import MenuBar, { TMenuBarProps } from "../MenuBar";
 import commonStore from "@/store/common";
 import { EventName } from "root/types/EventName";
-import { getWindowNumbers } from "@/api";
-import { IEventBeforClose } from "root/types/ParamsType";
 import AppContext, { IAppContext } from "@/context";
 
 const { isMac, isWindow, ipcRenderer } = window.electronApi;
