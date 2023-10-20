@@ -8,7 +8,7 @@ export type TMenuBarProps = {
 const ScMenuBox = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  'webkitAppRegion': 'no-drag',
+  '-webkit-app-region': 'no-drag',
 });
 
 export default function MenuBar(props: TMenuBarProps) {

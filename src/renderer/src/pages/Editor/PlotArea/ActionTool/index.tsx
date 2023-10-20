@@ -40,7 +40,7 @@ const ActionButton = (props: {
 };
 
 export function ActionTool() {
-  const { currentMaterial } = editorStore.getSnapshot();
+  const { currentMaterial } = useSnapshot(editorStore.state);
   const { value, canUndo, canRedo } = useSnapshot(editorStore.materialList);
   return (
     <ToolBox>

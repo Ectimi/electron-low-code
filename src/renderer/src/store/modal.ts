@@ -1,18 +1,21 @@
-import { proxy, useSnapshot } from 'valtio';
+import { proxy } from 'valtio';
 
 interface IModalStore {
   CreateProjectModalOpen: boolean;
+  ResourceLibraryModalOpen: boolean;
 }
 
 class ModalStore {
   state = proxy<IModalStore>({
     CreateProjectModalOpen: false,
+    ResourceLibraryModalOpen: false,
   });
-
-  getSnapshot = () => useSnapshot(this.state);
 
   toggleCreateProjectModal = (bool: boolean) =>
     (this.state.CreateProjectModalOpen = bool);
+
+  toggleResourceLibraryModal = (bool: boolean) =>
+    (this.state.ResourceLibraryModalOpen = bool);
 }
 
 const modalStore = new ModalStore();

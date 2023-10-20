@@ -21,6 +21,7 @@ import { useSafeState, useUpdateEffect } from 'ahooks';
 import { Fragment, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import Fallback from '@/components/Fallback';
+import { useSnapshot } from 'valtio';
 
 const Accordion = styled(MuiAccordion)(({ theme }) => ({
   '.MuiButtonBase-root': {
@@ -67,7 +68,7 @@ const titleMap: Map<EStyleType, any> = new Map([
 
 export default function StylePanelRenderer() {
   const [updateKey, forceUpdate] = useSafeState(0);
-  const editorSnap = editorStore.getSnapshot();
+  const editorSnap = useSnapshot(editorStore.state);
   const property = useMemo<IMaterial['property'] | null>(() => {
     return editorSnap.currentMaterial
       ? editorStore.getConfiguration(editorSnap.currentMaterial!)!

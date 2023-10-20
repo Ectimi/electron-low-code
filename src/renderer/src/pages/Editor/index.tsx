@@ -7,7 +7,7 @@ import PlotArea from './PlotArea';
 import AttrPanel from './AttrPanel';
 import { useSearchParams } from 'react-router-dom';
 import { useMount } from 'ahooks';
-import commonStore from '../../store/common';
+import commonStore from '@/store/common';
 
 const ScBox = styled(Box)({
   display: 'flex',
@@ -20,10 +20,10 @@ const Editor: FC = () => {
   const [searchParams] = useSearchParams();
 
   useMount(() => {
-    const projectName = searchParams.get('projectName');
-    const projectPath = searchParams.get('projectPath')
-    commonStore.state.currentProjectName = projectName!
-    commonStore.state.currentProjectPath = projectPath!
+    const projectName = searchParams.get('projectName')!;
+    const projectPath = searchParams.get('projectPath')!;
+    commonStore.state.currentProjectName = projectName!;
+    commonStore.state.currentProjectPath = projectPath!;
   });
 
   return (

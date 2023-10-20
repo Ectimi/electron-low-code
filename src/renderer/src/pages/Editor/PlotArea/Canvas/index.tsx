@@ -47,7 +47,7 @@ export default function Canvas(props: ICanvasProps) {
     ...restProps
   } = props;
   const update = useUpdate();
-  const snap = editorStore.getSnapshot();
+  const snap = useSnapshot(editorStore.state);
   const materials = useSnapshot(editorStore.materialList);
   const [, drop] = useDrop(() => ({
     accept: 'material',

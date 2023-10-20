@@ -1,4 +1,3 @@
-import { forwardRef, useRef } from 'react';
 import { Box, styled } from '@mui/material';
 import Canvas from './Canvas';
 import { usePlotArea } from '@/hooks/usePlotArea';
@@ -7,7 +6,6 @@ import { useMount, useSafeState, useUpdateEffect } from 'ahooks';
 import { ActionTool } from './ActionTool';
 import { subscribeKey } from 'valtio/utils';
 import editorStore, { IEditorStore } from 'root/renderer/src/store/editor';
-import { IMaterial } from 'root/renderer/src/materials/types/material';
 import { useSnapshot } from 'valtio';
 
 const PlotAreaBox = styled('div')({

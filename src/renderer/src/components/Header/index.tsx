@@ -10,12 +10,13 @@ import MenuBar, { TMenuBarProps } from "../MenuBar";
 import commonStore from "@/store/common";
 import { EventName } from "root/types/EventName";
 import AppContext, { IAppContext } from "@/context";
+import { useSnapshot } from "valtio";
 
-const { isMac, isWindow, ipcRenderer } = window.electronApi;
+const { isMac, ipcRenderer } = window.electronApi;
 
 export const HeaderHeight = 28;
 
-const ScHeader = styled(Box)({
+const ScHeader = styled(Box)(({theme})=>({
   position: "fixed",
   top: 0,
   left: 0,
@@ -26,13 +27,13 @@ const ScHeader = styled(Box)({
   width: "100%",
   height: `${HeaderHeight}px`,
   padding: "0 10px",
-  backgroundColor: "var(--headline-color)",
-  color: "#fff",
+  backgroundColor: theme.header.background,
+  color: theme.header.text,
   WebkitAppRegion: "drag",
   ".MuiIconButton-root": {
-    WebkitAppRegion: "no-drag",
+    '-webkit-app-region': "no-drag",
   },
-});
+}));
 
 const ScTitle = styled(Box)({
   position: "absolute",
@@ -43,7 +44,7 @@ const ScTitle = styled(Box)({
 
 export const Header: FC = () => {
   const context = useContext(AppContext) as IAppContext;
-  const commonStoreSnapshot = commonStore.getSnapshot();
+  const commonStoreSnapshot = useSnapshot(commonStore.state);
   const template: TMenuBarProps["template"] = [
     {
       label: "文件(F)",
@@ -93,7 +94,7 @@ export const Header: FC = () => {
       <ScTitle>
         {commonStoreSnapshot.currentProjectName || "Low Code Editor"}
       </ScTitle>
-      {isWindow && (
+      {!isMac && (
         <Stack direction="row" spacing={1}>
           <IconButton
             aria-label="minimize"

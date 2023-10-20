@@ -1,5 +1,5 @@
 import { IMaterialItem } from '@/materials/createMaterial';
-import { proxy, useSnapshot } from 'valtio';
+import { proxy } from 'valtio';
 import { proxyWithHistory } from 'valtio/utils';
 import set from 'lodash/set';
 import { produce } from 'immer';
@@ -24,8 +24,6 @@ class EditorStore {
   });
 
   materialList = proxyWithHistory<IMaterialItem[]>([]);
-
-  getSnapshot = () => useSnapshot(this.state);
 
   setCurrentMaterial = (materialId: IEditorStore['currentMaterial']) =>
     (this.state.currentMaterial = materialId);

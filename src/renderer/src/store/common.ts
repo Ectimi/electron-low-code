@@ -1,4 +1,4 @@
-import { proxy, useSnapshot } from 'valtio';
+import { proxy } from 'valtio';
 
 interface ICommonStore {
   currentProjectName: string;
@@ -10,8 +10,6 @@ class CommonStore {
     currentProjectName:'',
     currentProjectPath:''
   });
-
-  getSnapshot = () => useSnapshot(this.state);
 }
 
 const commonStore = new CommonStore();

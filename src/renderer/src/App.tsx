@@ -12,6 +12,8 @@ import { EMenuAction } from 'root/types/MenuAction';
 import modalStore from '@/store/modal';
 import { EventName } from 'root/types/EventName';
 import { IEventBeforClose } from 'root/types/ParamsType';
+import { ThemeProvider } from '@mui/material';
+import theme from './theme';
 
 const { ipcRenderer, isMac } = window.electronApi;
 
@@ -82,30 +84,32 @@ function App() {
 
   return (
     <AppContext.Provider value={provider}>
-      <CssBaseline />
-      <GlobalStyles
-        styles={{
-          'html,body,#root': { width: '100%', height: '100%' },
-          '#root': { paddingTop: `${HeaderHeight}px` },
-          '::-webkit-scrollbar': {
-            width: '6px',
-            height: '8px',
-          },
-          '::-webkit-scrollbar-thumb': {
-            borderRadius: '2px',
-            backgroundColor: '#989898',
-            cursor: 'pointer',
-          },
-          '::-webkit-scrollbar-track': {
-            boxShadow: 'none',
-            background: 'transparent',
-            borderRadius: '10px',
-          },
-        }}
-      />
-      <AppLayout>
-        <RouterProvider router={router} />
-      </AppLayout>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <GlobalStyles
+          styles={{
+            'html,body,#root': { width: '100%', height: '100%' },
+            '#root': { paddingTop: `${HeaderHeight}px` },
+            '::-webkit-scrollbar': {
+              width: '6px',
+              height: '8px',
+            },
+            '::-webkit-scrollbar-thumb': {
+              borderRadius: '2px',
+              backgroundColor: '#989898',
+              cursor: 'pointer',
+            },
+            '::-webkit-scrollbar-track': {
+              boxShadow: 'none',
+              background: 'transparent',
+              borderRadius: '10px',
+            },
+          }}
+        />
+        <AppLayout>
+          <RouterProvider router={router} />
+        </AppLayout>
+      </ThemeProvider>
     </AppContext.Provider>
   );
 }

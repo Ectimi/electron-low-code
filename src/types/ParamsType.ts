@@ -9,3 +9,4 @@ export interface IEventBeforClose {
   projectPath?: string;
   lastClosePath?: string;
 }
+
