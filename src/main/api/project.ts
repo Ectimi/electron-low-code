@@ -14,16 +14,12 @@ import {
 } from '../template/applicationConfigTemplate';
 import { merge } from 'lodash';
 import { isImage, isVideo } from '../utils';
+import { nanoid } from 'nanoid';
+import type { FileData } from 'chonky';
 
-export interface IRecource {
-  resources: Array<{ fileName: string; filePath: string }>;
-  children: Record<string, IRecource>;
-}
-
-class Recource {
-  resources: IRecource['resources'] = [];
-  children: IRecource['children'] = {};
-}
+export type FileMap<FT extends FileData = FileData> = {
+  [fileId: string]: FT & { childrenIds?: string[]; parentId?: string };
+};
 
 export default class ProjectApi {
   applicationDataManager: ApplicationDataManager | null = null;
@@ -179,44 +175,82 @@ export default class ProjectApi {
       projectConfig.assetFolderName,
       projectConfig.videoFolderName
     );
-    const Image = new Recource();
-    const Video = new Recource();
 
-    const traverseDirectory = (
-      recourse: IRecource,
-      dirPath: string,
-      type: 'image' | 'video'
-    ) => {
+    const rootFolderId = nanoid();
+    const imageFolderId = nanoid();
+    const videoFolderId = nanoid();
+    const fileMap: FileMap = {
+      [rootFolderId]: {
+        id: rootFolderId,
+        name: '资源库',
+        isDir: true,
+        childrenIds: [imageFolderId, videoFolderId],
+      },
+      [imageFolderId]: {
+        id: imageFolderId,
+        name: 'images',
+        isDir: true,
+        childrenIds: [],
+        parentId: rootFolderId,
+      },
+      [videoFolderId]: {
+        id: videoFolderId,
+        name: 'videos',
+        isDir: true,
+        childrenIds: [],
+        parentId: rootFolderId,
+      },
+    };
+
+    const traverseDirectory = (parentId: string, dirPath: string) => {
       const stat = fs.statSync(dirPath);
       if (stat.isDirectory()) {
         const fileNames = fs.readdirSync(dirPath);
         fileNames.map((fileName) => {
           const filePath = path.join(dirPath, fileName);
           const fileStat = fs.statSync(filePath);
+          const modDate = fileStat.mtime;
+          const size = fileStat.size;
           if (fileStat.isFile()) {
-            const extension = path.extname(fileName.toLowerCase());
-            if (type === 'image' && isImage(extension)) {
-              recourse.resources.push({ fileName, filePath });
-            } else if (type === 'video' && isVideo(extension)) {
-              recourse.resources.push({ fileName, filePath });
+            const ext = path.extname(fileName.toLowerCase());
+
+            if (isImage(ext) || isVideo(ext)) {
+              const id = nanoid();
+
+              fileMap[parentId].childrenIds!.push(id);
+              fileMap[id] = {
+                id,
+                name: fileName,
+                size,
+                modDate,
+                parentId,
+                ext,
+                thumbnailUrl: isImage(ext)
+                  ? `file://${filePath.replace(/\\/g, '//')}`
+                  : undefined,
+              };
             }
           } else if (fileStat.isDirectory()) {
-            if (type === 'image') {
-              Image.children[fileName] = new Recource();
-              traverseDirectory(Image.children[fileName], filePath, type);
-            } else if (type === 'video') {
-              Video.children[fileName] = new Recource();
-              traverseDirectory(Video.children[fileName], filePath, type);
-            }
+            const id = nanoid();
+            fileMap[parentId].childrenIds?.push(id);
+            fileMap[id] = {
+              id,
+              name: fileName,
+              idDir: true,
+              modDate,
+              childrenIds: [],
+              parentId,
+            };
+
+            fileMap[rootFolderId];
+            traverseDirectory(id, filePath);
           }
         });
       }
     };
-    traverseDirectory(Image, imageFolderPath, 'image');
-    traverseDirectory(Video, videoFolderPath, 'video');
+    traverseDirectory(imageFolderId, imageFolderPath);
+    traverseDirectory(videoFolderId, videoFolderPath);
 
-    const res = { Image, Video };
-    
-    return returnValue(res);
+    return returnValue({ rootFolderId, fileMap });
   }
 }

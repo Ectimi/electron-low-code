@@ -5,9 +5,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PreviewIcon from '@mui/icons-material/Preview';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import CollectionsIcon from '@mui/icons-material/Collections';
 import { MouseEventHandler, ReactElement, cloneElement } from 'react';
 import { useSnapshot } from 'valtio';
 import editorStore from 'root/renderer/src/store/editor';
+import modalStore from 'root/renderer/src/store/modal';
 
 const ToolBox = styled(Paper)({
   position: 'absolute',
@@ -68,6 +70,12 @@ export function ActionTool() {
         />
 
         <ActionButton title="项目设置" icon={<SettingsIcon />} />
+
+        <ActionButton
+          title="资源库"
+          icon={<CollectionsIcon />}
+          onClick={() => modalStore.toggleResourceLibraryModal(true)}
+        />
       </Stack>
     </ToolBox>
   );

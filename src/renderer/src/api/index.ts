@@ -4,7 +4,7 @@ import {
   IApplicationConfig,
   IProjectItem,
 } from 'root/main/template/applicationConfigTemplate';
-import { IRecource } from 'root/main/api/project';
+import { FileMap } from 'root/main/api/project';
 import { sendEvent } from '@/ipc/ipc.ts';
 
 export function selectFloder() {
@@ -42,5 +42,8 @@ export function checkProjectWindowOpen(project: IProjectItem) {
 }
 
 export function getResource(dirPath: string) {
-  return sendEvent<IRecource>(ApiName.GetResource, dirPath);
+  return sendEvent<{ rootFolderId: string; fileMap: FileMap }>(
+    ApiName.GetResource,
+    dirPath
+  );
 }
