@@ -1,12 +1,6 @@
+import { Box, Dialog } from '@mui/material';
 import {
-  Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  styled,
-} from '@mui/material';
-import {
+  setChonkyDefaults,
   ChonkyActions,
   ChonkyFileActionData,
   FileBrowser,
@@ -15,13 +9,12 @@ import {
   FileList,
   FileNavbar,
   FileToolbar,
-} from 'chonky';
-import CloseIcon from '@mui/icons-material/Close';
+  FileBrowserHandle,
+} from '@aperturerobotics/chonky';
 import modalStore from 'root/renderer/src/store/modal';
 import { useSnapshot } from 'valtio';
 import Transition from '../Transition';
-import { setChonkyDefaults } from 'chonky';
-import { ChonkyIconFA } from 'chonky-icon-fontawesome';
+import { ChonkyIconFA } from '@aperturerobotics/chonky-icon-fontawesome';
 import { useMount, useSafeState, useUpdateEffect } from 'ahooks';
 import { subscribeKey } from 'valtio/utils';
 import { getResource } from 'root/renderer/src/api';
@@ -29,14 +22,10 @@ import commonStore from 'root/renderer/src/store/common';
 import { FileMap } from 'root/main/api/project';
 import { useRef } from 'react';
 
-setChonkyDefaults({ iconComponent: ChonkyIconFA as any });
-
-const DialogCloseButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  top: 8,
-  right: 8,
-  color: theme.palette.grey[500],
-}));
+setChonkyDefaults({
+  iconComponent: ChonkyIconFA as any,
+  defaultFileViewActionId: ChonkyActions.EnableGridView.id,
+});
 
 const getFiles = (currentFolderId: string, fileMap: FileMap) => {
   const currentFolder = fileMap[currentFolderId];
@@ -67,6 +56,7 @@ const getFolderChain = (currentFolderId: string, fileMap: FileMap) => {
 
 export function ResourceLibraryModal() {
   const snap = useSnapshot(modalStore.state);
+  const fileBrowserRef = useRef<FileBrowserHandle>(null);
   const [currentFolderId, setCurrentFolderId] = useSafeState('');
   const [files, setFiles] = useSafeState<any[]>([]);
   const [folderChain, setFolderChain] = useSafeState<any[]>([]);
@@ -88,8 +78,6 @@ export function ResourceLibraryModal() {
     subscribeKey(modalStore.state, 'ResourceLibraryModalOpen', (isOpen) => {
       if (isOpen) {
         getResource(commonStore.state.currentProjectPath).then((data) => {
-          console.log(data.fileMap);
-
           fileMap.current = data.fileMap;
 
           setCurrentFolderId(data.rootFolderId);
@@ -114,8 +102,9 @@ export function ResourceLibraryModal() {
       open={snap.ResourceLibraryModalOpen}
       onClose={() => modalStore.toggleResourceLibraryModal(false)}
     >
-      <Box sx={{width:'700px',height:'500px'}}>
+      <Box sx={{ width: '730px', height: '500px' }}>
         <FileBrowser
+          ref={fileBrowserRef}
           disableDragAndDrop={true}
           files={files}
           folderChain={folderChain}

@@ -176,6 +176,9 @@ export default class ProjectApi {
       projectConfig.videoFolderName
     );
 
+    const isExistImageFolder = fs.existsSync(imageFolderPath);
+    const isExistVideoFolder = fs.existsSync(videoFolderPath);
+
     const rootFolderId = nanoid();
     const imageFolderId = nanoid();
     const videoFolderId = nanoid();
@@ -185,22 +188,27 @@ export default class ProjectApi {
         name: '资源库',
         isDir: true,
         childrenIds: [imageFolderId, videoFolderId],
-      },
-      [imageFolderId]: {
+      }
+    };
+    if (isExistImageFolder) {
+      fileMap[imageFolderId] = {
         id: imageFolderId,
         name: 'images',
         isDir: true,
         childrenIds: [],
         parentId: rootFolderId,
-      },
-      [videoFolderId]: {
+        modDate: new Date(),
+      };
+    }
+    if (isExistVideoFolder) {
+      fileMap[videoFolderId] = {
         id: videoFolderId,
         name: 'videos',
         isDir: true,
         childrenIds: [],
         parentId: rootFolderId,
-      },
-    };
+      };
+    }
 
     const traverseDirectory = (parentId: string, dirPath: string) => {
       const stat = fs.statSync(dirPath);
@@ -236,7 +244,7 @@ export default class ProjectApi {
             fileMap[id] = {
               id,
               name: fileName,
-              idDir: true,
+              isDir: true,
               modDate,
               childrenIds: [],
               parentId,
@@ -248,8 +256,9 @@ export default class ProjectApi {
         });
       }
     };
-    traverseDirectory(imageFolderId, imageFolderPath);
-    traverseDirectory(videoFolderId, videoFolderPath);
+
+    isExistImageFolder && traverseDirectory(imageFolderId, imageFolderPath);
+    isExistVideoFolder && traverseDirectory(videoFolderId, videoFolderPath);
 
     return returnValue({ rootFolderId, fileMap });
   }
