@@ -7,5 +7,7 @@ export const enum ApiName {
   
   GetWindowNumbers = 'GetWindowNumbers',
   CheckProjectWindowOpen = 'CheckProjectWindowOpen',
-  GetResource = 'GetResource'
+  GetResource = 'GetResource',
+  DeleteResource = 'DeleteResource',
+  SelectResource = 'SelectResource'
 }

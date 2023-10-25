@@ -14,11 +14,14 @@ import {
 } from '../template/applicationConfigTemplate';
 import { merge } from 'lodash';
 import { isImage, isVideo } from '../utils';
-import { nanoid } from 'nanoid';
 import type { FileData } from 'chonky';
 
 export type FileMap<FT extends FileData = FileData> = {
-  [fileId: string]: FT & { childrenIds?: string[]; parentId?: string };
+  [fileId: string]: FT & {
+    childrenIds?: string[];
+    parentId?: string;
+    path?: string;
+  };
 };
 
 export default class ProjectApi {
@@ -43,6 +46,34 @@ export default class ProjectApi {
     }
 
     return returnValue('');
+  }
+
+  async [ApiName.SelectResource](type: 'image' | 'video') {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    if (focusedWindow) {
+      const imageFilters = [
+        {
+          name: 'image',
+          extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'],
+        },
+      ];
+      const videoFilters = [
+        {
+          name: 'video',
+          extensions: ['mp4', 'mov', 'avi', 'mkv'],
+        },
+      ];
+      const result = await dialog.showOpenDialog(focusedWindow, {
+        properties: ['openFile', 'multiSelections'],
+        filters: type === 'image' ? imageFilters : videoFilters,
+      });
+
+      if (!result.canceled && result.filePaths.length > 0) {
+        return returnValue(result.filePaths);
+      }
+    }
+
+    return returnValue([]);
   }
 
   async [ApiName.CreateProject](data: ICreateProjectParams) {
@@ -179,16 +210,16 @@ export default class ProjectApi {
     const isExistImageFolder = fs.existsSync(imageFolderPath);
     const isExistVideoFolder = fs.existsSync(videoFolderPath);
 
-    const rootFolderId = nanoid();
-    const imageFolderId = nanoid();
-    const videoFolderId = nanoid();
+    const rootFolderId = 'root';
+    const imageFolderId = encodeURIComponent(imageFolderPath);
+    const videoFolderId = encodeURIComponent(videoFolderPath);
     const fileMap: FileMap = {
       [rootFolderId]: {
         id: rootFolderId,
         name: '资源库',
         isDir: true,
         childrenIds: [imageFolderId, videoFolderId],
-      }
+      },
     };
     if (isExistImageFolder) {
       fileMap[imageFolderId] = {
@@ -219,12 +250,11 @@ export default class ProjectApi {
           const fileStat = fs.statSync(filePath);
           const modDate = fileStat.mtime;
           const size = fileStat.size;
+          const id = encodeURIComponent(filePath);
           if (fileStat.isFile()) {
             const ext = path.extname(fileName.toLowerCase());
 
             if (isImage(ext) || isVideo(ext)) {
-              const id = nanoid();
-
               fileMap[parentId].childrenIds!.push(id);
               fileMap[id] = {
                 id,
@@ -233,13 +263,13 @@ export default class ProjectApi {
                 modDate,
                 parentId,
                 ext,
+                path: filePath,
                 thumbnailUrl: isImage(ext)
                   ? `file://${filePath.replace(/\\/g, '//')}`
                   : undefined,
               };
             }
           } else if (fileStat.isDirectory()) {
-            const id = nanoid();
             fileMap[parentId].childrenIds?.push(id);
             fileMap[id] = {
               id,
@@ -248,6 +278,7 @@ export default class ProjectApi {
               modDate,
               childrenIds: [],
               parentId,
+              path: filePath,
             };
 
             fileMap[rootFolderId];
@@ -261,5 +292,23 @@ export default class ProjectApi {
     isExistVideoFolder && traverseDirectory(videoFolderId, videoFolderPath);
 
     return returnValue({ rootFolderId, fileMap });
+  }
+
+  async [ApiName.DeleteResource](filePaths: string[]) {
+    if (!filePaths) return returnError('缺少参数');
+    try {
+      for (let i = 0; i < filePaths.length; i++) {
+        const path = filePaths[i];
+        const stat = fs.statSync(path);
+        if (stat.isDirectory()) {
+          fs.rmdirSync(path);
+        } else {
+          fs.unlinkSync(path);
+        }
+      }
+      return returnValue('删除成功');
+    } catch (error) {
+      return returnError(error);
+    }
   }
 }

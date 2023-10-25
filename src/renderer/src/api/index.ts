@@ -47,3 +47,11 @@ export function getResource(dirPath: string) {
     dirPath
   );
 }
+
+export function deleteResource(filePaths: string[]) {
+  return sendEvent(ApiName.DeleteResource, filePaths);
+}
+
+export function selectResource(type: 'image' | 'video') {
+  return sendEvent<string[]>(ApiName.SelectResource, type);
+}
