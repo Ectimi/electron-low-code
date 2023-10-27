@@ -22,11 +22,13 @@ export class ApiResgiter {
   callApi(ctor: any) {
     const methods = Object.getOwnPropertyNames(
       Object.getPrototypeOf(ctor)
-    ).filter(
-      (propertyName) =>
+    ).filter((propertyName) => {
+      return (
         propertyName !== 'constructor' &&
-        typeof (ctor as any)[propertyName] === 'function'
-    );
+        typeof (ctor as any)[propertyName] === 'function' &&
+        !propertyName.startsWith('_')
+      );
+    });
 
     methods.map((name) => {
       listen(name, (ctor as any)[name].bind(ctor));

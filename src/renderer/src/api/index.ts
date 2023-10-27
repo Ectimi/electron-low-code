@@ -1,4 +1,7 @@
-import { ICreateProjectParams } from 'root/types/ParamsType.ts';
+import {
+  ICreateProjectParams,
+  IImportResource,
+} from 'root/types/ParamsType.ts';
 import { ApiName } from 'root/types/ApiName.ts';
 import {
   IApplicationConfig,
@@ -52,6 +55,10 @@ export function deleteResource(filePaths: string[]) {
   return sendEvent(ApiName.DeleteResource, filePaths);
 }
 
-export function selectResource(type: 'image' | 'video') {
+export function selectResource(type: 'images' | 'videos') {
   return sendEvent<string[]>(ApiName.SelectResource, type);
+}
+
+export function importResource(params: IImportResource) {
+  return sendEvent<string>(ApiName.ImportResource, params);
 }

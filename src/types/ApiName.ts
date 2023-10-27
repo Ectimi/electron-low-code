@@ -9,5 +9,6 @@ export const enum ApiName {
   CheckProjectWindowOpen = 'CheckProjectWindowOpen',
   GetResource = 'GetResource',
   DeleteResource = 'DeleteResource',
-  SelectResource = 'SelectResource'
+  SelectResource = 'SelectResource',
+  ImportResource = 'ImportResource'
 }

@@ -1,9 +1,10 @@
 import fs from 'fs';
+import fsExtra from 'fs-extra';
 import path from 'path';
 import { BrowserWindow, dialog } from 'electron';
 import { ApiName } from 'root/types/ApiName';
 import { returnValue, returnError } from './utils';
-import { ICreateProjectParams } from 'root/types/ParamsType';
+import { ICreateProjectParams, IImportResource } from 'root/types/ParamsType';
 import { ApplicationDataManager } from '../applicationData';
 import projectConfigTemplate, {
   IProjectConfig,
@@ -13,7 +14,7 @@ import {
   IProjectItem,
 } from '../template/applicationConfigTemplate';
 import { merge } from 'lodash';
-import { isImage, isVideo } from '../utils';
+import { isImage, isSubPath, isVideo } from '../utils';
 import type { FileData } from 'chonky';
 
 export type FileMap<FT extends FileData = FileData> = {
@@ -32,6 +33,16 @@ export default class ProjectApi {
     this.applicationDataManager = applicationDataManager;
   }
 
+  private async _getProjectConfig(projectPath: string) {
+    const configPath = path.join(projectPath, this.projectConfigFileName);
+    await fs.promises.access(configPath, fs.constants.F_OK);
+    const projectConfig: IProjectConfig = JSON.parse(
+      await fs.readFileSync(configPath, 'utf-8')
+    );
+
+    return projectConfig;
+  }
+
   async [ApiName.SelectFolder]() {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     if (focusedWindow) {
@@ -48,7 +59,7 @@ export default class ProjectApi {
     return returnValue('');
   }
 
-  async [ApiName.SelectResource](type: 'image' | 'video') {
+  async [ApiName.SelectResource](type: 'images' | 'videos') {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     if (focusedWindow) {
       const imageFilters = [
@@ -65,7 +76,7 @@ export default class ProjectApi {
       ];
       const result = await dialog.showOpenDialog(focusedWindow, {
         properties: ['openFile', 'multiSelections'],
-        filters: type === 'image' ? imageFilters : videoFilters,
+        filters: type === 'images' ? imageFilters : videoFilters,
       });
 
       if (!result.canceled && result.filePaths.length > 0) {
@@ -156,12 +167,7 @@ export default class ProjectApi {
     if (!projectPath) return returnError('缺少参数');
 
     try {
-      const configPath = path.join(projectPath, 'project.config.json');
-      await fs.promises.access(configPath, fs.constants.F_OK);
-      const projectConfig: any = JSON.parse(
-        await fs.readFileSync(configPath, 'utf-8')
-      );
-
+      const projectConfig = await this._getProjectConfig(projectPath);
       if (
         projectConfig &&
         JSON.stringify(Object.keys(projectConfig)) ===
@@ -174,7 +180,6 @@ export default class ProjectApi {
         });
       }
     } catch (error) {
-      console.log('error', error);
       return returnValue({ isValid: false });
     }
 
@@ -229,6 +234,7 @@ export default class ProjectApi {
         childrenIds: [],
         parentId: rootFolderId,
         modDate: new Date(),
+        path: imageFolderPath,
       };
     }
     if (isExistVideoFolder) {
@@ -238,6 +244,7 @@ export default class ProjectApi {
         isDir: true,
         childrenIds: [],
         parentId: rootFolderId,
+        path: videoFolderPath,
       };
     }
 
@@ -309,6 +316,48 @@ export default class ProjectApi {
       return returnValue('删除成功');
     } catch (error) {
       return returnError(error);
+    }
+  }
+
+  async [ApiName.ImportResource]({
+    projectPath,
+    filePaths,
+    targetPath,
+  }: IImportResource) {
+    try {
+      const projectConfig = await this._getProjectConfig(projectPath);
+      const assetFolderPath = path.join(
+        projectPath,
+        projectConfig.assetFolderName
+      );
+      const imageFolderPath = path.join(
+        assetFolderPath,
+        projectConfig.imageFolderName
+      );
+      const videoFolderPath = path.join(
+        assetFolderPath,
+        projectConfig.videoFolderName
+      );
+
+      for (let i = 0; i < filePaths.length; i++) {
+        const filePath = filePaths[i];
+        if (
+          isSubPath(filePath, imageFolderPath) ||
+          isSubPath(filePath, videoFolderPath)
+        ) {
+          return returnError('请在项目资源外进行导入');
+        }
+      }
+
+      filePaths.map((src) => {
+        fsExtra.copySync(src, path.join(targetPath, path.basename(src)));
+      });
+
+      return returnValue('导入成功');
+    } catch (error) {
+      console.log('import error', error);
+
+      return returnError('导入出错');
     }
   }
 }

@@ -10,3 +10,8 @@ export interface IEventBeforClose {
   lastClosePath?: string;
 }
 
+export interface IImportResource {
+  projectPath: string;
+  filePaths: string[];
+  targetPath: string;
+}

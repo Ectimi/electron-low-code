@@ -28,3 +28,8 @@ export const isVideo = (extension: string) => {
   const videoExtensions = ['.mp4', '.avi', '.mkv', '.mov', '.wmv'];
   return videoExtensions.includes(extension);
 };
+
+export const isSubPath = (childPath: string, parentPath: string) => {
+  const relativePath = path.relative(parentPath, childPath);
+  return !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
+};

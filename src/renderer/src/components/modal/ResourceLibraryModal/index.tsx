@@ -30,6 +30,7 @@ import { subscribeKey } from 'valtio/utils';
 import {
   deleteResource,
   getResource,
+  importResource,
   selectResource,
 } from 'root/renderer/src/api';
 import commonStore from 'root/renderer/src/store/common';
@@ -74,6 +75,7 @@ export function ResourceLibraryModal() {
   const fileBrowserRef = useRef<FileBrowserHandle>(null);
   const fileMap = useRef<FileMap>();
   const willDeleteFile = useRef<string[]>([]);
+  const openedResourceType = useRef('');
   const [currentFolderId, setCurrentFolderId] = useSafeState('');
   const [files, setFiles] = useSafeState<any[]>([]);
   const [folderChain, setFolderChain] = useSafeState<any[]>([]);
@@ -118,12 +120,23 @@ export function ResourceLibraryModal() {
     },
   });
 
-  const handleFileAction = (data: ChonkyFileActionData) => {
+  const refreshFileBrowser = async () => {
+    const data = await getResource(commonStore.state.currentProjectPath);
+    fileMap.current = data.fileMap;
+
+    setFiles(getFiles(currentFolderId, data.fileMap));
+    setFolderChain(getFolderChain(currentFolderId, data.fileMap));
+  };
+
+  const handleFileAction = async (data: ChonkyFileActionData) => {
     if (data.id === ChonkyActions.OpenFiles.id) {
       const { targetFile, files } = data.payload;
       const fileToOpen = targetFile ?? files[0];
       if (fileToOpen && FileHelper.isDirectory(fileToOpen)) {
         setCurrentFolderId(fileToOpen.id);
+      }
+      if (targetFile?.name === 'images' || targetFile?.name === 'videos') {
+        openedResourceType.current = targetFile.name;
       }
     } else if (data.id === deleteFile.id) {
       willDeleteFile.current = data.state.selectedFiles.map(
@@ -131,7 +144,21 @@ export function ResourceLibraryModal() {
       );
       setAlertVisible(true);
     } else if (data.id === importFile.id) {
-      console.log(data);
+      try {
+        const selectedFiles = await selectResource(
+          openedResourceType.current as any
+        );
+        const res = await importResource({
+          projectPath: commonStore.state.currentProjectPath,
+          filePaths: selectedFiles,
+          targetPath: fileMap.current![lastestFolderId.current].path!,
+        });
+        await refreshFileBrowser();
+        showMessage({ content: res });
+      } catch (error) {
+        showMessage({ content: error as string, type: 'error' });
+        console.log('import error', error);
+      }
     }
   };
 
@@ -144,11 +171,7 @@ export function ResourceLibraryModal() {
     try {
       if (willDeleteFile.current.length) {
         await deleteResource(willDeleteFile.current);
-        const data = await getResource(commonStore.state.currentProjectPath);
-        fileMap.current = data.fileMap;
-
-        setFiles(getFiles(currentFolderId, data.fileMap));
-        setFolderChain(getFolderChain(currentFolderId, data.fileMap));
+        await refreshFileBrowser();
         showMessage({ content: '删除成功' });
       }
     } catch (error) {
@@ -171,6 +194,8 @@ export function ResourceLibraryModal() {
           setFiles(getFiles(lastestFolderId.current, data.fileMap));
           setFolderChain(getFolderChain(lastestFolderId.current, data.fileMap));
         });
+      } else {
+        openedResourceType.current = '';
       }
     });
   });
@@ -180,11 +205,13 @@ export function ResourceLibraryModal() {
       setFiles(getFiles(currentFolderId, fileMap.current));
       setFolderChain(getFolderChain(currentFolderId, fileMap.current));
     }
+
     if (currentFolderId === 'root') {
       setFileActions([deleteFile, useGiantThumbnails]);
     } else {
       setFileActions([deleteFile, useGiantThumbnails, importFile]);
     }
+    fileBrowserRef.current?.requestFileAction(useGiantThumbnails, {});
   }, [currentFolderId]);
 
   return (
@@ -206,7 +233,7 @@ export function ResourceLibraryModal() {
             disableDragAndDrop={true}
             files={files}
             folderChain={folderChain}
-            fileActions={[deleteFile, useGiantThumbnails, importFile]}
+            fileActions={fileActions}
             onFileAction={handleFileAction}
             defaultFileViewActionId={useGiantThumbnails.id}
           >
