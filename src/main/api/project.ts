@@ -216,8 +216,8 @@ export default class ProjectApi {
     const isExistVideoFolder = fs.existsSync(videoFolderPath);
 
     const rootFolderId = 'root';
-    const imageFolderId = encodeURIComponent(imageFolderPath);
-    const videoFolderId = encodeURIComponent(videoFolderPath);
+    const imageFolderId = 'image';
+    const videoFolderId = 'video';
     const fileMap: FileMap = {
       [rootFolderId]: {
         id: rootFolderId,

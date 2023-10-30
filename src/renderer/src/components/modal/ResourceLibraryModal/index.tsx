@@ -37,38 +37,7 @@ import commonStore from 'root/renderer/src/store/common';
 import { FileMap } from 'root/main/api/project';
 import { useRef } from 'react';
 import showMessage from '../../Message';
-
-const getFiles = (currentFolderId: string, fileMap: FileMap) => {
-  const currentFolder = fileMap[currentFolderId];
-  const files =
-    currentFolder && currentFolder.childrenIds
-      ? currentFolder.childrenIds.map(
-          (fileId: string) => fileMap[fileId] ?? null
-        )
-      : [];
-
-  return files;
-};
-
-const getFolderChain = (currentFolderId: string, fileMap: FileMap) => {
-  const currentFolder = fileMap[currentFolderId];
-  const folderChain = [currentFolder];
-
-  if (currentFolder) {
-    let parentId: any = currentFolder.parentId;
-    while (parentId) {
-      const parentFile = fileMap[parentId];
-      if (parentFile) {
-        folderChain.unshift(parentFile);
-        parentId = parentFile.parentId;
-      } else {
-        parentId = null;
-      }
-    }
-  }
-
-  return folderChain;
-};
+import { getFiles, getFolderChain } from 'root/renderer/src/utils';
 
 export function ResourceLibraryModal() {
   const snap = useSnapshot(modalStore.state);

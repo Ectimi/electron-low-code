@@ -106,7 +106,6 @@ export function EffectPannel(
         ...data,
         opacity: data.opacity! / 100,
       } as TEffect);
-      console.log(data);
     });
     return () => subscription!.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps

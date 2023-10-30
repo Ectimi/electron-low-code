@@ -67,12 +67,15 @@ const styleParser = (styleProps: TStyle) => {
 
   // 处理 background 样式
   Object.keys(background).map((key) => {
-    const value: any = background[key as keyof TBackground];
+    let value: any = background[key as keyof TBackground];
     if (Array.isArray(value)) {
       (targetStyle as any)[key] = value
         .map((v) => styleValueParser(v))
         .join(' ');
     } else {
+      if (key === 'backgroundImage') {
+        value = 'url(' + value + ')';
+      }
       (targetStyle as any)[key] = value;
     }
   });

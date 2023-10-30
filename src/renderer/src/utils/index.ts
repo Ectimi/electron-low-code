@@ -1,3 +1,5 @@
+import { FileMap } from "root/main/api/project";
+
 export const genUid = (function () {
   const soup =
     '!#$%()*+,-./:;=?@[]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -65,4 +67,37 @@ export const extractCssValue = (val: string | number) => {
     return { value: parseFloat(val), unit: val.replace(/-?\d+(\.\d+)?/g, '') };
   }
   return { value: parseFloat(val), unit: 'px' };
+};
+
+
+export const getFiles = (currentFolderId: string, fileMap: FileMap) => {
+  const currentFolder = fileMap[currentFolderId];
+  const files =
+    currentFolder && currentFolder.childrenIds
+      ? currentFolder.childrenIds.map(
+          (fileId: string) => fileMap[fileId] ?? null
+        )
+      : [];
+
+  return files;
+};
+
+export const getFolderChain = (currentFolderId: string, fileMap: FileMap) => {
+  const currentFolder = fileMap[currentFolderId];
+  const folderChain = [currentFolder];
+
+  if (currentFolder) {
+    let parentId: any = currentFolder.parentId;
+    while (parentId) {
+      const parentFile = fileMap[parentId];
+      if (parentFile) {
+        folderChain.unshift(parentFile);
+        parentId = parentFile.parentId;
+      } else {
+        parentId = null;
+      }
+    }
+  }
+
+  return folderChain;
 };
