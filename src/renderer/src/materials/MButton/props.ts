@@ -34,6 +34,10 @@ export const presetStyle: TStyle = defaultsDeep(
 
 export const defaultProps: TMaterialProps = {
   style: presetStyle,
+  attribute: {
+    id: '',
+    className: '',
+  },
   animations: [],
   events: [],
 };

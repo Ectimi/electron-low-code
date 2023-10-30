@@ -11,6 +11,11 @@ export interface IMaterial {
   name: EMaterialName;
   property: {
     style: TStyle;
+    attribute: {
+      id: string;
+      className: string;
+      [key: string]: any;
+    };
     animations: any;
     events: any;
   };
