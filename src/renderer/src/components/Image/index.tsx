@@ -38,6 +38,6 @@ export default function Image(props: ImageProps) {
       <div>图片加载失败</div>
     </ErrorBox>
   ) : (
-    <Img src={props.src} onError={() => setError(true)} />
+    <Img src={src} onError={() => setError(true)} {...otherProps} />
   );
 }

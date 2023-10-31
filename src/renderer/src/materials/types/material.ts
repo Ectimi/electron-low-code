@@ -6,7 +6,7 @@ export const enum EMaterialName {
   Button = 'Button',
 }
 
-export interface IMaterial {
+export interface IMaterial<Attribute> {
   id: string;
   name: EMaterialName;
   property: {
@@ -14,11 +14,11 @@ export interface IMaterial {
     attribute: {
       id: string;
       className: string;
-      [key: string]: any;
-    };
+    } & Attribute;
     animations: any;
     events: any;
   };
 }
 
-export type TMaterialProps = IMaterial['property'];
+export type TMaterialProps<Attribute extends object = any> =
+  IMaterial<Attribute>['property'];

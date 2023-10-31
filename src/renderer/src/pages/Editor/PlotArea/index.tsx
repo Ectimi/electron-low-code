@@ -60,7 +60,9 @@ export default function PlotArea() {
   useMount(() => {
     const updateIndicator = (materialId: IEditorStore['currentMaterial']) => {
       if (materialId) {
-        const ele = document.getElementById(materialId);
+        const ele = document.querySelector(
+          `[data-id=${materialId}]`
+        ) as HTMLElement;
         const top = ele?.offsetTop + 'px';
         const left = ele?.offsetLeft + 'px';
         const { right, bottom, width, height } = getComputedStyle(ele!);

@@ -1,8 +1,4 @@
 import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
   Divider,
   FormControl,
   IconButton,
@@ -24,30 +20,9 @@ import Image from 'root/renderer/src/components/Image';
 import InputWithUnit from 'root/renderer/src/components/InputWithUnit';
 import { TBackground } from 'root/renderer/src/materials/types/style';
 import editorStore from 'root/renderer/src/store/editor';
-import {
-  extractCssValue,
-  getFiles,
-  getFolderChain,
-  isValidCssValue,
-} from 'root/renderer/src/utils';
-import {
-  ChonkyActions,
-  ChonkyFileActionData,
-  ChonkyIconName,
-  FileBrowser,
-  FileBrowserHandle,
-  FileData,
-  FileHelper,
-  FileList,
-  FileNavbar,
-  FileViewMode,
-  defineFileAction,
-} from '@aperturerobotics/chonky';
-import { ChonkyIconFA } from '@aperturerobotics/chonky-icon-fontawesome';
-import { getResource } from 'root/renderer/src/api';
-import commonStore from 'root/renderer/src/store/common';
-import { FileMap } from 'root/main/api/project';
-import Transition from 'root/renderer/src/components/modal/Transition';
+import { extractCssValue, isValidCssValue } from 'root/renderer/src/utils';
+import modalStore from 'root/renderer/src/store/modal';
+import ResourceSelectModal from 'root/renderer/src/components/modal/ResourceSelectModal';
 
 type TBackgroundSize = 'auto' | 'cover' | 'contain' | 'custom';
 type TBackgroundPosition = 'left' | 'center' | 'right' | 'custom';
@@ -174,33 +149,9 @@ export function BackgroundPannel(props: TProps) {
       })(),
     }
   );
-  const [dialogVisible, setDialogVisible] = useSafeState(false);
-  const [currentFolderId, setCurrentFolderId] = useSafeState('');
-  const [files, setFiles] = useSafeState<any[]>([]);
-  const [folderChain, setFolderChain] = useSafeState<any[]>([]);
-  const fileMap = useRef<FileMap>();
-  const lastestFolderId = useLatest(currentFolderId);
-  const fileBrowserRef = useRef<FileBrowserHandle>(null);
-  const [disableSelectButton, setDisableSelectButton] = useSafeState(true);
   const [selectedImage, setSelectedImage] = useSafeState(
     getValues('backgroundImage')
   );
-
-  const useGiantThumbnails = defineFileAction({
-    id: 'use_giant_thumbnails',
-    fileViewConfig: {
-      mode: FileViewMode.Grid,
-      entryWidth: 150,
-      entryHeight: 150,
-    },
-    button: {
-      name: 'Switch to Grid',
-      toolbar: true,
-      contextMenu: false,
-      group: 'Options',
-      icon: ChonkyIconName.largeThumbnail,
-    },
-  });
 
   const update = (data: TFormValue) => {
     const backgroundSize =
@@ -237,50 +188,11 @@ export function BackgroundPannel(props: TProps) {
     update(getValues());
   };
 
-  const openDialog = () => setDialogVisible(true);
+  const openDialog = () => modalStore.toggleResourceSelectModal(true);
 
-  const closeDialog = () => setDialogVisible(false);
+  const closeDialog = () => modalStore.toggleResourceSelectModal(false);
 
-  const handleFileAction = async (data: ChonkyFileActionData) => {
-    if (data.id === ChonkyActions.OpenFiles.id) {
-      const { targetFile, files } = data.payload;
-      const fileToOpen = targetFile ?? files[0];
-      if (fileToOpen && FileHelper.isDirectory(fileToOpen)) {
-        setCurrentFolderId(fileToOpen.id);
-      }
-    } else if (data.id === ChonkyActions.ChangeSelection.id) {
-      const { selectedFiles } = data.state;
-      if (selectedFiles.length > 1) {
-        const lastFile = selectedFiles[selectedFiles.length - 1];
-        const selection = new Set<string>();
-        if (!FileHelper.isDirectory(lastFile)) {
-          selection.add((lastFile as FileData).id);
-          setDisableSelectButton(true);
-        } else {
-          setDisableSelectButton(false);
-        }
-
-        fileBrowserRef.current?.setFileSelection(selection);
-      } else if (selectedFiles.length === 1) {
-        const file = selectedFiles[0];
-        if (FileHelper.isDirectory(file)) {
-          fileBrowserRef.current?.setFileSelection(new Set());
-          setDisableSelectButton(true);
-        } else {
-          setDisableSelectButton(false);
-        }
-      } else {
-        setDisableSelectButton(true);
-      }
-    }
-  };
-
-  const handleSelectImage = () => {
-    const selectedId = [
-      ...(fileBrowserRef.current?.getFileSelection() as any),
-    ][0];
-    const imagePath = fileMap.current![selectedId].thumbnailUrl!;
-
+  const onSelect = (imagePath: string) => {
     setSelectedImage(imagePath);
     setValue('backgroundImage', imagePath);
     update(getValues());
@@ -308,25 +220,6 @@ export function BackgroundPannel(props: TProps) {
     update(getValues());
   }, [sizeType, positionXType, positionYType]);
 
-  useUpdateEffect(() => {
-    getResource(commonStore.state.currentProjectPath).then((data) => {
-      fileMap.current = data.fileMap;
-      if (lastestFolderId.current === '') {
-        setCurrentFolderId('image');
-      }
-      fileBrowserRef.current?.requestFileAction(useGiantThumbnails, {});
-    });
-  }, [dialogVisible]);
-
-  useUpdateEffect(() => {
-    if (fileMap.current) {
-      setFiles(getFiles(currentFolderId, fileMap.current));
-      setFolderChain(getFolderChain(currentFolderId, fileMap.current));
-    }
-
-    fileBrowserRef.current?.requestFileAction(useGiantThumbnails, {});
-  }, [currentFolderId]);
-
   return (
     <>
       <Stack gap={2}>
@@ -339,7 +232,11 @@ export function BackgroundPannel(props: TProps) {
           <div>图片</div>
           <Stack direction="row" sx={{ width: '209px' }}>
             <ImageBox>
-              <Image src={selectedImage} title="点击选择图片"  onClick={openDialog} />
+              <Image
+                src={selectedImage}
+                title="点击选择图片"
+                onClick={openDialog}
+              />
               {selectedImage !== 'none' && (
                 <ImageAction>
                   <Tooltip title="选择图片" arrow>
@@ -523,34 +420,7 @@ export function BackgroundPannel(props: TProps) {
         </StackFlex>
       </Stack>
 
-      <Dialog
-        maxWidth="md"
-        TransitionComponent={Transition}
-        open={dialogVisible}
-        onClose={closeDialog}
-      >
-        <Box sx={{ width: '670px', height: '500px' }}>
-          <FileBrowser
-            ref={fileBrowserRef}
-            iconComponent={ChonkyIconFA}
-            disableDragAndDrop={true}
-            files={files}
-            folderChain={folderChain}
-            defaultFileViewActionId={useGiantThumbnails.id}
-            onFileAction={handleFileAction}
-            disableDefaultFileActions={[ChonkyActions.SelectAllFiles.id]}
-          >
-            <FileNavbar />
-            <FileList />
-          </FileBrowser>
-        </Box>
-        <DialogActions>
-          <Button onClick={closeDialog}>取消</Button>
-          <Button disabled={disableSelectButton} onClick={handleSelectImage}>
-            确定选择
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ResourceSelectModal type="image" onSelect={onSelect} />
     </>
   );
 }

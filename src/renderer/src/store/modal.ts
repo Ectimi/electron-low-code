@@ -3,12 +3,14 @@ import { proxy } from 'valtio';
 interface IModalStore {
   CreateProjectModalOpen: boolean;
   ResourceLibraryModalOpen: boolean;
+  ResourceSelectModalOpen: boolean;
 }
 
 class ModalStore {
   state = proxy<IModalStore>({
     CreateProjectModalOpen: false,
     ResourceLibraryModalOpen: false,
+    ResourceSelectModalOpen: false,
   });
 
   toggleCreateProjectModal = (bool: boolean) =>
@@ -16,6 +18,9 @@ class ModalStore {
 
   toggleResourceLibraryModal = (bool: boolean) =>
     (this.state.ResourceLibraryModalOpen = bool);
+
+  toggleResourceSelectModal = (bool: boolean) =>
+    (this.state.ResourceSelectModalOpen = bool);
 }
 
 const modalStore = new ModalStore();

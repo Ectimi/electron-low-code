@@ -1,13 +1,17 @@
 import { Box } from '@mui/material';
 import { styleParser } from '../utils/styleParser';
-import { defaultProps } from './props';
-import { TMaterialProps } from '../types/material';
+import { TButtonProps, defaultProps } from './props';
 import { cloneDeep } from 'lodash';
 
-export default function MButton(props: TMaterialProps) {
-  const sx = styleParser(props.style);  
-  
-  return <Box sx={sx}>按钮</Box>;
+export default function MButton(props: TButtonProps) {
+  const { style, attribute } = props;
+  const sx = styleParser(style);
+
+  return (
+    <Box id={attribute.id} className={attribute.className} sx={sx}>
+      {attribute.text}
+    </Box>
+  );
 }
 
 MButton.__default_configuration = cloneDeep(defaultProps);

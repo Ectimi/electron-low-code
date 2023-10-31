@@ -14,7 +14,7 @@ export default function CanvasRenderer(props: { materials: IMaterialItem[] }) {
 
         return cloneElement(Component as ReactElement, {
           key: material.id,
-          id: material.id,
+          'data-id':material.id,
           ...store.getConfiguration(material.id),
           onClick: () => {
             editorStore.setCurrentMaterial(material.id);
