@@ -6,7 +6,7 @@ export const enum EMaterialName {
   Button = 'Button',
 }
 
-export interface IMaterial<Attribute> {
+export interface IMaterial<Attribute = any> {
   id: string;
   name: EMaterialName;
   property: {

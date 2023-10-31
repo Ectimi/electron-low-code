@@ -1,12 +1,5 @@
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
-import MuiAccordionDetails from '@mui/material/AccordionDetails';
-import {
-  Accordion as MuiAccordion,
-  AccordionSummary as MuiAccordionSummary,
-  Typography,
-  Stack,
-  styled,
-} from '@mui/material';
+import { Typography } from '@mui/material';
 import editorStore from '@/store/editor';
 import { EStyleType } from '@/materials/types/style';
 import { IMaterial } from '@/materials/types/material';
@@ -22,39 +15,11 @@ import { Fragment, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import Fallback from '@/components/Fallback';
 import { useSnapshot } from 'valtio';
-
-const Accordion = styled(MuiAccordion)(({ theme }) => ({
-  '.MuiButtonBase-root': {
-    minHeight: '30px',
-  },
-  border: `1px solid ${theme.palette.divider}`,
-  '&:not(:last-child)': {
-    borderBottom: 0,
-  },
-  '&:before': {
-    display: 'none',
-  },
-}));
-
-const AccordionSummary = styled(MuiAccordionSummary)(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === 'dark'
-      ? 'rgba(255, 255, 255, .05)'
-      : 'rgba(0, 0, 0, .03)',
-  flexDirection: 'row-reverse',
-  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
-    transform: 'rotate(90deg)',
-  },
-  '& .MuiAccordionSummary-content': {
-    margin: theme.spacing(1),
-  },
-}));
-
-const AccordionDetails = styled(MuiAccordionDetails)({
-  padding: '8px 20px',
-  borderTop: '1px solid rgba(0, 0, 0, .125)',
-  fontSize: '14px',
-});
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from '@/components/Accordion';
 
 const titleMap: Map<EStyleType, any> = new Map([
   [EStyleType.layout, '布局'],
@@ -69,7 +34,7 @@ const titleMap: Map<EStyleType, any> = new Map([
 export default function StylePanelRenderer() {
   const [updateKey, forceUpdate] = useSafeState(0);
   const editorSnap = useSnapshot(editorStore.state);
-  const property = useMemo<IMaterial['property'] | null>(() => {
+  const property = useMemo<IMaterial<any>['property'] | null>(() => {
     return editorSnap.currentMaterial
       ? editorStore.getConfiguration(editorSnap.currentMaterial!)!
       : null;
@@ -82,7 +47,7 @@ export default function StylePanelRenderer() {
   return (
     <ErrorBoundary FallbackComponent={Fallback}>
       <Fragment key={updateKey}>
-        {editorSnap.currentMaterial && property ? (
+        {property &&
           [...titleMap.keys()].map((key) => (
             <Accordion
               key={key}
@@ -196,17 +161,7 @@ export default function StylePanelRenderer() {
                 )}
               </AccordionDetails>
             </Accordion>
-          ))
-        ) : (
-          <Stack
-            sx={{ height: '100%' }}
-            direction={'row'}
-            alignItems="center"
-            justifyContent="center"
-          >
-            请在画布中选择组件
-          </Stack>
-        )}
+          ))}
       </Fragment>
     </ErrorBoundary>
   );

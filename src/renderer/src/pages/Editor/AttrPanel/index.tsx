@@ -1,8 +1,10 @@
 import { useState, SyntheticEvent } from 'react';
-import { Box, Paper as MPaper, Tabs, Tab, styled } from '@mui/material';
+import { Box, Paper as MPaper, Tabs, Tab, styled, Stack } from '@mui/material';
 import StylePanelRenderer from '@/core/StylePanelRenderer';
 import AniPanelRenderer from '@/core/AniPanelRenderer';
 import AttributePanelRenderer from 'root/renderer/src/core/AttributePanelRenderer';
+import { useSnapshot } from 'valtio';
+import editorStore from 'root/renderer/src/store/editor';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -32,28 +34,41 @@ const AttrPanelBox = styled(MPaper)({
   userSelect: 'none',
 });
 
+const TabTypes = ['属性', '样式', '动画'];
+
 export default function AttrPanel() {
-  const [index, setIndex] = useState(1);
+  const editorSnap = useSnapshot(editorStore.state);
+  const [tabIndex, setTabIndex] = useState(1);
   const handleChange = (_: SyntheticEvent, newValue: number) => {
-    setIndex(newValue);
+    setTabIndex(newValue);
   };
 
   return (
     <AttrPanelBox id="attrPanelBox" elevation={5}>
-      <Tabs value={index} onChange={handleChange}>
-        <Tab label="属性" />
-        <Tab label="样式" />
-        <Tab label="动画" />
+      <Tabs value={tabIndex} onChange={handleChange}>
+        {TabTypes.map((label) => (
+          <Tab key={label} label={label} />
+        ))}
       </Tabs>
-      <TabPanel value={index} index={0}>
-        <AttributePanelRenderer />
-      </TabPanel>
-      <TabPanel value={index} index={1}>
-        <StylePanelRenderer />
-      </TabPanel>
-      <TabPanel value={index} index={2}>
-        <AniPanelRenderer />
-      </TabPanel>
+      {TabTypes.map((label, index) =>
+        editorSnap.currentMaterial ? (
+          <TabPanel key={label} value={tabIndex} index={index}>
+            {index === 0 && <AttributePanelRenderer />}
+            {index === 1 && <StylePanelRenderer />}
+            {index === 2 && <AniPanelRenderer />}
+          </TabPanel>
+        ) : (
+          <Stack
+            key={label}
+            sx={{ height: '100%' }}
+            direction={'row'}
+            alignItems="center"
+            justifyContent="center"
+          >
+            请在画布中选择组件
+          </Stack>
+        )
+      )}
     </AttrPanelBox>
   );
 }

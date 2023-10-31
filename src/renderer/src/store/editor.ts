@@ -47,6 +47,16 @@ class EditorStore {
       }
     });
   };
+
+  updateMaterialAttribute = (materialId: string,value: any) => {
+    this.materialList.value = produce(this.materialList.value, (draft) => {
+      const material = draft.filter(({ id }) => id === materialId)[0];
+      if (material) {
+        // set(material, ['configuration', 'attribute', ...key.split('.')], value);
+        set(material, ['configuration', 'attribute'], value);
+      }
+    });
+  };
 }
 
 const editorStore = new EditorStore();
