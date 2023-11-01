@@ -10,12 +10,12 @@ export default function CanvasRenderer(props: { materials: IMaterialItem[] }) {
     <>
       {materials.map((material) => {
         const fn = material.component;
-        const Component = fn({ ...material.configuration });
+        const Component = fn({ ...material.property });
 
         return cloneElement(Component as ReactElement, {
           key: material.id,
           'data-id':material.id,
-          ...store.getConfiguration(material.id),
+          ...store.getProperty(material.id),
           onClick: () => {
             editorStore.setCurrentMaterial(material.id);
           },

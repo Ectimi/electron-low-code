@@ -14,4 +14,4 @@ export default function MText(props: TTextProps) {
   );
 }
 
-MText.__default_configuration = cloneDeep(defaultProps);
+MText.__default_property = cloneDeep(defaultProps);

@@ -10,7 +10,7 @@ export const enum EMaterialName {
 export interface IMaterial<Attribute = any> {
   id: string;
   name: EMaterialName;
-  parentId:string;
+  parentId:string | null;
   property: {
     style: TStyle;
     attribute: {

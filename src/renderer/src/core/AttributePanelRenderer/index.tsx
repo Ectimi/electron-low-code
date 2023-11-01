@@ -69,7 +69,7 @@ export default function AttributePanelRenderer() {
   const editorSnap = useSnapshot(editorStore.state);
   const [attribute, setAttribute] = useSafeState<
     IMaterial['property']['attribute']
-  >(editorStore.getConfiguration(editorSnap.currentMaterial!)!.attribute || {});
+  >(editorStore.getProperty(editorSnap.currentMaterial!)!.attribute || {});
   const { watch, control, reset, setValue } = useForm<IForm>({
     defaultValues: {
       id: attribute.id || '',
@@ -88,7 +88,7 @@ export default function AttributePanelRenderer() {
 
   const update = (data: IForm) => {
     const obj: any = {};
-    const attribute = editorStore.getConfiguration(
+    const attribute = editorStore.getProperty(
       editorSnap.currentMaterial!
     )!.attribute;
     for (const key in data) {
@@ -103,7 +103,7 @@ export default function AttributePanelRenderer() {
   useEffect(() => {
     reset();
     if (editorSnap.currentMaterial) {
-      const attribute = editorStore.getConfiguration(
+      const attribute = editorStore.getProperty(
         editorSnap.currentMaterial!
       )!.attribute;
       setAttribute(attribute);

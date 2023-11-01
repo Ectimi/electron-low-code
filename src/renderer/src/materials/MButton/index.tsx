@@ -14,4 +14,4 @@ export default function MButton(props: TButtonProps) {
   );
 }
 
-MButton.__default_configuration = cloneDeep(defaultProps);
+MButton.__default_property = cloneDeep(defaultProps);

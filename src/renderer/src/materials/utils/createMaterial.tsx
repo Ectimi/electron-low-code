@@ -7,14 +7,11 @@ import { EMaterialName, IMaterial } from '../types/material';
 import { FC } from 'react';
 
 type MaterialFC = FC & {
-  __default_configuration: IMaterial['property'];
+  __default_property: IMaterial['property'];
 };
 
-export interface IMaterialItem {
-  id: string;
-  name: EMaterialName;
+export interface IMaterialItem extends IMaterial {
   component: MaterialFC;
-  configuration: IMaterial['property'];
 }
 
 const componentMap: Record<EMaterialName, MaterialFC> = {
@@ -24,14 +21,18 @@ const componentMap: Record<EMaterialName, MaterialFC> = {
   [EMaterialName.Box]: MBox as unknown as MaterialFC,
 };
 
-export default function createMaterial(name: EMaterialName): IMaterialItem {
+export default function createMaterial(
+  name: EMaterialName,
+  parentId: IMaterial['parentId'] = null
+): IMaterialItem {
   const id = name + '__' + nanoid();
   const component = componentMap[name];
 
   return {
     id,
     name,
+    parentId,
     component,
-    configuration: component.__default_configuration,
+    property: component.__default_property,
   };
 }

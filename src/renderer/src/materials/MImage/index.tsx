@@ -23,4 +23,4 @@ export default function MImage(props: TImageProps) {
   );
 }
 
-MImage.__default_configuration = cloneDeep(defaultProps);
+MImage.__default_property = cloneDeep(defaultProps);

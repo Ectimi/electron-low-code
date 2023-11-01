@@ -36,14 +36,14 @@ class EditorStore {
   getMaterial = (materialId: string) =>
     this.materialList.value.filter(({ id }) => id === materialId)[0];
 
-  getConfiguration = (materialId: string) =>
-    this.getMaterial(materialId).configuration;
+  getProperty = (materialId: string) =>
+    this.getMaterial(materialId).property;
 
   updateMaterialStyle = (materialId: string, key: string, value: any) => {
     this.materialList.value = produce(this.materialList.value, (draft) => {
       const material = draft.filter(({ id }) => id === materialId)[0];
       if (material) {
-        set(material, ['configuration', 'style', ...key.split('.')], value);
+        set(material, ['property', 'style', ...key.split('.')], value);
       }
     });
   };
@@ -52,7 +52,7 @@ class EditorStore {
     this.materialList.value = produce(this.materialList.value, (draft) => {
       const material = draft.filter(({ id }) => id === materialId)[0];
       if (material) {
-        set(material, ['configuration', 'attribute'], value);
+        set(material, ['property', 'attribute'], value);
       }
     });
   };

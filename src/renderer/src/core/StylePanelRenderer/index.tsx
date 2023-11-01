@@ -36,7 +36,7 @@ export default function StylePanelRenderer() {
   const editorSnap = useSnapshot(editorStore.state);
   const property = useMemo<IMaterial<any>['property'] | null>(() => {
     return editorSnap.currentMaterial
-      ? editorStore.getConfiguration(editorSnap.currentMaterial!)!
+      ? editorStore.getProperty(editorSnap.currentMaterial!)!
       : null;
   }, [editorSnap.currentMaterial]);
 

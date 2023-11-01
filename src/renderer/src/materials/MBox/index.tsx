@@ -30,4 +30,4 @@ export default function MButton(props: TBoxProps) {
   );
 }
 
-MButton.__default_configuration = cloneDeep(defaultProps);
+MButton.__default_property = cloneDeep(defaultProps);
