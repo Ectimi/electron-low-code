@@ -4,11 +4,13 @@ export const enum EMaterialName {
   Image = 'Image',
   Text = 'Mext',
   Button = 'Button',
+  Box = 'Box'
 }
 
 export interface IMaterial<Attribute = any> {
   id: string;
   name: EMaterialName;
+  parentId:string;
   property: {
     style: TStyle;
     attribute: {

@@ -2,12 +2,13 @@ import { nanoid } from 'nanoid';
 import MImage from '@/materials/MImage';
 import MText from '@/materials/MText';
 import MButton from '@/materials/MButton';
+import MBox from '@/materials/MBox';
 import { EMaterialName, IMaterial } from '../types/material';
 import { FC } from 'react';
 
 type MaterialFC = FC & {
-    __default_configuration: IMaterial['property']; 
-  };
+  __default_configuration: IMaterial['property'];
+};
 
 export interface IMaterialItem {
   id: string;
@@ -20,6 +21,7 @@ const componentMap: Record<EMaterialName, MaterialFC> = {
   [EMaterialName.Button]: MButton as unknown as MaterialFC,
   [EMaterialName.Image]: MImage as unknown as MaterialFC,
   [EMaterialName.Text]: MText as unknown as MaterialFC,
+  [EMaterialName.Box]: MBox as unknown as MaterialFC,
 };
 
 export default function createMaterial(name: EMaterialName): IMaterialItem {

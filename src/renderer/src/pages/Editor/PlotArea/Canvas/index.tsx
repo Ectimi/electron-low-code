@@ -54,10 +54,13 @@ export default function Canvas(props: ICanvasProps) {
     drop: (item: IDropResult) => {
       const materialItem = createMaterial(item.materialName);
       editorStore.addMaterial(materialItem);
+      console.log('parent');
+      
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),
+      isOverCurrent: monitor.isOver({ shallow: true }),
     }),
   }));
 
