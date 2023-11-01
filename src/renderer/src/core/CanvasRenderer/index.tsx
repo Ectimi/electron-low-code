@@ -1,6 +1,4 @@
-import { ReactElement, cloneElement } from 'react';
 import { IMaterialItem } from 'root/renderer/src/materials/utils/createMaterial';
-import store from '@/store/editor';
 import editorStore from '@/store/editor';
 
 export default function CanvasRenderer(props: { materials: IMaterialItem[] }) {
@@ -9,17 +7,16 @@ export default function CanvasRenderer(props: { materials: IMaterialItem[] }) {
   return (
     <>
       {materials.map((material) => {
-        const fn = material.component;
-        const Component = fn({ ...material.property });
+        const Component: any = material.component;
 
-        return cloneElement(Component as ReactElement, {
-          key: material.id,
-          'data-id':material.id,
-          ...store.getProperty(material.id),
-          onClick: () => {
-            editorStore.setCurrentMaterial(material.id);
-          },
-        });
+        return (
+          <Component
+            key={material.id}
+            data-id={material.id}
+            onClick={() => editorStore.setCurrentMaterial(material.id)}
+            {...material.property}
+          />
+        );
       })}
     </>
   );

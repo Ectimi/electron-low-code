@@ -2,7 +2,7 @@ import { TStyle } from './style';
 
 export const enum EMaterialName {
   Image = 'Image',
-  Text = 'Mext',
+  Text = 'Text',
   Button = 'Button',
   Box = 'Box'
 }

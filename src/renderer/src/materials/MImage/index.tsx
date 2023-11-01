@@ -6,7 +6,7 @@ import ImagePng from '@/assets/image.png';
 import { CSSProperties } from '@mui/material/styles/createMixins';
 
 export default function MImage(props: TImageProps) {
-  const { style, attribute } = props;
+  const { style, attribute,...restProps } = props;
   const sx: CSSProperties = {
     ...styleParser(style),
     objectFit: attribute.objectFix,
@@ -19,6 +19,7 @@ export default function MImage(props: TImageProps) {
       className={attribute.className}
       sx={sx}
       src={url}
+      {...restProps}
     />
   );
 }

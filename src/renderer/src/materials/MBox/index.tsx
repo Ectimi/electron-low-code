@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import { styleParser } from '../utils/styleParser';
 import { TBoxProps, defaultProps } from './props';
 import { cloneDeep } from 'lodash';
@@ -6,28 +6,39 @@ import { useDrop } from 'react-dnd';
 import { IDropResult } from '@/pages/Editor/MaterialIndicatorBox';
 import createMaterial from '../utils/createMaterial';
 
-export default function MButton(props: TBoxProps) {
-  const { style, attribute } = props;
+const EmptyBox = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: 'auto',
+  height: 50,
+  backgroundColor: '#f1f1f1',
+  color: '#a7b1bd',
+});
+
+export default function MBox(props: TBoxProps) {
+  const { style, attribute, ...restProps } = props;
   const sx = styleParser(style);
   const [, drop] = useDrop(() => ({
     accept: 'material',
-    drop: (item: IDropResult,monitor) => {
-        const didDrop = monitor.didDrop()
-        console.log('didDrop',monitor);
-        
-      //   const materialItem = createMaterial(item.materialName);
+    drop: (item: IDropResult, monitor) => {
+      const didDrop = monitor.didDrop();
+      if (!didDrop) {
+        console.log('drop');
+      }
     },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
   }));
 
   return (
-    <Box ref={drop} id={attribute.id} className={attribute.className} sx={sx}>
-      请将元素播放到这里
-    </Box>
+    <EmptyBox
+      ref={drop}
+      id={attribute.id}
+      className={attribute.className}
+      {...restProps}
+    >
+      请将元素拖放到这里
+    </EmptyBox>
   );
 }
 
-MButton.__default_property = cloneDeep(defaultProps);
+MBox.__default_property = cloneDeep(defaultProps);

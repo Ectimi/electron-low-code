@@ -3,7 +3,9 @@ import { IDropResult } from '../../MaterialIndicatorBox';
 import { styled } from '@mui/material';
 import editorStore from '@/store/editor';
 import CanvasRenderer from '@/core/CanvasRenderer';
-import createMaterial, { IMaterialItem } from 'root/renderer/src/materials/utils/createMaterial';
+import createMaterial, {
+  IMaterialItem,
+} from 'root/renderer/src/materials/utils/createMaterial';
 import { useSnapshot } from 'valtio';
 import { subscribeKey } from 'valtio/utils';
 import { useMount, useUpdate } from 'ahooks';
@@ -51,17 +53,13 @@ export default function Canvas(props: ICanvasProps) {
   const materials = useSnapshot(editorStore.materialList);
   const [, drop] = useDrop(() => ({
     accept: 'material',
-    drop: (item: IDropResult) => {
-      const materialItem = createMaterial(item.materialName);
-      editorStore.addMaterial(materialItem);
-      console.log('parent');
-      
+    drop: (item: IDropResult, monitor) => {
+      const didDrop = monitor.didDrop();
+      if (!didDrop) {
+        const materialItem = createMaterial(item.materialName);
+        editorStore.addMaterial(materialItem);
+      }
     },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-      isOverCurrent: monitor.isOver({ shallow: true }),
-    }),
   }));
 
   useMount(() => subscribeKey(editorStore.materialList, 'value', update));

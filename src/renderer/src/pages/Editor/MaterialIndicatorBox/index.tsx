@@ -52,9 +52,8 @@ const MaterialIndicatorItem = function (props: IMaterialIndicatorItem) {
     <ScMaterialIndicatorItem
       ref={drag}
       style={{ opacity }}
-      className="material-indicator-item"
     >
-      <ScIconContainer className="icon-container">
+      <ScIconContainer>
         {cloneElement(props.icon, { sx: { fontSize: 40 } })}
       </ScIconContainer>
       <Typography variant="body2"  align="center">
@@ -66,7 +65,7 @@ const MaterialIndicatorItem = function (props: IMaterialIndicatorItem) {
 
 export default function MaterialIndicatorBox() {
   return (
-    <ScMaterialIndicatorBox className="material-indicator-box" elevation={5}>
+    <ScMaterialIndicatorBox elevation={5}>
       {MaterialIndicatorItems.map((item) => (
         <MaterialIndicatorItem key={item.materialName} {...item} />
       ))}
