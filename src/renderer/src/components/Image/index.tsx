@@ -28,7 +28,7 @@ export default function Image(props: ImageProps) {
   const { src, title, ...otherProps } = props;
   const [error, setError] = useSafeState(false);
 
-  return src === 'none' ? (
+  return src === 'none' || src === '' ? (
     <Tooltip title={title ? title : null} arrow>
       <ImageIcon fontSize="large" sx={{ cursor: 'pointer' }} {...otherProps} />
     </Tooltip>

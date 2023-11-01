@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import MImage from '@/materials/MImage';
 import MText from '@/materials/MText';
 import MButton from '@/materials/MButton';
-import { EMaterialName, IMaterial } from './types/material';
+import { EMaterialName, IMaterial } from '../types/material';
 import { FC } from 'react';
 
 type MaterialFC = FC & {

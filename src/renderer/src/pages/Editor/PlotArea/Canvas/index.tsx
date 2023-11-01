@@ -3,7 +3,7 @@ import { IDropResult } from '../../MaterialIndicatorBox';
 import { styled } from '@mui/material';
 import editorStore from '@/store/editor';
 import CanvasRenderer from '@/core/CanvasRenderer';
-import createMaterial, { IMaterialItem } from '@/materials/createMaterial';
+import createMaterial, { IMaterialItem } from 'root/renderer/src/materials/utils/createMaterial';
 import { useSnapshot } from 'valtio';
 import { subscribeKey } from 'valtio/utils';
 import { useMount, useUpdate } from 'ahooks';

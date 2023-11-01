@@ -145,11 +145,13 @@ export function EffectPannel(
         <Controller
           name="opacity"
           control={control}
+          rules={{ max: 100 }}
           render={({ field }) => (
             <StackFlex>
               <Box sx={{ width: '150px' }}>
                 <Slider
                   {...field}
+                  value={Number(field.value)}
                   min={0}
                   max={100}
                   step={1}
@@ -166,6 +168,7 @@ export function EffectPannel(
                   endAdornment: (
                     <InputAdornment position="start">%</InputAdornment>
                   ),
+                  inputProps: { max: 100, min: 0, step: 1 },
                 }}
                 sx={{ width: '100px' }}
               />
@@ -302,7 +305,7 @@ export function EffectPannel(
                 {...field}
                 type="number"
                 size="small"
-                label='blur-radius'
+                label="blur-radius"
                 sx={{ width: '180px' }}
               />
             )}
@@ -319,7 +322,7 @@ export function EffectPannel(
                 {...field}
                 type="number"
                 size="small"
-                label='spread-radius'
+                label="spread-radius"
                 sx={{ width: '180px' }}
               />
             )}

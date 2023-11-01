@@ -1,5 +1,5 @@
 import { ReactElement, cloneElement } from 'react';
-import { IMaterialItem } from '@/materials/createMaterial';
+import { IMaterialItem } from 'root/renderer/src/materials/utils/createMaterial';
 import store from '@/store/editor';
 import editorStore from '@/store/editor';
 

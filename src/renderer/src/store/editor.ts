@@ -1,4 +1,4 @@
-import { IMaterialItem } from '@/materials/createMaterial';
+import { IMaterialItem } from 'root/renderer/src/materials/utils/createMaterial';
 import { proxy } from 'valtio';
 import { proxyWithHistory } from 'valtio/utils';
 import set from 'lodash/set';
@@ -52,7 +52,6 @@ class EditorStore {
     this.materialList.value = produce(this.materialList.value, (draft) => {
       const material = draft.filter(({ id }) => id === materialId)[0];
       if (material) {
-        // set(material, ['configuration', 'attribute', ...key.split('.')], value);
         set(material, ['configuration', 'attribute'], value);
       }
     });
