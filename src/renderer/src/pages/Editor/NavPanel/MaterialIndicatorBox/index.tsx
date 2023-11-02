@@ -12,11 +12,13 @@ export interface IDropResult {
 }
 
 const ScMaterialIndicatorBox = styled(Paper)({
+  height:'100%',
+  width:'100%',
   display: 'flex',
   flexWrap: 'wrap',
   alignContent: 'flex-start',
   gap: '10px',
-  width: ' var(--left-panel-width)',
+  // width: ' var(--left-panel-width)',
   padding: 'var(--common-gap)',
   backgroundColor:'var(--background-color)'
 });

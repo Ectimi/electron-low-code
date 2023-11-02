@@ -1,5 +1,5 @@
 import { useDrop } from 'react-dnd';
-import { IDropResult } from '../../MaterialIndicatorBox';
+import { IDropResult } from '../../NavPanel/MaterialIndicatorBox';
 import { styled } from '@mui/material';
 import editorStore from '@/store/editor';
 import CanvasRenderer from '@/core/CanvasRenderer';

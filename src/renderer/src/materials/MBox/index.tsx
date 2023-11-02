@@ -3,7 +3,7 @@ import { styleParser } from '../utils/styleParser';
 import { TBoxProps, defaultProps } from './props';
 import { cloneDeep } from 'lodash';
 import { useDrop } from 'react-dnd';
-import { IDropResult } from '@/pages/Editor/MaterialIndicatorBox';
+import { IDropResult } from 'root/renderer/src/pages/Editor/NavPanel/MaterialIndicatorBox';
 import createMaterial from '../utils/createMaterial';
 import editorStore from '@/store/editor';
 import { PropsWithChildren } from 'react';
