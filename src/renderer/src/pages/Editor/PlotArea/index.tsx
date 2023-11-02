@@ -30,7 +30,17 @@ const HelperBox = styled(Box)(
 
 const IndicatorBox = styled(Box)(({ theme }) => ({
   position: 'absolute',
-  outline: `3px solid ${theme.palette.primary.dark}`,
+  border: `3px solid ${theme.palette.primary.dark}`,
+}));
+
+const IndicatorLabel = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  left: '-3px',
+  top: '-24px',
+  padding: '2px 10px',
+  fontSize: '12px',
+  backgroundColor: theme.palette.primary.dark,
+  color: '#fff',
 }));
 
 export default function PlotArea() {
@@ -43,6 +53,7 @@ export default function PlotArea() {
     width: '0px',
     height: '0px',
   });
+  const [indicatorLabel, setIndicatorLabel] = useSafeState('');
   const [plotAreaRef, canvasPos] = usePlotArea({
     onLooseSpace(el) {
       el.style.cursor = 'default';
@@ -65,8 +76,11 @@ export default function PlotArea() {
         ) as HTMLElement;
         const top = ele?.offsetTop + 'px';
         const left = ele?.offsetLeft + 'px';
-        const { right, bottom, width, height } = getComputedStyle(ele!);
+        const { right, bottom } = getComputedStyle(ele!);
+        const width = ele.offsetWidth + 'px';
+        const height = ele.offsetHeight + 'px';
         setIndicator({ top, right, bottom, left, width, height });
+        setIndicatorLabel(materialId.split('__')[0]);
       }
     };
     subscribeKey(editorStore.state, 'currentMaterial', (materialId) => {
@@ -89,7 +103,9 @@ export default function PlotArea() {
 
       <HelperBox x={canvasPos.x} y={canvasPos.y} scale={zoom}>
         {parseFloat(indicator.width) > 0 && (
-          <IndicatorBox sx={indicator}></IndicatorBox>
+          <IndicatorBox sx={indicator}>
+            <IndicatorLabel>{indicatorLabel}</IndicatorLabel>
+          </IndicatorBox>
         )}
       </HelperBox>
     </PlotAreaBox>

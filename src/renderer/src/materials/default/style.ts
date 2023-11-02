@@ -44,7 +44,7 @@ export const defaultMaterialStyle: TStyle = {
   },
   text: {
     color: '#000000',
-    lineHeight: 1.2,
+    lineHeight: 16,
     fontSize: 16,
     fontFamily:
       'Helvetica,Tahoma,Arial,STXihei,"华文细黑","Microsoft YaHei","微软雅黑",sans-serif',

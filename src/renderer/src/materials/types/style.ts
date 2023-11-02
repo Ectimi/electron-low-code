@@ -13,7 +13,8 @@ export type TDisplay =
   | 'inline-block'
   | 'inline'
   | 'flex'
-  | 'grid'
+  | 'inline-flex'
+  // | 'grid'
   | 'none';
 
 export type TBackgroundRepeat =

@@ -3,7 +3,7 @@ import createDefaultStyle from '../utils/createDefaultStyle';
 
 const style: TStyle = createDefaultStyle({
   layout: {
-    display: 'flex',
+    display: 'inline-flex',
     flexLayout: {
       container: {
         alignItems: 'center',

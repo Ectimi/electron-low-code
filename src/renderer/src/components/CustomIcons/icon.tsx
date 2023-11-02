@@ -1,9 +1,14 @@
 import { createSvgIcon } from '@mui/material';
+import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
 import { PropsWithChildren } from 'react';
 
-const Svg = (props:PropsWithChildren<any>)=>{
-  return <svg viewBox="0 0 16 16"  fill="none" stroke="currentColor">{props.children}</svg>
-}
+const Svg = (props: PropsWithChildren<any>) => {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor">
+      {props.children}
+    </svg>
+  );
+};
 export const DisplayBlockIcon = createSvgIcon(
   <Svg>
     <path
@@ -37,6 +42,8 @@ export const DisplayFlexIcon = createSvgIcon(
   </Svg>,
   'display-flex'
 );
+
+export const DisplayInlineFlexIcon = AlignHorizontalLeftIcon;
 
 export const DisplayGridIcon = createSvgIcon(
   <Svg>
@@ -102,4 +109,4 @@ export const DisplayNoneIcon = createSvgIcon(
   'display-none'
 );
 
-export const OverflowHiddenIcon = DisplayNoneIcon
+export const OverflowHiddenIcon = DisplayNoneIcon;

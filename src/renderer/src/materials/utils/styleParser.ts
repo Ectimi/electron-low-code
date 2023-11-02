@@ -28,7 +28,7 @@ const styleParser = (styleProps: TStyle) => {
 
   // 处理 layout 样式
   targetStyle.display = layout.display;
-  if (layout.display === 'flex' && layout.flexLayout) {
+  if (layout.display.includes('flex') && layout.flexLayout) {
     const { container, item } = layout.flexLayout;
 
     Object.keys(container).map((key) => {
@@ -53,16 +53,16 @@ const styleParser = (styleProps: TStyle) => {
 
   // 处理 size 样式
   Object.keys(size).map((key) => {
-    const value: any =
-      key === 'fontWeight'
-        ? (targetStyle as any)[key]
-        : styleValueParser(size[key as keyof TSize]!);
-    (targetStyle as any)[key] = value;
+    (targetStyle as any)[key] = styleValueParser(size[key as keyof TSize]!);
   });
 
   // 处理 text 样式
   Object.keys(text).map((key) => {
-    (targetStyle as any)[key] = text[key as keyof TText];
+    const value: any =
+      key === 'fontWeight'
+        ? (targetStyle as any)[key]
+        : styleValueParser(text[key as keyof TText]!);
+    (targetStyle as any)[key] = value;
   });
 
   // 处理 background 样式

@@ -1,7 +1,8 @@
-import { Tooltip, Unstable_Grid2, styled } from '@mui/material';
+import { SvgIcon, Tooltip, Unstable_Grid2, styled } from '@mui/material';
 import {
   DisplayBlockIcon,
   DisplayFlexIcon,
+  DisplayInlineFlexIcon,
   DisplayGridIcon,
   DisplayInlineBlockIcon,
   DisplayNoneIcon,
@@ -22,7 +23,8 @@ const Grid = styled(Unstable_Grid2)({
 const IconMap: Record<TDisplay, ReactNode> = {
   block: <DisplayBlockIcon />,
   flex: <DisplayFlexIcon />,
-  grid: <DisplayGridIcon />,
+  'inline-flex': <DisplayInlineFlexIcon />,
+  // grid: <DisplayGridIcon />,
   'inline-block': <DisplayInlineBlockIcon />,
   inline: <DisplayInlineIcon />,
   none: <DisplayNoneIcon />,

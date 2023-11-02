@@ -11,6 +11,7 @@ export interface IMaterial<Attribute = any> {
   id: string;
   name: EMaterialName;
   parentId:string | null;
+  children?:IMaterial[];
   property: {
     style: TStyle;
     attribute: {

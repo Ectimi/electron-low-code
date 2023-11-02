@@ -6,7 +6,7 @@ import { cloneDeep } from 'lodash';
 export default function MButton(props: TButtonProps) {
   const { style, attribute, ...restProps } = props;
   const sx = styleParser(style);
-
+ 
   return (
     <Box
       id={attribute.id}

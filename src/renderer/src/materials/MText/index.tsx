@@ -9,6 +9,7 @@ export default function MText(props: TTextProps) {
 
   return (
     <Box
+      component="span"
       id={attribute.id}
       className={attribute.className}
       sx={sx}
