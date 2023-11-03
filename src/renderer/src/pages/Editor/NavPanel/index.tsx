@@ -5,6 +5,7 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import _TabPanel from 'root/renderer/src/components/TabPanel';
 import MaterialIndicatorBox from './MaterialIndicatorBox';
+import NodeTree from './NodeTree';
 
 const TabBox = styled(Box)({
   display: 'flex',
@@ -27,7 +28,6 @@ export default function NavPanel() {
         variant="scrollable"
         value={tabIndex}
         onChange={handleChange}
-        // sx={{ width: '60px' }}
       >
         <Tab icon={<AddBoxIcon />} label="物料库" />
         <Tab icon={<AccountTreeIcon />} label="页面大纲" />
@@ -36,7 +36,7 @@ export default function NavPanel() {
         <MaterialIndicatorBox />
       </TabPanel>
       <TabPanel index={1} value={tabIndex}>
-        22
+        <NodeTree />
       </TabPanel>
     </TabBox>
   );

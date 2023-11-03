@@ -49,6 +49,7 @@
     "@aperturerobotics/chonky": "^0.2.7",
     "@aperturerobotics/chonky-icon-fontawesome": "^0.2.7",
     "@emotion/babel-plugin": "^11.11.0",
+    "@mui/x-tree-view": "^6.17.0",
     "@scena/react-guides": "^0.28.2",
     "@types/lodash": "^4.14.199",
     "@types/mousetrap": "^1.6.11",
