@@ -1,3 +1,4 @@
+import { memo, useRef } from 'react';
 import {
   MenuItem,
   Select,
@@ -5,13 +6,21 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
-import { useReactive } from 'ahooks';
+import {
+  useReactive,
+  useSafeState,
+  useUnmount,
+  useUpdate,
+  useUpdateEffect,
+} from 'ahooks';
 import { Subscription } from 'node_modules/react-hook-form/dist/utils/createSubject';
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import InputWithUnit from 'root/renderer/src/components/InputWithUnit';
 import { TCssValue, TSize } from 'root/renderer/src/materials/types/style';
 import editorStore from 'root/renderer/src/store/editor';
+
+type TProps = TSize & { onChange: (data: TSize) => void };
 
 const overflowTypes = ['visible', 'hidden', 'scroll', 'auto', 'inherit'];
 const objectFitTypes = ['contain', 'cover', 'fill', 'none', 'scale-down'];
@@ -30,15 +39,16 @@ const unitParser = (val: string | number) => {
   return 'px';
 };
 
-export function SizePannel(props: TSize & { onChange: (data: TSize) => void }) {
+export function SizePannel(props: TProps) {
   const { onChange, ...restProps } = props;
+  const shouldUpdate = useRef(true);
   const unitState = useReactive({
     width: unitParser(restProps.width),
     height: unitParser(restProps.height),
     minWidth: unitParser(restProps.minWidth),
     minHeight: unitParser(restProps.minHeight),
   });
-  const { watch, register, control, getValues } = useForm<TSize>({
+  const { watch, register, control, getValues, setValue } = useForm<TSize>({
     defaultValues: {
       ...restProps,
       width: parseFloat(restProps.width as any),
@@ -67,11 +77,51 @@ export function SizePannel(props: TSize & { onChange: (data: TSize) => void }) {
       subscription.unsubscribe();
     }
     subscription = watch((data) => {
-      update(data as TSize);
+      shouldUpdate.current && update(data as TSize);
     });
     return () => subscription!.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch, editorStore.state.currentMaterial]);
+
+  useUpdateEffect(() => {
+    const { width, height, minWidth, minHeight, objectFit, overflow } = props;
+
+    unitState.width = unitParser(width);
+    unitState.height = unitParser(height);
+    unitState.minWidth = unitParser(minWidth);
+    unitState.minHeight = unitParser(minHeight);
+
+    const shouldUpdateWidth = parseFloat(width as any) !== getValues('width');
+    const shouldUpdateHeight =
+      parseFloat(height as any) !== getValues('height');
+    const shouldUpdateMinWidth =
+      parseFloat(minWidth as any) !== getValues('minWidth');
+    const shouldUpdateMinHeight =
+      parseFloat(minHeight as any) !== getValues('minHeight');
+    const shouldUpdateObjectFit = objectFit !== getValues('objectFit');
+    const shouldUpdateOverflow = overflow !== getValues('overflow');
+
+    shouldUpdate.current = !(
+      shouldUpdateWidth ||
+      shouldUpdateHeight ||
+      shouldUpdateMinWidth ||
+      shouldUpdateMinHeight ||
+      shouldUpdateObjectFit ||
+      shouldUpdateOverflow
+    );
+
+    if (shouldUpdate.current === false) {
+      shouldUpdateWidth && setValue('width', parseFloat(width as any));
+      shouldUpdateHeight && setValue('height', parseFloat(height as any));
+      shouldUpdateMinWidth && setValue('minWidth', parseFloat(minWidth as any));
+      shouldUpdateMinHeight &&
+        setValue('minHeight', parseFloat(minHeight as any));
+      shouldUpdateObjectFit && setValue('objectFit', objectFit);
+      shouldUpdateOverflow && setValue('overflow', overflow);
+
+      shouldUpdate.current = true;
+    }
+  }, [props]);
 
   return (
     <Stack gap={2}>

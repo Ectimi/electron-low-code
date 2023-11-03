@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useImmer } from 'use-immer';
-import { useSafeState } from 'ahooks';
+import { useSafeState, useUpdateEffect } from 'ahooks';
 import SvgBoxPattern from './SvgBoxPattern';
 import { TGap, TGapValue } from 'root/renderer/src/materials/types/style';
 import { PropsWithChildren } from 'react';
@@ -125,6 +125,11 @@ export function GapPannel(props: TProps) {
     setInputValue(0);
     onInputChange(0);
   };
+
+  useUpdateEffect(() => {
+    setMargins(props.margin);
+    setPaddings(props.padding);
+  }, [props]);
 
   return (
     <>

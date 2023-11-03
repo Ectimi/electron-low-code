@@ -14,7 +14,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
-import { useReactive, useSafeState } from 'ahooks';
+import { useReactive, useSafeState, useUpdateEffect } from 'ahooks';
 import { TPosition } from 'root/renderer/src/materials/types/style';
 import SvgPositionPatterrn from './SvgPositionPattern';
 import { Box, PersetContainer, PresetFlexBox, PresetValue } from '../GapPannel';
@@ -53,7 +53,9 @@ export function PositionPannel(
   }
 ) {
   const [type, setType] = useSafeState(props.position);
-  const [zIndexType, setZIndexType] = useSafeState('auto');
+  const [zIndexType, setZIndexType] = useSafeState(
+    props.zIndex === 'auto' ? 'auto' : 'custom'
+  );
   const [modalVisible, setModalVisible] = useSafeState(false);
   const [inputValue, setInputValue] = useSafeState<number | string>('');
   const [posName, setPosName] = useSafeState('');
@@ -105,6 +107,16 @@ export function PositionPannel(
     setInputValue('auto');
     onInputChange('auto');
   };
+
+  useUpdateEffect(() => {
+    const { position, top, right, bottom, left, zIndex } = props;
+    setType(position);
+    setZIndexType(zIndex === 'auto' ? 'auto' : 'custom');
+    pos[0] = top;
+    pos[1] = right;
+    pos[2] = bottom;
+    pos[3] = left;
+  }, [props]);
 
   return (
     <>

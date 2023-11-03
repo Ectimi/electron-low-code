@@ -9,7 +9,7 @@ import {
   DisplayInlineIcon,
 } from '@/components/CustomIcons/icon';
 import { ReactNode, cloneElement } from 'react';
-import { useSafeState } from 'ahooks';
+import { useSafeState, useUpdateEffect } from 'ahooks';
 import { TDisplay } from 'root/renderer/src/materials/types/style';
 
 const Grid = styled(Unstable_Grid2)({
@@ -36,7 +36,10 @@ type TProps = {
 };
 export function LayoutPannel(props: TProps) {
   const [activeIcon, setActiveIcon] = useSafeState<TDisplay>(props.display);
-
+  useUpdateEffect(()=>{
+    setActiveIcon(props.display)
+  },[props.display])
+ 
   return (
     <Grid container spacing={2}>
       <Grid xs={3}>排布</Grid>

@@ -11,7 +11,7 @@ const style: TStyle = createDefaultStyle({
   },
   text: {
     fontSize: 16,
-    color: '#000',
+    color: '#000000',
   },
 });
 

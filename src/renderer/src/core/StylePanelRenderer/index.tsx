@@ -10,7 +10,7 @@ import { TextPannel } from './TextPannel';
 import { EffectPannel } from './EffectPannel';
 import { PositionPannel } from './PositionPannel';
 import { GapPannel } from './GapPannel';
-import { useSafeState, useUpdateEffect } from 'ahooks';
+import { useMount, useSafeState, useUpdateEffect } from 'ahooks';
 import { Fragment, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import Fallback from '@/components/Fallback';
@@ -20,6 +20,7 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from '@/components/Accordion';
+import { subscribeKey } from 'valtio/utils';
 
 const titleMap: Map<EStyleType, any> = new Map([
   [EStyleType.layout, '布局'],
@@ -34,15 +35,24 @@ const titleMap: Map<EStyleType, any> = new Map([
 export default function StylePanelRenderer() {
   const [updateKey, forceUpdate] = useSafeState(0);
   const editorSnap = useSnapshot(editorStore.state);
-  const property = useMemo<IMaterial<any>['property'] | null>(() => {
-    return editorSnap.currentMaterial
-      ? editorStore.getProperty(editorSnap.currentMaterial!)!
-      : null;
-  }, [editorSnap.currentMaterial]);
+  const [property, setProperty] = useSafeState<
+    IMaterial<any>['property'] | null
+  >(
+    editorSnap.currentMaterial
+      ? editorStore.getProperty(editorSnap.currentMaterial!)
+      : null
+  );
 
   useUpdateEffect(() => {
     forceUpdate((pre) => pre + 1);
   }, [editorSnap.currentMaterial]);
+
+  useMount(() =>
+    subscribeKey(editorStore.materialList, 'value', () => {
+      const property = editorStore.getProperty(editorSnap.currentMaterial!);
+      setProperty(property);
+    })
+  );
 
   return (
     <ErrorBoundary FallbackComponent={Fallback}>
