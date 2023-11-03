@@ -29,15 +29,16 @@ class EditorStore {
     (this.state.currentMaterial = materialId);
 
   addMaterial = (item: IMaterialItem) => {
-    this.materialList.value.push(item);
+    this.materialList.value = produce(this.materialList.value, (draft) => {
+      draft.push(item);
+    });
     this.setCurrentMaterial(item.id);
   };
 
   getMaterial = (materialId: string) =>
     this.materialList.value.filter(({ id }) => id === materialId)[0];
 
-  getProperty = (materialId: string) =>
-    this.getMaterial(materialId).property;
+  getProperty = (materialId: string) => this.getMaterial(materialId).property;
 
   updateMaterialStyle = (materialId: string, key: string, value: any) => {
     this.materialList.value = produce(this.materialList.value, (draft) => {
@@ -48,12 +49,19 @@ class EditorStore {
     });
   };
 
-  updateMaterialAttribute = (materialId: string,value: any) => {
+  updateMaterialAttribute = (materialId: string, value: any) => {
     this.materialList.value = produce(this.materialList.value, (draft) => {
       const material = draft.filter(({ id }) => id === materialId)[0];
       if (material) {
         set(material, ['property', 'attribute'], value);
       }
+    });
+  };
+
+  deleteMaterial = (materialId: string) => {
+    this.materialList.value = produce(this.materialList.value, (draft) => {
+      const index = draft.findIndex((item) => item.id === materialId);
+      draft.splice(index, 1);
     });
   };
 }

@@ -43,18 +43,31 @@ const ActionButton = (props: {
 
 export function ActionTool() {
   const { currentMaterial } = useSnapshot(editorStore.state);
-  const { value, canUndo, canRedo } = useSnapshot(editorStore.materialList);
+  const { value, canUndo, canRedo, undo, redo } = useSnapshot(
+    editorStore.materialList
+  );
   return (
     <ToolBox>
       <Stack gap={1} direction="row" alignItems="center">
-        <ActionButton title="撤消" icon={<UndoIcon />} disabled={!canUndo()} />
+        <ActionButton
+          title="撤消"
+          icon={<UndoIcon />}
+          disabled={!canUndo()}
+          onClick={undo}
+        />
 
-        <ActionButton title="重做" icon={<RedoIcon />} disabled={!canRedo()} />
+        <ActionButton
+          title="重做"
+          icon={<RedoIcon />}
+          disabled={!canRedo()}
+          onClick={redo}
+        />
 
         <ActionButton
           title="删除"
           icon={<DeleteIcon />}
           disabled={value.length === 0 && currentMaterial === null}
+          onClick={() => editorStore.deleteMaterial(currentMaterial!)}
         />
 
         <ActionButton
