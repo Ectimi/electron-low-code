@@ -27,6 +27,9 @@ import ResourceSelectModal from 'root/renderer/src/components/modal/ResourceSele
 type TBackgroundSize = 'auto' | 'cover' | 'contain' | 'custom';
 type TBackgroundPosition = 'left' | 'center' | 'right' | 'custom';
 type TFormValue = TBackground & {
+  backgroundSizeType: TBackgroundSize;
+  backgroundPositionXType: TBackgroundPosition;
+  backgroundPositionYType: TBackgroundPosition;
   backgroundSizeWidth: number;
   backgroundSizeHeight: number;
 };
@@ -74,36 +77,14 @@ let subscription: Subscription | null = null;
 
 export function BackgroundPannel(props: TProps) {
   const { onChange, ...restProps } = props;
-  const [sizeType, setSizeType] = useSafeState<TBackgroundSize>(() => {
-    const { backgroundSize } = props;
-    return Array.isArray(backgroundSize) ? 'custom' : backgroundSize;
-  });
-  const [positionXType, setPositionXType] = useSafeState<TBackgroundPosition>(
-    () => {
-      const { backgroundPositionX } = props;
-      return isValidCssValue(backgroundPositionX)
-        ? 'custom'
-        : (backgroundPositionX as TBackgroundPosition);
-    }
-  );
-  const [positionYType, setPositionYType] = useSafeState<TBackgroundPosition>(
-    () => {
-      const { backgroundPositionY } = props;
-      return isValidCssValue(backgroundPositionY)
-        ? 'custom'
-        : (backgroundPositionY as TBackgroundPosition);
-    }
-  );
-  const lastestSizeType = useLatest(sizeType);
-  const lastestPosXType = useLatest(positionXType);
-  const lastestPosYType = useLatest(positionYType);
+  const shouldUpdate = useRef(true);
   const unitRef = useRef({
     width: 'px',
     height: 'px',
     'position-x': 'px',
     'position-y': 'px',
   });
-  const { watch, register, control, getValues, setValue } = useForm<TFormValue>(
+  const { watch, register, control, getValues, setValue,reset } = useForm<TFormValue>(
     {
       defaultValues: (function getDefaultValue() {
         const { backgroundSize } = props;
@@ -141,6 +122,15 @@ export function BackgroundPannel(props: TProps) {
 
         return {
           ...restProps,
+          backgroundSizeType: Array.isArray(backgroundSize)
+            ? 'custom'
+            : backgroundSize,
+          backgroundPositionXType: isValidCssValue(props.backgroundPositionX)
+            ? 'custom'
+            : (props.backgroundPositionX as TBackgroundPosition),
+          backgroundPositionYType: isValidCssValue(props.backgroundPositionY)
+            ? 'custom'
+            : (props.backgroundPositionY as TBackgroundPosition),
           backgroundSizeWidth,
           backgroundSizeHeight,
           backgroundPositionX,
@@ -155,23 +145,25 @@ export function BackgroundPannel(props: TProps) {
 
   const update = (data: TFormValue) => {
     const backgroundSize =
-      lastestSizeType.current === 'custom'
+      data.backgroundSizeType === 'custom'
         ? [
             data.backgroundSizeWidth + unitRef.current.width,
             data.backgroundSizeHeight + unitRef.current.height,
           ]
-        : lastestSizeType.current;
+        : data.backgroundSizeType;
 
     const backgroundPositionX =
-      lastestPosXType.current === 'custom'
+      data.backgroundPositionXType === 'custom'
         ? data.backgroundPositionX + unitRef.current['position-x']
-        : lastestPosXType.current;
+        : data.backgroundPositionXType;
 
     const backgroundPositionY =
-      lastestPosYType.current === 'custom'
+      data.backgroundPositionYType === 'custom'
         ? data.backgroundPositionY + unitRef.current['position-y']
-        : lastestPosYType.current;
+        : data.backgroundPositionYType;
 
+        console.log('update',data.backgroundColor);
+        
     onChange({
       backgroundSize,
       backgroundPositionX,
@@ -193,15 +185,15 @@ export function BackgroundPannel(props: TProps) {
   const closeDialog = () => modalStore.toggleResourceSelectModal(false);
 
   const onSelect = (imagePath: string) => {
-    setSelectedImage(imagePath);
     setValue('backgroundImage', imagePath);
+    setSelectedImage(imagePath);
     update(getValues());
     closeDialog();
   };
 
   const handleDelete = () => {
-    setSelectedImage('none');
     setValue('backgroundImage', 'none');
+    setSelectedImage('none');
     update(getValues());
   };
 
@@ -210,15 +202,124 @@ export function BackgroundPannel(props: TProps) {
       subscription.unsubscribe();
     }
     subscription = watch((data) => {
-      update(data as TFormValue);
+      shouldUpdate.current && update(data as TFormValue);
     });
     return () => subscription!.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch, editorStore.state.currentMaterial]);
 
   useUpdateEffect(() => {
-    update(getValues());
-  }, [sizeType, positionXType, positionYType]);
+    const {
+      backgroundColor,
+      backgroundImage,
+      backgroundSize,
+      backgroundRepeat,
+      backgroundClip,
+      backgroundPositionX,
+      backgroundPositionY,
+    } = props;
+    
+    const shouldUpdateColor = backgroundColor !== getValues('backgroundColor');
+
+    const shouldUpdateImage = backgroundImage !== selectedImage;
+
+    const shouldUpdateSizeType =
+      typeof backgroundSize === 'string'
+        ? getValues('backgroundSizeType') !== backgroundSize
+        : false;
+
+    const shouldUpdateSizeX =
+      Array.isArray(backgroundSize) &&
+      parseFloat(backgroundSize[0] as any) !== getValues('backgroundSizeWidth');
+
+    const shouldUpdateSizeY =
+      Array.isArray(backgroundSize) &&
+      parseFloat(backgroundSize[1] as any) !==
+        getValues('backgroundSizeHeight');
+
+    const shouldUpdateRepeat =
+      backgroundRepeat !== getValues('backgroundRepeat');
+
+    const shouldUpdateClip = backgroundClip !== getValues('backgroundClip');
+
+    const shouldUpdatePosXType =
+      backgroundPositionX !== getValues('backgroundPositionXType');
+
+    const shouldUpdatePosX =
+      parseFloat(backgroundPositionX as any) !==
+      getValues('backgroundPositionX');
+
+    const shouldUpdatePosYType =
+      backgroundPositionY !== getValues('backgroundPositionYType');
+
+    const shouldUpdatePosY =
+      parseFloat(backgroundPositionY as any) !==
+      getValues('backgroundPositionY');
+
+    shouldUpdate.current = !(
+      shouldUpdateColor ||
+      shouldUpdateImage ||
+      shouldUpdateSizeType ||
+      shouldUpdateSizeX ||
+      shouldUpdateSizeY ||
+      shouldUpdateRepeat ||
+      shouldUpdateClip ||
+      shouldUpdatePosXType ||
+      shouldUpdatePosX ||
+      shouldUpdatePosYType ||
+      shouldUpdatePosY
+    );
+
+    if (shouldUpdate.current === false) {
+      shouldUpdateColor && setValue('backgroundColor', backgroundColor);
+    
+      shouldUpdateImage && setSelectedImage(backgroundImage);
+
+      shouldUpdateSizeType &&
+        setValue(
+          'backgroundSizeType',
+          Array.isArray(backgroundSize) ? 'custom' : backgroundSize
+        );
+
+      shouldUpdateSizeX &&
+        getValues('backgroundSizeType') === 'custom' &&
+        Array.isArray(backgroundSize) &&
+        setValue('backgroundSizeWidth', parseFloat(backgroundSize[0] as any));
+
+      shouldUpdateSizeY &&
+        getValues('backgroundSizeType') === 'custom' &&
+        Array.isArray(backgroundSize) &&
+        setValue('backgroundSizeHeight', parseFloat(backgroundSize[1] as any));
+
+      shouldUpdateRepeat && setValue('backgroundRepeat', backgroundRepeat);
+
+      shouldUpdateClip && setValue('backgroundClip', backgroundClip);
+
+      shouldUpdatePosXType &&
+        setValue(
+          'backgroundPositionXType',
+          isValidCssValue(backgroundPositionX)
+            ? 'custom'
+            : (backgroundPositionX as any)
+        );
+
+      shouldUpdatePosX &&
+        setValue('backgroundPositionX', parseFloat(backgroundPositionX as any));
+
+      shouldUpdatePosYType &&
+        setValue(
+          'backgroundPositionYType',
+          isValidCssValue(backgroundPositionY)
+            ? 'custom'
+            : (backgroundPositionY as any)
+        );
+
+      shouldUpdatePosY &&
+        setValue('backgroundPositionY', parseFloat(backgroundPositionY as any));
+
+      shouldUpdate.current = true;
+    }
+  }, [props]);
 
   return (
     <>
@@ -261,23 +362,26 @@ export function BackgroundPannel(props: TProps) {
             <Stack gap={2}>
               <FormControl fullWidth>
                 <InputLabel id="label-size">size</InputLabel>
-                <Select
-                  labelId="label-size"
-                  size="small"
-                  label="size"
-                  value={sizeType}
-                  onChange={(e) => {
-                    setSizeType(e.target.value as TBackgroundSize);
-                  }}
-                >
-                  {backgroundSizes.map((type) => (
-                    <MenuItem value={type} key={type}>
-                      {type}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <Controller
+                  name="backgroundSizeType"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      labelId="label-size"
+                      size="small"
+                      label="size"
+                    >
+                      {backgroundSizes.map((type) => (
+                        <MenuItem value={type} key={type}>
+                          {type}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
               </FormControl>
-              {sizeType === 'custom' && (
+              {getValues('backgroundSizeType') === 'custom' && (
                 <>
                   <InputWithUnit
                     {...register('backgroundSizeWidth')}
@@ -357,23 +461,26 @@ export function BackgroundPannel(props: TProps) {
               <Divider>x轴</Divider>
               <FormControl fullWidth>
                 <InputLabel id="label-position-x">position</InputLabel>
-                <Select
-                  labelId="label-position-x"
-                  size="small"
-                  label="position"
-                  value={positionXType}
-                  onChange={(e) => {
-                    setPositionXType(e.target.value as TBackgroundPosition);
-                  }}
-                >
-                  {backgroundPositionTypes.map((type) => (
-                    <MenuItem value={type} key={type}>
-                      {type}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <Controller
+                  name="backgroundPositionXType"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      labelId="label-position-x"
+                      size="small"
+                      label="position"
+                    >
+                      {backgroundPositionTypes.map((type) => (
+                        <MenuItem value={type} key={type}>
+                          {type}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
               </FormControl>
-              {positionXType === 'custom' && (
+              {getValues('backgroundPositionXType') === 'custom' && (
                 <InputWithUnit
                   {...register('backgroundPositionX')}
                   size="small"
@@ -389,23 +496,26 @@ export function BackgroundPannel(props: TProps) {
               <Divider>y轴</Divider>
               <FormControl fullWidth>
                 <InputLabel id="label-position-y">position</InputLabel>
-                <Select
-                  labelId="label-position-y"
-                  size="small"
-                  label="position"
-                  value={positionYType}
-                  onChange={(e) => {
-                    setPositionYType(e.target.value as TBackgroundPosition);
-                  }}
-                >
-                  {backgroundPositionTypes.map((type) => (
-                    <MenuItem value={type} key={type}>
-                      {type}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <Controller
+                  name="backgroundPositionYType"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      labelId="label-position-y"
+                      size="small"
+                      label="position"
+                    >
+                      {backgroundPositionTypes.map((type) => (
+                        <MenuItem value={type} key={type}>
+                          {type}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
               </FormControl>
-              {positionYType === 'custom' && (
+              {getValues('backgroundPositionYType') === 'custom' && (
                 <InputWithUnit
                   {...register('backgroundPositionY')}
                   size="small"

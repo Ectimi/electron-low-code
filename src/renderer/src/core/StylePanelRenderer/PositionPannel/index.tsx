@@ -57,6 +57,7 @@ export function PositionPannel(
     props.zIndex === 'auto' ? 'auto' : 'custom'
   );
   const [modalVisible, setModalVisible] = useSafeState(false);
+  const [zIndex, setZIndex] = useSafeState(1);
   const [inputValue, setInputValue] = useSafeState<number | string>('');
   const [posName, setPosName] = useSafeState('');
   const pos = useReactive([props.top, props.right, props.bottom, props.left]);
@@ -109,9 +110,12 @@ export function PositionPannel(
   };
 
   useUpdateEffect(() => {
-    const { position, top, right, bottom, left, zIndex } = props;
+    const { position, top, right, bottom, left } = props;
     setType(position);
-    setZIndexType(zIndex === 'auto' ? 'auto' : 'custom');
+    setZIndexType(props.zIndex === 'auto' ? 'auto' : 'custom');
+    props.zIndex !== 'auto' &&
+      props.zIndex !== zIndex &&
+      setZIndex(props.zIndex);
     pos[0] = top;
     pos[1] = right;
     pos[2] = bottom;
@@ -166,10 +170,12 @@ export function PositionPannel(
                   label="zIndex"
                   size="small"
                   type="number"
-                  defaultValue={1}
-                  onChange={(e) =>
-                    props.onChange('zIndex', Number(e.target.value))
-                  }
+                  value={zIndex}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    setZIndex(value);
+                    props.onChange('zIndex', value);
+                  }}
                 />
               </Stack>
             )}

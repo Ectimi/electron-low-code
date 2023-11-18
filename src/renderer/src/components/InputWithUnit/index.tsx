@@ -6,7 +6,7 @@ import {
   styled,
 } from '@mui/material';
 import type { TextFieldProps, SelectChangeEvent } from '@mui/material';
-import { useSafeState } from 'ahooks';
+import { useSafeState, useUpdateEffect } from 'ahooks';
 import { forwardRef } from 'react';
 
 const UnitInputSelect = styled(Select)({
@@ -30,12 +30,16 @@ const InputWithUnit = forwardRef(
   (
     props: TextFieldProps & {
       defaultUnit?: string;
-      onUnitChange: (unit: string,name: string) => void;
+      onUnitChange: (unit: string, name: string) => void;
     },
     ref: any
   ) => {
     const { sx, defaultUnit, onUnitChange, ...restProps } = props;
     const [unit, setUnit] = useSafeState(defaultUnit || 'px');
+
+    useUpdateEffect(() => {
+      setUnit(props.defaultUnit!);
+    }, [props.defaultUnit]);
 
     return (
       <Box sx={{ position: 'relative', ...sx }}>
@@ -45,7 +49,7 @@ const InputWithUnit = forwardRef(
           size="small"
           onChange={(e: SelectChangeEvent<any>) => {
             setUnit(e.target.value);
-            onUnitChange(e.target.value,restProps.label as string);
+            onUnitChange(e.target.value, restProps.label as string);
           }}
         >
           <MenuItem value="px">px</MenuItem>

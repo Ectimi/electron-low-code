@@ -6,8 +6,8 @@ const style: TStyle = createDefaultStyle({
     display: 'inline-block',
   },
   size: {
-    width: 300,
-    height: 150,
+    width: '300px',
+    height: '150px',
   },
 });
 

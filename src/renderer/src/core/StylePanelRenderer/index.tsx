@@ -11,7 +11,7 @@ import { EffectPannel } from './EffectPannel';
 import { PositionPannel } from './PositionPannel';
 import { GapPannel } from './GapPannel';
 import { useMount, useSafeState, useUpdateEffect } from 'ahooks';
-import { Fragment, useMemo } from 'react';
+import { Fragment, useCallback, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import Fallback from '@/components/Fallback';
 import { useSnapshot } from 'valtio';
@@ -33,7 +33,6 @@ const titleMap: Map<EStyleType, any> = new Map([
 ]);
 
 export default function StylePanelRenderer() {
-  const [updateKey, forceUpdate] = useSafeState(0);
   const editorSnap = useSnapshot(editorStore.state);
   const [property, setProperty] = useSafeState<
     IMaterial<any>['property'] | null
@@ -43,20 +42,128 @@ export default function StylePanelRenderer() {
       : null
   );
 
+  const AccordionDetailsContent = useCallback(
+    (key: EStyleType) => {
+      if (!property) return null;
+      switch (key) {
+        case EStyleType.layout:
+          return (
+            <LayoutPannel
+              display={property.style.layout.display}
+              onChange={(value) => {
+                editorStore.updateMaterialStyle(
+                  editorSnap.currentMaterial!,
+                  'layout.display',
+                  value
+                );
+              }}
+            />
+          );
+        case EStyleType.position:
+          return (
+            <PositionPannel
+              {...property.style.position}
+              onChange={(type, value) => {
+                editorStore.updateMaterialStyle(
+                  editorSnap.currentMaterial!,
+                  `position.${type}`,
+                  value
+                );
+              }}
+            />
+          );
+        case EStyleType.gap:
+          return (
+            <GapPannel
+              {...property.style.gap}
+              onChange={(gapType, value) => {
+                editorStore.updateMaterialStyle(
+                  editorSnap.currentMaterial!,
+                  'gap.' + gapType,
+                  value
+                );
+              }}
+            />
+          );
+        case EStyleType.size:
+          return (
+            <SizePannel
+              {...property.style.size}
+              onChange={(data) => {
+                editorStore.updateMaterialStyle(
+                  editorSnap.currentMaterial!,
+                  'size',
+                  data
+                );
+              }}
+            />
+          );
+        case EStyleType.text:
+          return (
+            <TextPannel
+              {...property.style.text}
+              onChange={(type, value) => {
+                editorStore.updateMaterialStyle(
+                  editorSnap.currentMaterial!,
+                  `text.${type}`,
+                  value
+                );
+              }}
+            />
+          );
+        case EStyleType.background:
+          return (
+            <BackgroundPannel
+              {...property.style.background}
+              onChange={(data) => {
+                editorStore.updateMaterialStyle(
+                  editorSnap.currentMaterial!,
+                  'background',
+                  data
+                );
+              }}
+            />
+          );
+        case EStyleType.effect:
+          return (
+            <EffectPannel
+              {...property.style.effect}
+              onChange={(data) => {
+                editorStore.updateMaterialStyle(
+                  editorSnap.currentMaterial!,
+                  'effect',
+                  data
+                );
+              }}
+            />
+          );
+      }
+    },
+    [property, editorSnap.currentMaterial]
+  );
+
   useUpdateEffect(() => {
-    forceUpdate((pre) => pre + 1);
+    if (editorSnap.currentMaterial) {
+      const property = editorStore.getProperty(editorSnap.currentMaterial!);
+      setProperty(property);
+    }
   }, [editorSnap.currentMaterial]);
 
   useMount(() =>
-    subscribeKey(editorStore.materialList, 'value', () => {
-      const property = editorStore.getProperty(editorSnap.currentMaterial!);
-      setProperty(property);
+    subscribeKey(editorStore.materialList, 'value', (list) => {
+      if (list.length === 0) {
+        editorStore.setCurrentMaterial(null);
+        setProperty(null);
+      } else {
+        const property = editorStore.getProperty(editorStore.state.currentMaterial!);
+        setProperty(property);
+      }
     })
   );
 
   return (
     <ErrorBoundary FallbackComponent={Fallback}>
-      <Fragment key={updateKey}>
+      <Fragment>
         {property &&
           [...titleMap.keys()].map((key) => (
             <Accordion
@@ -79,96 +186,7 @@ export default function StylePanelRenderer() {
               </AccordionSummary>
 
               <AccordionDetails>
-                {key === EStyleType.layout && (
-                  <LayoutPannel
-                    display={property.style.layout.display}
-                    onChange={(value) => {
-                      editorStore.updateMaterialStyle(
-                        editorSnap.currentMaterial!,
-                        'layout.display',
-                        value
-                      );
-                    }}
-                  />
-                )}
-
-                {key === EStyleType.position && (
-                  <PositionPannel
-                    {...property.style.position}
-                    onChange={(type, value) => {
-                      editorStore.updateMaterialStyle(
-                        editorSnap.currentMaterial!,
-                        `position.${type}`,
-                        value
-                      );
-                    }}
-                  />
-                )}
-
-                {key === EStyleType.gap && (
-                  <GapPannel
-                    {...property.style.gap}
-                    onChange={(gapType, value) => {
-                      editorStore.updateMaterialStyle(
-                        editorSnap.currentMaterial!,
-                        'gap.' + gapType,
-                        value
-                      );
-                    }}
-                  />
-                )}
-
-                {key === EStyleType.size && (
-                  <SizePannel
-                    {...property.style.size}
-                    onChange={(data) => {
-                      editorStore.updateMaterialStyle(
-                        editorSnap.currentMaterial!,
-                        'size',
-                        data
-                      );
-                    }}
-                  />
-                )}
-
-                {key === EStyleType.text && (
-                  <TextPannel
-                    {...property.style.text}
-                    onChange={(type, value) => {
-                      editorStore.updateMaterialStyle(
-                        editorSnap.currentMaterial!,
-                        `text.${type}`,
-                        value
-                      );
-                    }}
-                  />
-                )}
-
-                {key === EStyleType.background && (
-                  <BackgroundPannel
-                    {...property.style.background}
-                    onChange={(data) => {
-                      editorStore.updateMaterialStyle(
-                        editorSnap.currentMaterial!,
-                        'background',
-                        data
-                      );
-                    }}
-                  />
-                )}
-
-                {key === EStyleType.effect && (
-                  <EffectPannel
-                    {...property.style.effect}
-                    onChange={(data) => {
-                      editorStore.updateMaterialStyle(
-                        editorSnap.currentMaterial!,
-                        'effect',
-                        data
-                      );
-                    }}
-                  />
-                )}
+                {AccordionDetailsContent(key)}
               </AccordionDetails>
             </Accordion>
           ))}

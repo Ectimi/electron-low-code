@@ -6,8 +6,9 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
+import { useUpdateEffect } from 'ahooks';
 import { Subscription } from 'node_modules/react-hook-form/dist/utils/createSubject';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { TText } from 'root/renderer/src/materials/types/style';
 import editorStore from 'root/renderer/src/store/editor';
@@ -50,7 +51,8 @@ export function TextPannel(
   }
 ) {
   const { onChange, ...restProps } = props;
-  const { watch, register, control } = useForm<TText>({
+  const shouldUpdate = useRef(true);
+  const { watch, register, control, getValues, setValue } = useForm<TText>({
     defaultValues: restProps,
   });
 
@@ -60,7 +62,7 @@ export function TextPannel(
     }
     subscription = watch((data, { name }) => {
       if (name) {
-        onChange(name, data[name]!);
+        shouldUpdate.current && onChange(name, data[name]!);
       }
     });
     return () => {
@@ -68,6 +70,52 @@ export function TextPannel(
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch, editorStore.state.currentMaterial]);
+
+  useUpdateEffect(() => {
+    const {
+      fontSize,
+      fontFamily,
+      lineHeight,
+      fontWeight,
+      textAlign,
+      fontStyle,
+      textDecoration,
+      color,
+    } = props;
+    const shouldUpdateFontSize = fontSize !== getValues('fontSize');
+    const shouldUpdateFontFamily = fontFamily !== getValues('fontFamily');
+    const shouldUpdateLineHeight = lineHeight !== getValues('lineHeight');
+    const shouldUpdateFontWeight = fontWeight !== getValues('fontWeight');
+    const shouldUpdateTextAlign = textAlign !== getValues('textAlign');
+    const shouldUpdateFontStyle = fontStyle !== getValues('fontStyle');
+    const shouldUpdateTextDecoration =
+      textDecoration !== getValues('textDecoration');
+    const shouldUpdateColor = color !== getValues('color');
+
+    shouldUpdate.current = !(
+      shouldUpdateFontSize ||
+      shouldUpdateFontFamily ||
+      shouldUpdateLineHeight ||
+      shouldUpdateFontWeight ||
+      shouldUpdateTextAlign ||
+      shouldUpdateFontStyle ||
+      shouldUpdateTextDecoration ||
+      shouldUpdateColor
+    );
+
+    if (shouldUpdate.current === false) {
+      shouldUpdateFontSize && setValue('fontSize', fontSize);
+      shouldUpdateFontFamily && setValue('fontFamily', fontFamily);
+      shouldUpdateLineHeight && setValue('lineHeight', lineHeight);
+      shouldUpdateFontWeight && setValue('fontWeight', fontWeight);
+      shouldUpdateTextAlign && setValue('textAlign', textAlign);
+      shouldUpdateFontStyle && setValue('fontStyle', fontStyle);
+      shouldUpdateTextDecoration && setValue('textDecoration', textDecoration);
+      shouldUpdateColor && setValue('color', color);
+
+      shouldUpdate.current = true;
+    }
+  }, [props]);
 
   return (
     <Stack gap={2}>

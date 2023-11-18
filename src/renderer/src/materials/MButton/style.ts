@@ -12,8 +12,8 @@ const style: TStyle = createDefaultStyle({
     },
   },
   size: {
-    width: 100,
-    height: 35,
+    width: '100px',
+    height: '35px',
   },
   background: {
     backgroundColor: '#3f7ef7',

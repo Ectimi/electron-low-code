@@ -83,13 +83,11 @@ export default function PlotArea() {
         setIndicatorLabel(materialId.split('__')[0]);
       }
     };
-    // subscribeKey(editorStore.state, 'currentMaterial', (materialId) => {
-    //   setTimeout(() => updateIndicator(materialId));
-    // });
+    subscribeKey(editorStore.state, 'currentMaterial', (materialId) => {
+      setTimeout(() => updateIndicator(materialId));
+    });
     subscribeKey(editorStore.materialList, 'value', (value) => {
-      console.log('value',value);
-      
-      // setTimeout(() => updateIndicator(editorStore.state.currentMaterial));
+      setTimeout(() => updateIndicator(editorStore.state.currentMaterial));
     });
   });
 
